@@ -1,10 +1,16 @@
-const express = require("express");
 require("dotenv").config();
-const app = express();
+const express = require("express");
+const connectDB = require("./config/mongoose");
+const colors = require("colors");
+const { notFound, errorHandler } = require("./config/errorHandlerMiddleware");
 
-app.get("/", (req, res) => {
-    res.send("hiiii");
-});
+const app = express();
+connectDB();
+app.use(express.json());
+app.use('/',require("./routes"));
+
+app.use(notFound);
+app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
-app.listen(port, console.log(`Server Started on PORT ${port}`));
+app.listen(port, console.log(`Server Started on PORT ${port}`.yellow.bold),);
