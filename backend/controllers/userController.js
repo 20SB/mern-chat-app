@@ -19,6 +19,7 @@ module.exports.register = asyncHandler(async (req, res) => {
         throw new Error("User Already Exists");
     }
 
+    let dp = "";
     if (req.file) {
         dp = `/${req.file.path}`;
     }
@@ -60,7 +61,7 @@ module.exports.login = asyncHandler(async (req, res) => {
     }
     return res.status(200).json({
         success: true,
-        message: "User Registered Successfully",
+        message: "Login Successful",
         data: {
             user: {
                 _id: user._id,
@@ -72,6 +73,26 @@ module.exports.login = asyncHandler(async (req, res) => {
             token: jwt.sign(user.toJSON(), env.jwtSecret, {
                 expiresIn: "30d",
             }),
+        },
+    });
+});
+
+module.exports.allSearchedUsers = asyncHandler(async (req, res) => {
+    const keyword = req.query.search
+        ? {
+              $or: [
+                  { name: { $regex: req.query.search, $options: "i" } },
+                  { email: { $regex: req.query.search, $options: "i" } },
+              ],
+          }
+        : {};
+
+    const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
+    return res.status(200).json({
+        success: true,
+        message: "Users Successfully",
+        data: {
+            users,
         },
     });
 });
