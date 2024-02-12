@@ -8,6 +8,7 @@ const passport = require("passport");
 const colors = require("colors");
 const { notFound, errorHandler } = require("./config/errorHandlerMiddleware");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 connectDB();
@@ -25,12 +26,12 @@ app.use(
     })
 );
 
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/", require("./routes"));
 
 app.use(notFound);
 app.use(errorHandler);
 
-app.use("/public", express.static(path.join(__dirname, "public")));
 
 const port = env.port || 5000;
 app.listen(port, console.log(`Server Started on PORT ${port}`.yellow.bold));

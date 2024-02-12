@@ -13,7 +13,6 @@ module.exports.register = asyncHandler(async (req, res) => {
         res.status(400);
         throw new Error("Please Enter all the Fileds");
     }
-    console.log("files", req.file);
     const userExists = await User.findOne({ email });
     if (userExists) {
         res.status(400);
@@ -44,7 +43,6 @@ module.exports.register = asyncHandler(async (req, res) => {
                 token: jwt.sign(user.toJSON(), env.jwtSecret, {
                     expiresIn: "30d",
                 }),
-                file: req.file,
             },
         });
     } else {
