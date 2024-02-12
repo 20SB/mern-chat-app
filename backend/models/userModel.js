@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
         trim: true,
         required: true,
     },
-    pic:{
+    dp:{
         type: String,
         default: ""
     }
