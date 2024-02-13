@@ -6,19 +6,27 @@ import {
     InputRightElement,
     VStack,
     Button,
-    useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useHistory } from "react-router-dom";
 
 const SignUp = () => {
+    // Define the backend URL using an environment variable
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-    const toast = useToast();
-    const [pic, setPic] = useState();
-    const [loading, setLoading] = useState(false);
-    const [showPass, setShowPass] = useState(false);
-    const [showConfPass, setShowConfPass] = useState(false);
-    const [isPasswordValid, setIsPasswordValid] = useState(false);
 
+    // State variables
+    const [dp, setDp] = useState(); // For storing the user's profile picture
+    const [loading, setLoading] = useState(false); // For managing loading state
+    const [showPass, setShowPass] = useState(false); // For toggling password visibility
+    const [showConfPass, setShowConfPass] = useState(false); // For toggling confirm password visibility
+    const [isPasswordValid, setIsPasswordValid] = useState(false); // For checking password validity
+    const history = useHistory();
+    // const { setUser } = ChatState();
+
+    // Form data state
     const [formData, setFormData] = useState({
         name: null,
         email: null,
@@ -26,6 +34,7 @@ const SignUp = () => {
         confirmPassword: null,
     });
 
+    // Handle form input changes
     const handleChange = (e) => {
         const { name, value, files } = e.target;
 
@@ -35,8 +44,8 @@ const SignUp = () => {
         }));
     };
 
+    // Check if passwords match when confirmPassword changes
     useEffect(() => {
-        console.log(BACKEND_URL);
         if (formData.password !== formData.confirmPassword) {
             setIsPasswordValid(true);
         } else {
@@ -44,68 +53,49 @@ const SignUp = () => {
         }
     }, [formData.confirmPassword]);
 
+    // Form submission handler
     const submitHandler = async () => {
-        if (formData.password !== formData.confirmPassword) {
-            toast({
-                title: "Error",
-                description: "Password and Confirm Password do not match.",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom",
-            });
+        // check if all fields are filled or not
+        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+            toast.warning("Please Fill all the Fileds");
             return;
         }
 
+        // Check if passwords match before submitting
+        if (formData.password !== formData.confirmPassword) {
+            toast.warning("Password and Confirm Password do not match.");
+            return;
+        }
+
+        // Create form data to send to the backend
         let formDatas = new FormData();
         formDatas.append("name", formData.name);
         formDatas.append("email", formData.email);
         formDatas.append("password", formData.password);
-        formDatas.append("pic", pic);
+        formDatas.append("dp", dp);
 
-        // for (const entry of formDatas.entries()) {
-        //     console.log(entry[0], entry[1]);
-        // }
-        // console.log(formData);
-        // console.log(pic);
+        // set loader true
+        setLoading(true);
+        // Make a POST request to the backend API
+        axios
+            .post(`${BACKEND_URL}/api/user/signup`, formDatas)
+            .then((res) => {
+                console.log("res.data", res.data);
+                toast.success(res.data.message);
 
-        try {
-            const response = await fetch(`${BACKEND_URL}/api/user/signup`, {
-                method: "POST",
-                body: formDatas,
+                // setUser(data);
+                localStorage.setItem("userInfo", JSON.stringify(res.data.data));
+                history.push("/chats");
+            })
+            .catch((error) => {
+                toast.error(error.response.data.message);
+            })
+            .finally(() => {
+                setLoading(false);
             });
-
-                console.log(response);
-            if (response.ok) {
-                // Handle successful response
-                // For example, show a success toast
-                toast({
-                    title: "Success",
-                    description: "User signed up successfully.",
-                    status: "success",
-                    duration: 5000,
-                    isClosable: true,
-                    position: "bottom",
-                });
-            } else {
-                // Handle error response
-                // For example, show an error toast
-                toast({
-                    title: "Error",
-                    description: "Failed to sign up user.",
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true,
-                    position: "bottom",
-                });
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            // Handle any network or other errors
-        }
     };
 
-
+    // Render the signup form
     return (
         <VStack>
             <FormControl id="name" isRequired>
@@ -117,7 +107,7 @@ const SignUp = () => {
                 <FormLabel>Email</FormLabel>
                 <Input
                     name="email"
-                    type={"email"}
+                    type="email"
                     placeholder="Enter Email"
                     onChange={handleChange}
                 />
@@ -150,6 +140,7 @@ const SignUp = () => {
                         type={showConfPass ? "text" : "password"}
                         placeholder="Enter ConfirmPassword"
                         onChange={handleChange}
+                        required
                         focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
                     />
                     <InputRightElement width="4.5rem">
@@ -164,27 +155,22 @@ const SignUp = () => {
                 </InputGroup>
             </FormControl>
 
-            <FormControl id="pic" isRequired>
+            <FormControl id="dp" isRequired>
                 <FormLabel>Upload your Picture</FormLabel>
                 <Input
-                    name="pic"
+                    name="dp"
                     type={"file"}
                     p={"1.5"}
                     pb={"35px"}
                     accept="image/*"
-                    onChange={(e) => setPic(e.target.files[0])}
+                    onChange={(e) => setDp(e.target.files[0])}
                 />
             </FormControl>
 
-            <Button
-                colorScheme="blue"
-                width={"100%"}
-                mt={"15"}
-                onClick={submitHandler}
-                isLoading={loading}
-            >
+            <Button colorScheme="blue" width={"100%"} mt={"15"} onClick={submitHandler}>
                 Sign Up
             </Button>
+            <ToastContainer />
         </VStack>
     );
 };

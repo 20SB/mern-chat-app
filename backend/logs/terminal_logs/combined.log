@@ -13,3 +13,12 @@ Error:
 12/02/2024, 05:40:55 pm error: Error in Lock status 
 Error:  
 
+13/02/2024, 05:47:00 pm error: err.message 
+Error:  Error: Invalid Username or Password
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\userController.js:61:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+
+13/02/2024, 05:48:37 pm error: Error: Invalid Username or Password
+Stack: Error: Invalid Username or Password
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\userController.js:61:15
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

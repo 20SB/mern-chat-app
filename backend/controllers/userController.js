@@ -9,14 +9,15 @@ module.exports.register = asyncHandler(async (req, res) => {
     // logger.error(`Error in Lock status \nError:  \n`);
 
     const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-        res.status(400);
-        throw new Error("Please Enter all the Fileds");
-    }
+
     const userExists = await User.findOne({ email });
     if (userExists) {
         res.status(400);
         throw new Error("User Already Exists");
+        // return res.status(400).json({
+        //     success: true,
+        //     message: "User Already Exists",
+        // });
     }
 
     let dp = "";
@@ -30,7 +31,7 @@ module.exports.register = asyncHandler(async (req, res) => {
         dp,
     });
     if (user) {
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             message: "User Registered Successfully",
             data: {
@@ -56,7 +57,7 @@ module.exports.login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user || user.password !== password) {
-        res.status(401);
+        res.status(400);
         throw new Error("Invalid Username or Password");
     }
     return res.status(200).json({

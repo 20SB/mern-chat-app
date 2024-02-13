@@ -16,7 +16,7 @@ export const HomePage = () => {
                 borderRadius={"lg"}
                 borderWidth={"1px"}
             >
-                <Text fontSize={"4xl"} fontFamily={"Work Sans"}>
+                <Text fontSize={"4xl"} fontFamily={"Work Sans"} textAlign={"center"}>
                     ChitChat Junction
                 </Text>
             </Box>

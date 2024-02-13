@@ -30,7 +30,6 @@ const upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
         var ext = path.extname(file.originalname);
-        console.log("ext ", ext);
         if (
             ext !== ".jpg" &&
             ext !== ".jpeg" &&
