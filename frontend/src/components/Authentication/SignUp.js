@@ -6,34 +6,120 @@ import {
     InputRightElement,
     VStack,
     Button,
+    useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const SignUp = () => {
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
-    const [confirmPassword, setConfirmPassword] = useState();
+    const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+    const toast = useToast();
     const [pic, setPic] = useState();
+    const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
     const [showConfPass, setShowConfPass] = useState(false);
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
 
-    const postDetails = (pics) => {};
-    const submitHandler = () => {};
+    const [formData, setFormData] = useState({
+        name: null,
+        email: null,
+        password: null,
+        confirmPassword: null,
+    });
+
+    const handleChange = (e) => {
+        const { name, value, files } = e.target;
+
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: files ? files : value,
+        }));
+    };
+
+    useEffect(() => {
+        console.log(BACKEND_URL);
+        if (formData.password !== formData.confirmPassword) {
+            setIsPasswordValid(true);
+        } else {
+            setIsPasswordValid(false);
+        }
+    }, [formData.confirmPassword]);
+
+    const submitHandler = async () => {
+        if (formData.password !== formData.confirmPassword) {
+            toast({
+                title: "Error",
+                description: "Password and Confirm Password do not match.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+            return;
+        }
+
+        let formDatas = new FormData();
+        formDatas.append("name", formData.name);
+        formDatas.append("email", formData.email);
+        formDatas.append("password", formData.password);
+        formDatas.append("pic", pic);
+
+        // for (const entry of formDatas.entries()) {
+        //     console.log(entry[0], entry[1]);
+        // }
+        // console.log(formData);
+        // console.log(pic);
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/api/user/signup`, {
+                method: "POST",
+                body: formDatas,
+            });
+
+                console.log(response);
+            if (response.ok) {
+                // Handle successful response
+                // For example, show a success toast
+                toast({
+                    title: "Success",
+                    description: "User signed up successfully.",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                    position: "bottom",
+                });
+            } else {
+                // Handle error response
+                // For example, show an error toast
+                toast({
+                    title: "Error",
+                    description: "Failed to sign up user.",
+                    status: "error",
+                    duration: 5000,
+                    isClosable: true,
+                    position: "bottom",
+                });
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            // Handle any network or other errors
+        }
+    };
+
 
     return (
         <VStack>
             <FormControl id="name" isRequired>
                 <FormLabel>Name</FormLabel>
-                <Input placeholder="Enter your Name" onChange={(e) => setName(e.target.value)} />
+                <Input name="name" placeholder="Enter your Name" onChange={handleChange} />
             </FormControl>
 
             <FormControl id="email" isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
+                    name="email"
                     type={"email"}
                     placeholder="Enter Email"
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={handleChange}
                 />
             </FormControl>
 
@@ -41,10 +127,11 @@ const SignUp = () => {
                 <FormLabel>Password</FormLabel>
                 <InputGroup size="md">
                     <Input
+                        name="password"
                         pr="4.5rem"
                         type={showPass ? "text" : "password"}
                         placeholder="Enter password"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={handleChange}
                     />
                     <InputRightElement width="4.5rem">
                         <Button h="1.75rem" size="sm" onClick={() => setShowPass(!showPass)}>
@@ -58,10 +145,12 @@ const SignUp = () => {
                 <FormLabel>ConfirmPassword</FormLabel>
                 <InputGroup size="md">
                     <Input
+                        name="confirmPassword"
                         pr="4.5rem"
                         type={showConfPass ? "text" : "password"}
                         placeholder="Enter ConfirmPassword"
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        onChange={handleChange}
+                        focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
                     />
                     <InputRightElement width="4.5rem">
                         <Button
@@ -78,15 +167,22 @@ const SignUp = () => {
             <FormControl id="pic" isRequired>
                 <FormLabel>Upload your Picture</FormLabel>
                 <Input
+                    name="pic"
                     type={"file"}
                     p={"1.5"}
                     pb={"35px"}
                     accept="image/*"
-                    onChange={(e) => postDetails(e.target.files[0])}
+                    onChange={(e) => setPic(e.target.files[0])}
                 />
             </FormControl>
 
-            <Button colorScheme="blue" width={"100%"} mt={"15"} onClick={submitHandler}>
+            <Button
+                colorScheme="blue"
+                width={"100%"}
+                mt={"15"}
+                onClick={submitHandler}
+                isLoading={loading}
+            >
                 Sign Up
             </Button>
         </VStack>
