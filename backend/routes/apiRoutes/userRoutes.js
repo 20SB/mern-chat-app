@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const {generateRandomString} = require("../../config/randomString");
 const userController = require("../../controllers/userController");
+const passport = require("passport");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -46,5 +47,6 @@ const upload = multer({
 
 router.post("/signup", upload.single("dp"), userController.register);
 router.post("/login", userController.login);
+router.get("/", passport.authenticate("jwt", { session: false }), userController.allSearchedUsers);
 
 module.exports = router;
