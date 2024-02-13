@@ -22,3 +22,15 @@ Error:  Error: Invalid Username or Password
 Stack: Error: Invalid Username or Password
     at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\userController.js:61:15
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+13/02/2024, 10:43:33 pm error: Error: results is not defined
+Stack: Error: results is not defined
+    at D:\VS_Code\practice mern stack\chat_app\backend\controllers\chatController.js:81:15
+    at asyncUtilWrap (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\express-async-handler\index.js:3:20)
+    at Layer.handle [as handle_request] (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\express\lib\router\route.js:144:13)
+    at complete (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\middleware\authenticate.js:280:13)
+    at D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\middleware\authenticate.js:287:15
+    at pass (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\authenticator.js:446:14)
+    at Authenticator.transformAuthInfo (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\authenticator.js:468:5)
+    at D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
+    at req.login.req.logIn (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\http\request.js:44:13)
