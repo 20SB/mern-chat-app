@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const chatSchema = mongoose.Schema(
     {
-        chatname: {
+        chatName: {
             type: String,
             trim: true,
         },
@@ -22,7 +22,7 @@ const chatSchema = mongoose.Schema(
         },
         groupAdmin: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
+            ref: "User",
         },
     },
     {

@@ -10,11 +10,13 @@ const colors = require("colors");
 const { notFound, errorHandler } = require("./config/errorHandlerMiddleware");
 const path = require("path");
 const fs = require("fs");
+const { useTreblle } = require("treblle");
 
 const app = express();
 connectDB();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 app.use(passport.initialize());
 
@@ -25,6 +27,11 @@ app.use(
         credentials: true,
     })
 );
+
+useTreblle(app, {
+    apiKey: env.treblleApiKey,
+    projectId: env.treblleProjectId,
+});
 
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/", require("./routes"));
