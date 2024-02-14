@@ -9,8 +9,8 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
-import useGlobalToast from "../../globalFunctions/toast";
-import { useHistory } from "react-router-dom";
+import useGlobalToast from "../../../globalFunctions/toast";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     // Define the backend URL using an environment variable
@@ -22,7 +22,7 @@ const Login = () => {
     // State variables
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
-    const history = useHistory();
+    const navigate = useNavigate();
     // const { setUser } = ChatState();
 
     // Form data state
@@ -61,7 +61,7 @@ const Login = () => {
 
                 // setUser(data);
                 localStorage.setItem("userInfo", JSON.stringify(res.data.data));
-                history.push("/chats");
+                navigate("/chats");
             })
             .catch((error) => {
                 toast.error("Error", error.response.data.message);

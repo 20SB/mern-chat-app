@@ -1,24 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import SideDrawer from "../components/miscellaneous/SideDrawer";
+import { Box } from "@chakra-ui/react";
+import { ChatState } from "./../context/chatProvider";
 
 export const ChatPage = () => {
-    const [chats, setchats] = useState([])
-    const fetchChats = async () => {
-        const {data} = await axios.get(
-            "https://ems-dev.stepsoflearningprocess.com:5002/users/get_all_user"
-        );
+    const { user } = ChatState();
 
-        setchats(data.users);
-    };
-
-    useEffect(()=>{
-        fetchChats();
-    }, []);
-
-
-    return <div>{
-        chats.map((chat) => (
-            <div key={chat._id}>{chat.email}</div>
-        ))
-        }</div>;
+    return (
+        <div style={{ width: "100%" }}>
+            {user && <SideDrawer />}
+            <Box>
+                {/* {user && <MyChats />} */}
+                {/* {user && <ChatBox />} */}
+            </Box>
+        </div>
+    );
 };
