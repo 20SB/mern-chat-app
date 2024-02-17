@@ -10,6 +10,7 @@ export const HomePage = () => {
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("userInfo"));
 
+        console.log(user ? "user found" : "uswr not found");
         if (user) {
             navigate("/chats");
         }
@@ -54,5 +55,8 @@ export const HomePage = () => {
                 </Tabs>
             </Box>
         </Container>
+        // <>
+        //     <p>hiii</p>
+        // </>
     );
 };

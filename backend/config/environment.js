@@ -6,6 +6,11 @@ const development = {
 
     treblleApiKey: process.env.TREBLLE_API_KEY,
     treblleProjectId: process.env.TREBLLE_PROJECT_ID,
+
+    awsSecretAccessKey: process.env.AWS_ACCESS_KEY_ID,
+    awsAccesskey: process.env.AWS_SECRET_ACCESS_KEY,
+    awsRegion: process.env.AWS_REGION,
+    awsBucket: process.env.AWS_BUCKETNAME,
 };
 
 module.exports = development;

@@ -3,6 +3,9 @@ const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const env = require("../config/environment");
 const logger = require("../config/logger");
+const AWS = require("../config/aws");
+const s3 = new AWS.S3();
+const BUCKETNAME = process.env.AWS_BUCKETNAME;
 
 module.exports.register = asyncHandler(async (req, res) => {
     // logger.info(`info log\n`);
@@ -22,8 +25,24 @@ module.exports.register = asyncHandler(async (req, res) => {
 
     let dp = "";
     if (req.file) {
-        dp = `/${req.file.path}`;
+        console.log(req.file);
+        const uploadParams = {
+            Bucket: BUCKETNAME,
+            Key: `${"DP"}/${req.file.originalname}`,
+            Body: req.file.buffer,
+        };
+
+        try {
+            const data = await s3.upload(uploadParams).promise();
+            console.log(data);
+            dp = data.Location;
+        } catch (err) {
+            console.error("Error uploading file to S3:", err);
+            res.status(500);
+            throw new Error("Error in storing DP, try after sometime");
+        }
     }
+
     const user = await User.create({
         name,
         email,

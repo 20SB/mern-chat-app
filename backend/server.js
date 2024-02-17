@@ -11,12 +11,19 @@ const { notFound, errorHandler } = require("./config/errorHandlerMiddleware");
 const path = require("path");
 const fs = require("fs");
 const { useTreblle } = require("treblle");
+// const AWS = require("aws-sdk");
+const AWS = require("./config/aws");
 
 const app = express();
 connectDB();
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// AWS.config.update({
+//     accessKeyId: "AKIAXB3QX2BQFDP22A3C",
+//     secretAccessKey: "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",
+//     region: "ap-south-1",
+// });
 
 app.use(passport.initialize());
 

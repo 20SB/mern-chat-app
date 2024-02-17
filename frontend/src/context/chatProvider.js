@@ -13,8 +13,9 @@ const ChatProvider = ({ children }) => {
         setUser(userInfo);
 
         if (!userInfo) {
+            console.log("go to home");
             navigate("/");
-        }
+        } 
     }, [navigate]);
     return <ChatContext.Provider value={{ user, setUser }}>{children}</ChatContext.Provider>;
 };
