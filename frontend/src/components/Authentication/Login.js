@@ -9,8 +9,9 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
-import useGlobalToast from "../../../globalFunctions/toast";
+import useGlobalToast from "../../globalFunctions/toast";
 import { useNavigate } from "react-router-dom";
+import { ChatState } from "../../context/chatProvider";
 
 const Login = () => {
     // Define the backend URL using an environment variable
@@ -23,8 +24,9 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
     const navigate = useNavigate();
-    // const { setUser } = ChatState();
+    const { user, setUser } = ChatState();
 
+    // console.log("user", user);
     // Form data state
     const [formData, setFormData] = useState({
         email: null,
@@ -55,16 +57,19 @@ const Login = () => {
         // Make a POST request to the backend API
         axios
             .post(`${BACKEND_URL}/api/user/login`, formData)
-            .then((res) => {
-                console.log("res.data", res.data);
-                toast.success(res.data.message, "");
+            .then(({ data }) => {
+                console.log("data", data);
+                toast.success(data.message, "");
 
-                // setUser(data);
-                localStorage.setItem("userInfo", JSON.stringify(res.data.data));
+                setUser(data.data);
+                localStorage.setItem("userInfo", JSON.stringify(data.data));
                 navigate("/chats");
             })
             .catch((error) => {
-                toast.error("Error", error.response.data.message);
+                toast.error(
+                    "Error",
+                    error.response ? error.response.data.message : "Something Went Wrong"
+                );
             })
             .finally(() => {
                 setLoading(false);
@@ -123,12 +128,7 @@ const Login = () => {
                 Login
             </Button>
 
-            <Button
-                colorScheme="red"
-                width={"100%"}
-                onClick={handleGetGuestCredentials}
-                isLoading={loading}
-            >
+            <Button colorScheme="red" width={"100%"} onClick={handleGetGuestCredentials}>
                 Get Guest User Credentials
             </Button>
         </VStack>

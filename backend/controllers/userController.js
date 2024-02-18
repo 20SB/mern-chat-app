@@ -113,8 +113,6 @@ module.exports.allSearchedUsers = asyncHandler(async (req, res) => {
     return res.status(200).json({
         success: true,
         message: "Users Successfully",
-        data: {
-            users,
-        },
+        users,
     });
 });

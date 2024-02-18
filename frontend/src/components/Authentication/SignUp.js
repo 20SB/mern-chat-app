@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import useGlobalToast from "../../../globalFunctions/toast";
+import useGlobalToast from "../../globalFunctions/toast";
 
 const SignUp = () => {
     // Define the backend URL using an environment variable
@@ -170,7 +170,13 @@ const SignUp = () => {
                     />
                 </FormControl>
 
-                <Button colorScheme="blue" width={"100%"} mt={"15"} onClick={submitHandler}>
+                <Button
+                    colorScheme="blue"
+                    width={"100%"}
+                    mt={"15"}
+                    onClick={submitHandler}
+                    isLoading={loading}
+                >
                     Sign Up
                 </Button>
             </VStack>

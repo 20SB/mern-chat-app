@@ -3,6 +3,8 @@ import axios from "axios";
 import SideDrawer from "../components/miscellaneous/SideDrawer";
 import { Avatar, Box } from "@chakra-ui/react";
 import { ChatState } from "./../context/chatProvider";
+import { MyChats } from "../components/miscellaneous/MyChats";
+import { ChatBox } from "../components/miscellaneous/ChatBox";
 
 export const ChatPage = () => {
     const { user } = ChatState();
@@ -10,14 +12,9 @@ export const ChatPage = () => {
     return (
         <div style={{ width: "100%" }}>
             {user && <SideDrawer />}
-            hiiii
-            <Box>
-                <Avatar
-                    name="Segun Adebayo"
-                    src="https://subha-biswal-b1.s3.ap-south-1.amazonaws.com/DP/m3.jpg"
-                />
-                {/* {user && <MyChats />} */}
-                {/* {user && <ChatBox />} */}
+            <Box display="flex" justifyContent="space-between" w="100%" h="91.5vh" p="10px">
+                {user && <MyChats />}
+                {user && <ChatBox />}
             </Box>
         </div>
     );

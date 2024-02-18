@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Container, Box, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
-import Login from "../components/Authentication/Authentication/Login";
-import SignUp from "../components/Authentication/Authentication/SignUp";
 import { useNavigate } from "react-router-dom";
+import Login from "../components/Authentication/Login";
+import SignUp from "../components/Authentication/SignUp";
 
 export const HomePage = () => {
     const navigate = useNavigate();
@@ -27,7 +27,7 @@ export const HomePage = () => {
                 borderRadius={"lg"}
                 borderWidth={"1px"}
             >
-                <Text fontSize={"4xl"} fontFamily={"Work Sans"} textAlign={"center"}>
+                <Text fontSize={"4xl"} fontFamily={"Work sans"} textAlign={"center"}>
                     ChitChat Junction
                 </Text>
             </Box>
