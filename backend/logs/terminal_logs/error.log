@@ -28,3 +28,15 @@ Stack: Error: results is not defined
     at Authenticator.transformAuthInfo (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\authenticator.js:468:5)
     at D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
     at req.login.req.logIn (D:\VS_Code\practice mern stack\chat_app\backend\node_modules\passport\lib\http\request.js:44:13)
+19/02/2024, 03:09:39 pm error: Error: Chat.findById(...).then(...).then(...).populate is not a function
+Stack: TypeError: Chat.findById(...).then(...).then(...).populate is not a function
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\chatController.js:163:10
+    at asyncUtilWrap (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express-async-handler\index.js:3:20)
+    at Layer.handle [as handle_request] (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\route.js:144:13)
+    at complete (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:280:13)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:287:15
+    at pass (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:446:14)
+    at Authenticator.transformAuthInfo (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:468:5)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
+    at req.login.req.logIn (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\http\request.js:44:13)

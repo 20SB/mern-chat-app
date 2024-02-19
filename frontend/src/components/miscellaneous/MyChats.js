@@ -8,7 +8,7 @@ import { ChatLoading } from "./ChatLoading";
 import { getSender } from "../../config/chatLogics";
 import { GroupChatModal } from "./GroupChatModal";
 
-export const MyChats = () => {
+export const MyChats = ({ fetchAgain }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const [loggedUser, setLoggedUser] = useState();
     const toast = useGlobalToast();
@@ -25,7 +25,7 @@ export const MyChats = () => {
             .get(`${BACKEND_URL}/api/chat`, config)
             .then(({ data }) => {
                 // console.log("data", data);
-                toast.success(data.message, "");
+                // toast.success(data.message, "");
 
                 setChats(data.data);
             })
@@ -39,7 +39,7 @@ export const MyChats = () => {
     useEffect(() => {
         setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
         fetchChats();
-    }, []);
+    }, [fetchAgain]);
     return (
         <Box
             display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
@@ -57,9 +57,13 @@ export const MyChats = () => {
                 fontSize={"28px"}
                 fontFamily={"Work sans"}
                 display={"flex"}
+                flexDir={{ base: "column", md: "column", lg: "column", xl: "row" }}
+                flexWrap={"wrap"}
                 w={"100%"}
                 justifyContent={"space-between"}
                 alignItems={"center"}
+                borderBottom={"1px"}
+                borderColor="gray.400"
             >
                 My Chats
                 <GroupChatModal>

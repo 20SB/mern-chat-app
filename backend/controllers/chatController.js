@@ -57,7 +57,6 @@ module.exports.accessChat = asyncHandler(async (req, res) => {
             res.status(500);
             throw new Error(err.message);
         });
-
 });
 
 module.exports.fetchChat = asyncHandler(async (req, res) => {
@@ -122,7 +121,7 @@ module.exports.createGroupChat = asyncHandler(async (req, res) => {
 });
 
 module.exports.renameGroup = asyncHandler(async (req, res) => {
-    const {chatId, chatName } = req.body;
+    const { chatId, chatName } = req.body;
 
     Chat.findByIdAndUpdate(chatId, { chatName }, { new: true })
         .populate("users", "-password")
@@ -138,21 +137,33 @@ module.exports.renameGroup = asyncHandler(async (req, res) => {
             res.status(500);
             throw new Error(err.message);
         });
-
 });
 
 module.exports.removeFromGroup = asyncHandler(async (req, res) => {
     const { chatId, userId } = req.body;
 
-    Chat.findByIdAndUpdate(
-        chatId,
-        {
-            $pull: { users: userId },
-        },
-        { new: true }
-    )
-        .populate("users", "-password")
-        .populate("groupAdmin", "-password")
+    Chat.findById(chatId)
+        .then((chat) => {
+            if (chat.groupAdmin == userId) {
+                let usersWithoutAdmin = chat.users.filter((uId) => uId != userId);
+                let gAdmin =
+                    usersWithoutAdmin[Math.floor(Math.random() * usersWithoutAdmin.length)];
+                chat.groupAdmin = gAdmin;
+            }
+            return chat.save();
+        })
+        .then((chat) => {
+            return Chat.findByIdAndUpdate(
+                chat._id,
+                {
+                    $pull: { users: userId },
+                },
+                { new: true }
+            )
+                .populate("users", "-password")
+                .populate("groupAdmin", "-password");
+        })
+
         .then((updatedChat) => {
             res.status(200).json({
                 success: true,
@@ -167,7 +178,7 @@ module.exports.removeFromGroup = asyncHandler(async (req, res) => {
 });
 
 module.exports.addToGroup = asyncHandler(async (req, res) => {
-    const {chatId, userId} = req.body;
+    const { chatId, userId } = req.body;
 
     Chat.findByIdAndUpdate(
         chatId,
