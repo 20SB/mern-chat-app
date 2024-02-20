@@ -21,7 +21,7 @@ import { UserBadgeItem } from "../UserAvatar/UserBadgeItem";
 import { UserListItem } from "../UserAvatar/UserListItem";
 import axios from "axios";
 
-export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
+export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fecthMessages }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { user, selectedChat, setSelectedChat } = ChatState();
@@ -33,7 +33,7 @@ export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
     const [loadingSearch, setLoadingSearch] = useState(false);
     const toast = useGlobalToast();
 
-    console.log("selectedChat", selectedChat);
+    // console.log("selectedChat", selectedChat);
     const handleRename = () => {
         if (!groupChatName) {
             return;
@@ -163,6 +163,7 @@ export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
             .then(({ data }) => {
                 userToRemove._id === user.user._id ? setSelectedChat() : setSelectedChat(data.data);
                 setFetchAgain(!fetchAgain);
+                fecthMessages();
                 toast.success(data.message, "");
             })
             .catch((error) => {
