@@ -40,3 +40,55 @@ Stack: TypeError: Chat.findById(...).then(...).then(...).populate is not a funct
     at Authenticator.transformAuthInfo (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:468:5)
     at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
     at req.login.req.logIn (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\http\request.js:44:13)
+20/02/2024, 12:10:25 pm error: Error: req is not defined
+Stack: ReferenceError: req is not defined
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\messageController.js:6:33
+    at asyncUtilWrap (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express-async-handler\index.js:3:20)
+    at Layer.handle [as handle_request] (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\route.js:144:13)
+    at complete (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:280:13)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:287:15
+    at pass (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:446:14)
+    at Authenticator.transformAuthInfo (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:468:5)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
+    at req.login.req.logIn (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\http\request.js:44:13)
+20/02/2024, 12:10:42 pm error: Error: Message.create(...).populate is not a function
+Stack: TypeError: Message.create(...).populate is not a function
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\messageController.js:14:10
+    at asyncUtilWrap (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express-async-handler\index.js:3:20)
+    at Layer.handle [as handle_request] (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\route.js:144:13)
+    at complete (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:280:13)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:287:15
+    at pass (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:446:14)
+    at Authenticator.transformAuthInfo (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:468:5)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
+    at req.login.req.logIn (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\http\request.js:44:13)
+20/02/2024, 01:07:48 pm error: Error: req is not defined
+Stack: ReferenceError: req is not defined
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\messageController.js:56:26
+    at asyncUtilWrap (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express-async-handler\index.js:3:20)
+    at Layer.handle [as handle_request] (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\route.js:144:13)
+    at complete (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:280:13)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:287:15
+    at pass (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:446:14)
+    at Authenticator.transformAuthInfo (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:468:5)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
+    at req.login.req.logIn (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\http\request.js:44:13)
+20/02/2024, 01:08:13 pm error: Error: then is not defined
+Stack: ReferenceError: then is not defined
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\messageController.js:57:5
+    at asyncUtilWrap (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express-async-handler\index.js:3:20)
+    at Layer.handle [as handle_request] (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\express\lib\router\route.js:144:13)
+    at complete (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:280:13)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:287:15
+    at pass (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:446:14)
+    at Authenticator.transformAuthInfo (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\authenticator.js:468:5)
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\middleware\authenticate.js:284:22
+    at req.login.req.logIn (C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\node_modules\passport\lib\http\request.js:44:13)
+20/02/2024, 02:18:29 pm error: Error: User is not defined
+Stack: ReferenceError: User is not defined
+    at C:\Users\subha\OneDrive\Documents\vs code\mern-chat-app\backend\controllers\messageController.js:23:5
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

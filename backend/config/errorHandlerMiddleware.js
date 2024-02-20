@@ -15,7 +15,7 @@ module.exports.errorHandler = (err, req, res, next) => {
         logger.error(`Error: ${err.message}\nStack: ${err.stack}`);
     }
 
-    res.json({
+    return res.json({
         message: err.message,
         stack: process.env.NODE_ENV === "production" && statusCode === 500 ? null : err.stack,
         success: false,
