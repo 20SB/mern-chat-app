@@ -28,11 +28,16 @@ import InputEmoji from "react-input-emoji";
 import { IoIosDocument, IoMdPhotos } from "react-icons/io";
 import { FaUser, FaCamera } from "react-icons/fa";
 
+import io from "socket.io-client";
+const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
+var socket, selectedChatCompare;
+
 export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState("");
+    const [socketConnected, setSocketConnected] = useState(true);
 
     const { user, selectedChat, setSelectedChat } = ChatState();
     const toast = useGlobalToast();
@@ -40,6 +45,8 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     console.log("messages", messages);
     const fecthMessages = () => {
         if (!selectedChat) return;
+        
+            setLoading(true);
         const config = {
             headers: {
                 Authorization: `Bearer ${user.token}`,
@@ -60,6 +67,10 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         ? error.response.data.message
                         : "Something Went Wrong in fetching messages"
                 );
+            })
+            .finally(() => {
+                setLoading(false);
+                socket.emit("join chat", selectedChat._id);
             });
     };
     const sendMessage = (e) => {
@@ -99,6 +110,15 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     useEffect(() => {
         fecthMessages();
     }, [selectedChat]);
+
+    useEffect(() => {
+        socket = io(ENDPOINT);
+        socket.emit("setup", user);
+        socket.on("connection", () => {
+            setSocketConnected(true);
+        });
+    }, []);
+
     return (
         <>
             {selectedChat ? (
