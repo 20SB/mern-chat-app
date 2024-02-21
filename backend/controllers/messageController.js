@@ -26,7 +26,7 @@ module.exports.sendMessage = expressAsyncHandler(async (req, res) => {
         let message = await Message.create(newMessage);
 
         // Populate sender and chat fields of the message
-        message = await message.populate("sender", "name pic");
+        message = await message.populate("sender", "name dp");
         message = await message.populate("chat");
         message = await User.populate(message, {
             path: "chat.users",

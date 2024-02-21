@@ -42,11 +42,20 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const { user, selectedChat, setSelectedChat } = ChatState();
     const toast = useGlobalToast();
 
-    console.log("messages", messages);
+    // Establish a connection to the Socket.IO server when the component mounts
+    useEffect(() => {
+        socket = io(ENDPOINT);
+        socket.emit("setup", user);
+        socket.on("connection", () => {
+            setSocketConnected(true);
+        });
+    }, []);
+
+    // Fetch messages when the selected chat changes
     const fecthMessages = () => {
         if (!selectedChat) return;
-        
-            setLoading(true);
+
+        setLoading(true);
         const config = {
             headers: {
                 Authorization: `Bearer ${user.token}`,
@@ -56,7 +65,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         axios
             .get(`${BACKEND_URL}/api/message?chatId=${selectedChat._id}`, config)
             .then(({ data }) => {
-                console.log("messages data", data);
                 toast.success(data.message, "");
                 setMessages(data.data);
             })
@@ -73,6 +81,8 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 socket.emit("join chat", selectedChat._id);
             });
     };
+
+    // Send a new message when the user presses Enter
     const sendMessage = (e) => {
         if (e.key === "Enter" && newMessage) {
             setLoading(true);
@@ -91,8 +101,8 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     config
                 )
                 .then(({ data }) => {
-                    console.log("data", data);
                     toast.success(data.message, "");
+                    socket.emit("new message", data.data.message);
                     setMessages([...messages, data.data.message]);
                 })
                 .catch((error) => {
@@ -107,17 +117,22 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         }
     };
 
+    // Fetch messages when the selected chat changes
     useEffect(() => {
         fecthMessages();
+        selectedChatCompare = selectedChat;
     }, [selectedChat]);
 
+    // Update messages when a new message is received
     useEffect(() => {
-        socket = io(ENDPOINT);
-        socket.emit("setup", user);
-        socket.on("connection", () => {
-            setSocketConnected(true);
+        socket.on("message received", (newMessageReceived) => {
+            if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+                // give notification
+            } else {
+                setMessages([...messages, newMessageReceived]);
+            }
         });
-    }, []);
+    });
 
     return (
         <>

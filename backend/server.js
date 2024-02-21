@@ -1,32 +1,34 @@
-require("dotenv").config();
-const env = require("./config/environment");
-const express = require("express");
-const bodyParser = require("body-parser");
-const connectDB = require("./config/mongoose");
-const cors = require("cors");
-const passport = require("passport");
-const passportJWT = require("./config/passportJWT");
-const colors = require("colors");
-const { notFound, errorHandler } = require("./config/errorHandlerMiddleware");
-const path = require("path");
-const fs = require("fs");
-const { useTreblle } = require("treblle");
-// const AWS = require("aws-sdk");
-const AWS = require("./config/aws");
+// Import required modules
+require("dotenv").config(); // Load environment variables from .env file
+const env = require("./config/environment"); // Import environment configuration
+const express = require("express"); // Import Express.js framework
+const bodyParser = require("body-parser"); // Middleware to parse incoming request bodies
+const connectDB = require("./config/mongoose"); // Connect to MongoDB database
+const cors = require("cors"); // Middleware to enable CORS (Cross-Origin Resource Sharing)
+const passport = require("passport"); // Authentication middleware for Node.js
+const passportJWT = require("./config/passportJWT"); // Passport strategy for JSON Web Token (JWT) authentication
+const colors = require("colors"); // Library for terminal output coloring
+const { notFound, errorHandler } = require("./config/errorHandlerMiddleware"); // Middleware for handling 404 errors and other errors
+const path = require("path"); // Module for working with file paths
+const fs = require("fs"); // File system module
+const { useTreblle } = require("treblle"); // Integration for error tracking with Treblle
+// const AWS = require("aws-sdk"); // Uncomment if using AWS SDK
+const AWS = require("./config/aws"); // Import AWS configuration
 
+// Initialize Express application
 const app = express();
+
+// Connect to MongoDB
 connectDB();
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
-// AWS.config.update({
-//     accessKeyId: "AKIAXB3QX2BQFDP22A3C",
-//     secretAccessKey: "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",
-//     region: "ap-south-1",
-// });
+// Middleware setup
+app.use(express.json()); // Parse JSON request bodies
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 
+// Initialize passport for authentication
 app.use(passport.initialize());
 
+// Enable CORS
 app.use(
     cors({
         origin: "*",
@@ -35,36 +37,26 @@ app.use(
     })
 );
 
+// Error tracking with Treblle
 useTreblle(app, {
     apiKey: env.treblleApiKey,
     projectId: env.treblleProjectId,
 });
 
+// Serve static files from the 'public' directory
 app.use("/public", express.static(path.join(__dirname, "public")));
-app.use("/", require("./routes"));
 
+// Routing
+app.use("/", require("./routes")); // Use router defined in 'routes' directory
+
+// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 
+// Define port to listen on
 const port = env.port || 5000;
+
+// Start server
 const server = app.listen(port, console.log(`Server Started on PORT ${port}`.yellow.bold));
 
-const io = require("socket.io")(server, {
-    pingTimeout: 60000,
-    cors: {
-        origin: "*",
-    },
-});
-
-io.on("connection", (socket) => {
-    console.log("connected to socket.io");
-    socket.on("setup", (userData) => {
-        socket.join(userData.user._id);
-        console.log(userData.user._id);
-        socket.emit("connected");
-    });
-    socket.on("join chat", (room) => {
-        socket.join(room);
-        console.log("User joined Room: ", room);
-    });
-});
+const io = require("./config/socketIo").socketConfig(server);

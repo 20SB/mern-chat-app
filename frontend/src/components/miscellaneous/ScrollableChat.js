@@ -1,6 +1,6 @@
 import React from "react";
 import ScrollableFeed from "react-scrollable-feed";
-import { isLastMessage, isSameSender, isSameUser } from "../../config/chatLogics";
+import { isLastMessage, isLastMessageOfText, isSameSender, isSameUser } from "../../config/chatLogics";
 import { ChatState } from "./../../context/chatProvider";
 import { Avatar, Tooltip } from "@chakra-ui/react";
 import { isSameSenderMargin } from "./../../config/chatLogics";
@@ -12,7 +12,8 @@ export const ScrollableChat = ({ messages }) => {
             {messages &&
                 messages.map((m, i) => (
                     <div style={{ display: "flex" }} key={m._id}>
-                        {isSameSender(messages, m, i, user.user._id) && (
+                        {(isSameSender(messages, m, i, user.user._id) ||
+                            isLastMessageOfText(messages, i, user.user._id)) && (
                             <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                                 <Avatar
                                     mt={"7px"}
