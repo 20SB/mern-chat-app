@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import {
     Avatar,
@@ -13,9 +13,8 @@ import {
     Portal,
     Spinner,
     Text,
-    position,
 } from "@chakra-ui/react";
-import { AddIcon, ArrowBackIcon } from "@chakra-ui/icons";
+import { AddIcon, ArrowBackIcon, CloseIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../../config/chatLogics";
 import { ProfileModal } from "./ProfileModal";
 import { UpdateGroupChatModal } from "./UpdateGroupChatModal";
@@ -27,6 +26,9 @@ import { ScrollableChat } from "./ScrollableChat";
 import InputEmoji from "react-input-emoji";
 import { IoIosDocument, IoMdPhotos } from "react-icons/io";
 import { FaUser, FaCamera } from "react-icons/fa";
+import Lottie from "react-lottie";
+import typingDots from "../../assets/animations/typing.json";
+import loadingDots from "../../assets/animations/loadingDots.json";
 
 import io from "socket.io-client";
 const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
@@ -43,6 +45,19 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     const { user, selectedChat, setSelectedChat } = ChatState();
     const toast = useGlobalToast();
+    const typingRef = useRef(false);
+
+    const getDefaultOptions = (animationData) => {
+        let defaultOptions = {
+            loop: true,
+            autoplay: true,
+            animationData: animationData,
+            rendererSettings: {
+                preserveAspectRatio: "xMidYMid slice",
+            },
+        };
+        return defaultOptions;
+    };
 
     // Establish a connection to the Socket.IO server when the component mounts
     useEffect(() => {
@@ -73,7 +88,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         axios
             .get(`${BACKEND_URL}/api/message?chatId=${selectedChat._id}`, config)
             .then(({ data }) => {
-                toast.success(data.message, "");
+                // toast.success(data.message, "");
                 setMessages(data.data);
             })
             .catch((error) => {
@@ -93,8 +108,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // Send a new message when the user presses Enter
     const sendMessage = (e) => {
         if (e.key === "Enter" && newMessage) {
-            // setLoading(true);
-
             socket.emit("stop typing", selectedChat._id);
             const config = {
                 headers: {
@@ -111,7 +124,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     config
                 )
                 .then(({ data }) => {
-                    // toast.success(data.message, "");
                     socket.emit("new message", data.data.message);
                     setMessages([...messages, data.data.message]);
                 })
@@ -120,9 +132,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         "Error",
                         error.response ? error.response.data.message : "Something Went Wrong"
                     );
-                })
-                .finally(() => {
-                    // setLoading(false);
                 });
         }
     };
@@ -144,21 +153,27 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         });
     });
 
+    // Typing handler function
     const typingHandler = (newText) => {
         setNewMessage(newText);
         if (!socketConnected) return;
 
-        if (!typing) {
+        if (!typingRef.current) {
+            typingRef.current = true; // Update the reference
             setTyping(true);
             socket.emit("typing", selectedChat._id);
         }
+
         let lastTypingTime = new Date().getTime();
         var timerLength = 3000;
         setTimeout(() => {
             var timeNow = new Date().getTime();
             var timeDiff = timeNow - lastTypingTime;
-            if (timeDiff >= timerLength && typing) {
+
+            if (timeDiff >= timerLength && typingRef.current) {
+                console.log("Stopped typing");
                 socket.emit("stop typing", selectedChat._id);
+                typingRef.current = false; // Update the reference
                 setTyping(false);
             }
         }, timerLength);
@@ -173,35 +188,66 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         pb={3}
                         px={2}
                         w="100%"
-                        fontFamily={"Work sans"}
                         display={"flex"}
                         justifyContent={{ base: "space-between" }}
                         alignItems={"center"}
                     >
-                        <IconButton
-                            display={{ base: "flex", md: "none" }}
-                            icon={<ArrowBackIcon />}
-                            onClick={() => setSelectedChat("")}
-                        />
-                        {!selectedChat.isGroupChat ? (
-                            <>
-                                <div>
-                                    <Avatar
-                                        mt={"7px"}
-                                        m={1}
-                                        cursor={"pointer"}
-                                        name={getSender(user, selectedChat.users)}
-                                        src={getSenderFull(user, selectedChat.users).dp}
-                                        h={"2.5rem"}
-                                        w={"2.5rem"}
-                                    />
-                                    {getSender(user, selectedChat.users)}
-                                </div>
-                                <ProfileModal user={getSenderFull(user, selectedChat.users)} />
-                            </>
-                        ) : (
-                            <>
-                                {/* <div>
+                        <Box
+                            fontFamily={"Work sans"}
+                            display={"flex"}
+                            justifyContent={{ base: "space-between" }}
+                            alignItems={"center"}
+                            w={{ base: "calc(100% - 50px)", md: "100%" }}
+                        >
+                            {!selectedChat.isGroupChat ? (
+                                <>
+                                    <ProfileModal user={getSenderFull(user, selectedChat.users)}>
+                                        <div style={{ display: "flex" }}>
+                                            <Avatar
+                                                mt={"7px"}
+                                                m={1}
+                                                cursor={"pointer"}
+                                                name={getSender(user, selectedChat.users)}
+                                                src={getSenderFull(user, selectedChat.users).dp}
+                                                h={"2.5rem"}
+                                                w={"2.5rem"}
+                                            />
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    alignItems: "flex-end",
+                                                    cursor: "pointer",
+                                                }}
+                                            >
+                                                {getSender(user, selectedChat.users)}
+                                                {isTyping ? (
+                                                    <div
+                                                        style={{
+                                                            fontSize: "13px",
+                                                            fontFamily: "Segoe UI",
+                                                            color: "#667781",
+                                                            display: "flex",
+                                                            padding: "0px 0px 7px 10px",
+                                                            alignItems: "flex-end",
+                                                        }}
+                                                    >
+                                                        typing
+                                                        <Lottie
+                                                            options={getDefaultOptions(loadingDots)}
+                                                            width={20}
+                                                            height={"50%"}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <></>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </ProfileModal>
+                                </>
+                            ) : (
+                                <>
+                                    {/* <div>
                                     <Avatar
                                         mt={"7px"}
                                         m={1}
@@ -213,14 +259,49 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     />
                                     {selectedChat.chatName.toUpperCase()}
                                 </div> */}
-                                {selectedChat.chatName.toUpperCase()}{" "}
-                                <UpdateGroupChatModal
-                                    fetchAgain={fetchAgain}
-                                    setFetchAgain={setFetchAgain}
-                                    fecthMessages={fecthMessages}
-                                />
-                            </>
-                        )}
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "flex-end",
+                                        }}
+                                    >
+                                        {selectedChat.chatName.toUpperCase()}{" "}
+                                        {isTyping ? (
+                                            <div
+                                                style={{
+                                                    fontSize: "13px",
+                                                    fontFamily: "Segoe UI",
+                                                    color: "#667781",
+                                                    display: "flex",
+                                                    padding: "0px 0px 7px 10px",
+                                                    alignItems: "flex-end",
+                                                }}
+                                            >
+                                                Someone is typing
+                                                <Lottie
+                                                    options={getDefaultOptions(loadingDots)}
+                                                    width={20}
+                                                    height={"50%"}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <></>
+                                        )}
+                                    </div>
+                                    <UpdateGroupChatModal
+                                        fetchAgain={fetchAgain}
+                                        setFetchAgain={setFetchAgain}
+                                        fecthMessages={fecthMessages}
+                                    />
+                                </>
+                            )}
+                        </Box>
+                        <IconButton
+                            display={{ base: "flex", md: "none" }}
+                            fontSize={15}
+                            icon={<CloseIcon />}
+                            onClick={() => setSelectedChat("")}
+                        />
                     </Text>
                     <Box
                         display={"flex"}
@@ -251,56 +332,70 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         <FormControl
                             onKeyDown={sendMessage}
                             isRequired
-                            mt={3}
                             display={"flex"}
-                            position={"relative"}
-                            alignItems={"center"}
+                            flexDir={"column"}
+                            alignItems={"flex-start"}
                         >
-                            {isTyping ? <div>Loading...</div> : <></>}
-                            <Menu>
-                                <MenuButton
-                                    as={IconButton}
-                                    icon={<AddIcon />}
-                                    borderRadius={"50%"}
-                                    bg={"#FFFFFF"}
+                            {/* {isTyping ? (
+                                <div>
+                                    <Lottie options={getDefaultOptions(typingDots)} width={80} />
+                                </div>
+                            ) : (
+                                <></>
+                            )} */}
+                            <Box
+                                display={"flex"}
+                                position={"relative"}
+                                alignItems={"center"}
+                                w={"100%"}
+                            >
+                                <Menu>
+                                    <MenuButton
+                                        as={IconButton}
+                                        icon={<AddIcon />}
+                                        borderRadius={"50%"}
+                                        bg={"#FFFFFF"}
+                                    />
+                                    <Portal>
+                                        <MenuList>
+                                            <MenuItem
+                                                icon={<IoIosDocument size={20} color="#7F66FF" />}
+                                            >
+                                                Document
+                                            </MenuItem>
+                                            <MenuItem
+                                                icon={<IoMdPhotos size={20} color="#007BFC" />}
+                                            >
+                                                Photos & Videos
+                                            </MenuItem>
+                                            <MenuItem icon={<FaCamera size={20} color="#FF2E74" />}>
+                                                Camera
+                                            </MenuItem>
+                                            <MenuItem icon={<FaUser size={20} color="#009DE2" />}>
+                                                Contact
+                                            </MenuItem>
+                                        </MenuList>
+                                    </Portal>
+                                </Menu>
+                                <InputEmoji
+                                    value={newMessage}
+                                    onChange={typingHandler}
+                                    placeholder="Enter message.."
+                                    width={"50%"}
                                 />
-                                <Portal>
-                                    <MenuList>
-                                        <MenuItem
-                                            icon={<IoIosDocument size={20} color="#7F66FF" />}
-                                        >
-                                            Document
-                                        </MenuItem>
-                                        <MenuItem icon={<IoMdPhotos size={20} color="#007BFC" />}>
-                                            Photos & Videos
-                                        </MenuItem>
-                                        <MenuItem icon={<FaCamera size={20} color="#FF2E74" />}>
-                                            Camera
-                                        </MenuItem>
-                                        <MenuItem icon={<FaUser size={20} color="#009DE2" />}>
-                                            Contact
-                                        </MenuItem>
-                                    </MenuList>
-                                </Portal>
-                            </Menu>
-                            <InputEmoji
-                                value={newMessage}
-                                onChange={typingHandler}
-                                placeholder="Enter message.."
-                                width={"50%"}
-                            />
-                            <img
-                                width="24"
-                                height="24"
-                                src="https://img.icons8.com/material-rounded/24/sent.png"
-                                alt="sent"
-                                style={{
-                                    right: "10px",
-                                    top: "8px",
-                                    cursor: "pointer",
-                                }}
-                                onClick={() => sendMessage({ key: "Enter" })}
-                            />
+                                <img
+                                    width="24"
+                                    height="24"
+                                    src="https://img.icons8.com/material-rounded/24/sent.png"
+                                    alt="sent"
+                                    style={{
+                                        right: "10px",
+                                        top: "8px",
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={() => sendMessage({ key: "Enter" })}
+                                />
+                            </Box>
                         </FormControl>
                     </Box>
                 </>

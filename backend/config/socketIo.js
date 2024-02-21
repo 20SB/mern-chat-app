@@ -53,5 +53,10 @@ module.exports.socketConfig = function (server) {
                 socket.in(user._id).emit("message received", newMessageReceived);
             });
         });
+
+        socket.off("setup", ()=>{
+            console.log("USER Disconnected");
+            socket.leave(userData._id);
+        })
     });
 };
