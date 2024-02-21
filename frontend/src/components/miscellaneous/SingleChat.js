@@ -6,11 +6,16 @@ import {
     FormControl,
     IconButton,
     Input,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Portal,
     Spinner,
     Text,
     position,
 } from "@chakra-ui/react";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { AddIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../../config/chatLogics";
 import { ProfileModal } from "./ProfileModal";
 import { UpdateGroupChatModal } from "./UpdateGroupChatModal";
@@ -19,23 +24,19 @@ import useGlobalToast from "../../globalFunctions/toast";
 import "../../assets/css/styles.css";
 import chatWall from "../../assets/images/wpWall.png";
 import { ScrollableChat } from "./ScrollableChat";
-import EmojiPicker from "emoji-picker-react";
 import InputEmoji from "react-input-emoji";
+import { IoIosDocument, IoMdPhotos } from "react-icons/io";
+import { FaUser, FaCamera } from "react-icons/fa";
 
 export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [newMessage, setNewMessage] = useState();
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [text, setText] = useState("");
-    console.log(text);
+    const [newMessage, setNewMessage] = useState("");
 
     const { user, selectedChat, setSelectedChat } = ChatState();
     const toast = useGlobalToast();
-    function handleOnEnter(text) {
-        console.log("enter", text);
-    }
+
     console.log("messages", messages);
     const fecthMessages = () => {
         if (!selectedChat) return;
@@ -93,10 +94,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     setLoading(false);
                 });
         }
-    };
-    const typingHandler = (e) => {
-        setNewMessage(e.target.value);
-        //Typing logic here
     };
 
     useEffect(() => {
@@ -165,7 +162,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         flexDir={"column"}
                         justifyContent={"flex-end"}
                         p={3}
-                        bg={"red"}
+                        bg={"#E8E8E8"}
                         w={"100%"}
                         h={"100%"}
                         borderRadius={"lg"}
@@ -185,27 +182,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                 <ScrollableChat messages={messages} />
                             </div>
                         )}
-                        <InputEmoji
-                            value={text}
-                            onChange={setText}
-                            cleanOnEnter
-                            onEnter={handleOnEnter}
-                            placeholder="Type a message"
-                        />
-                        {showEmojiPicker && (
-                            <EmojiPicker
-                                onEmojiClick={(event, emojiObject) => {
-                                    console.log(event.target);
-                                    console.log(emojiObject);
-                                    setNewMessage((prevMessage) =>
-                                        prevMessage
-                                            ? prevMessage + emojiObject.emoji
-                                            : emojiObject.emoji
-                                    );
-                                }}
-                                style={{ position: "absolute", height: "60vh", bottom: "80px" }}
-                            />
-                        )}
 
                         <FormControl
                             onKeyDown={sendMessage}
@@ -215,17 +191,37 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             position={"relative"}
                             alignItems={"center"}
                         >
-                            <i
-                                class="fa-regular fa-face-smile"
-                                style={{ fontSize: "25px", padding: "0px 10px", cursor: "pointer" }}
-                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                            ></i>
-                            <Input
-                                variant={"filled"}
-                                bg="#E0E0E0"
-                                placeholder="Enter message.."
-                                onChange={typingHandler}
+                            <Menu>
+                                <MenuButton
+                                    as={IconButton}
+                                    icon={<AddIcon />}
+                                    borderRadius={"50%"}
+                                    bg={"#FFFFFF"}
+                                />
+                                <Portal>
+                                    <MenuList>
+                                        <MenuItem
+                                            icon={<IoIosDocument size={20} color="#7F66FF" />}
+                                        >
+                                            Document
+                                        </MenuItem>
+                                        <MenuItem icon={<IoMdPhotos size={20} color="#007BFC" />}>
+                                            Photos & Videos
+                                        </MenuItem>
+                                        <MenuItem icon={<FaCamera size={20} color="#FF2E74" />}>
+                                            Camera
+                                        </MenuItem>
+                                        <MenuItem icon={<FaUser size={20} color="#009DE2" />}>
+                                            Contact
+                                        </MenuItem>
+                                    </MenuList>
+                                </Portal>
+                            </Menu>
+                            <InputEmoji
                                 value={newMessage}
+                                onChange={setNewMessage}
+                                placeholder="Enter message.."
+                                width={"50%"}
                             />
                             <img
                                 width="24"
@@ -233,7 +229,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                 src="https://img.icons8.com/material-rounded/24/sent.png"
                                 alt="sent"
                                 style={{
-                                    position: "absolute",
                                     right: "10px",
                                     top: "8px",
                                     cursor: "pointer",

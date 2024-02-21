@@ -28,7 +28,7 @@ export const HomePage = () => {
                 borderWidth={"1px"}
             >
                 <Text fontSize={"4xl"} fontFamily={"Work sans"} textAlign={"center"}>
-                    ChitChat Junction
+                    Chit Chaat
                 </Text>
             </Box>
             <Box
@@ -55,8 +55,5 @@ export const HomePage = () => {
                 </Tabs>
             </Box>
         </Container>
-        // <>
-        //     <p>hiii</p>
-        // </>
     );
 };

@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useGlobalToast from "../../globalFunctions/toast";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 const SignUp = () => {
     // Define the backend URL using an environment variable
@@ -126,9 +127,15 @@ const SignUp = () => {
                             placeholder="Enter password"
                             onChange={handleChange}
                         />
-                        <InputRightElement width="4.5rem">
-                            <Button h="1.75rem" size="sm" onClick={() => setShowPass(!showPass)}>
-                                {showPass ? "Hide" : "Show"}
+                        <InputRightElement width="2.5rem">
+                            <Button
+                                h="1.75rem"
+                                size="sm"
+                                onClick={() => setShowPass(!showPass)}
+                                bg={"transparent"}
+                                padding={5}
+                            >
+                                {showPass ? <ViewOffIcon /> : <ViewIcon />}
                             </Button>
                         </InputRightElement>
                     </InputGroup>
@@ -146,13 +153,15 @@ const SignUp = () => {
                             required
                             focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
                         />
-                        <InputRightElement width="4.5rem">
+                        <InputRightElement width="2.5rem">
                             <Button
                                 h="1.75rem"
                                 size="sm"
                                 onClick={() => setShowConfPass(!showConfPass)}
+                                bg={"transparent"}
+                                padding={5}
                             >
-                                {showConfPass ? "Hide" : "Show"}
+                                {showConfPass ? <ViewOffIcon /> : <ViewIcon />}
                             </Button>
                         </InputRightElement>
                     </InputGroup>

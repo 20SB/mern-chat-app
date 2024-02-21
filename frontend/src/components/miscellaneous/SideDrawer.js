@@ -138,7 +138,7 @@ const SideDrawer = () => {
                 </Tooltip>
                 <Text fontSize={"2xl"} fontFamily={"Work sans"}>
                     {" "}
-                    ChitChat Junction
+                    Chit Chaat
                 </Text>
                 <Box>
                     <Menu>

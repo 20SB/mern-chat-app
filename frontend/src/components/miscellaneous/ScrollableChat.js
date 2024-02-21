@@ -12,8 +12,7 @@ export const ScrollableChat = ({ messages }) => {
             {messages &&
                 messages.map((m, i) => (
                     <div style={{ display: "flex" }} key={m._id}>
-                        {(isSameSender(messages, m, i, user.user._id) ||
-                            isLastMessage(messages, i, user.user._id)) && (
+                        {isSameSender(messages, m, i, user.user._id) && (
                             <Tooltip label={m.sender.name} placement="bottom-start" hasArrow>
                                 <Avatar
                                     mt={"7px"}
@@ -31,15 +30,18 @@ export const ScrollableChat = ({ messages }) => {
                                 background: `${
                                     m.sender._id === user.user._id ? "#d9fdd3" : "#ffffff"
                                 }`,
-                                borderRadius: "20px",
+                                borderRadius: "10px",
                                 padding: "5px 15px",
                                 maxWidth: "75%",
                                 marginLeft: isSameSenderMargin(messages, m, i, user.user._id),
                                 marginTop: 3,
-                                height: "40px",
+                                minHeight: "40px",
                                 boxSizing: "border-box",
                                 display: "flex",
                                 alignItems: "center",
+                                boxShadow: "0px 1px 1px 0px #adadad ",
+                                textAlign: "justify",
+                                marginBottom: `${isLastMessage(messages, i) ? "10px" : "2px"}`,
                             }}
                         >
                             {m.content}

@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import useGlobalToast from "../../globalFunctions/toast";
 import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../context/chatProvider";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 const Login = () => {
     // Define the backend URL using an environment variable
@@ -110,9 +111,15 @@ const Login = () => {
                         placeholder="Enter password"
                         onChange={handleChange}
                     />
-                    <InputRightElement width="4.5rem">
-                        <Button h="1.75rem" size="sm" onClick={() => setShowPass(!showPass)}>
-                            {showPass ? "Hide" : "Show"}
+                    <InputRightElement width="2.5rem">
+                        <Button
+                            h="1.75rem"
+                            size="sm"
+                            onClick={() => setShowPass(!showPass)}
+                            bg={"transparent"}
+                            padding={5}
+                        >
+                            {showPass ? <ViewOffIcon /> : <ViewIcon />}
                         </Button>
                     </InputRightElement>
                 </InputGroup>

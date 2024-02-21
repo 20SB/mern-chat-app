@@ -1,6 +1,15 @@
-.messages{
+.messages {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
     scrollbar-width: none;
+}
+.my-btn {
+    font-size: 20px;
+    color: gray;
+    margin-left: 10px;
+    cursor: pointer;
+}
+.my-btn:hover {
+    color: black;
 }
