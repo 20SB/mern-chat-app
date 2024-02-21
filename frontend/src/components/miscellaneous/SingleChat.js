@@ -38,6 +38,8 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState("");
     const [socketConnected, setSocketConnected] = useState(true);
+    const [typing, setTyping] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
 
     const { user, selectedChat, setSelectedChat } = ChatState();
     const toast = useGlobalToast();
@@ -48,6 +50,12 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.emit("setup", user);
         socket.on("connection", () => {
             setSocketConnected(true);
+        });
+        socket.on("typing", () => {
+            setIsTyping(true);
+        });
+        socket.on("stop typing", () => {
+            setIsTyping(false);
         });
     }, []);
 
@@ -85,7 +93,9 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // Send a new message when the user presses Enter
     const sendMessage = (e) => {
         if (e.key === "Enter" && newMessage) {
-            setLoading(true);
+            // setLoading(true);
+
+            socket.emit("stop typing", selectedChat._id);
             const config = {
                 headers: {
                     "Content-Type": "application/json",
@@ -101,7 +111,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     config
                 )
                 .then(({ data }) => {
-                    toast.success(data.message, "");
+                    // toast.success(data.message, "");
                     socket.emit("new message", data.data.message);
                     setMessages([...messages, data.data.message]);
                 })
@@ -112,7 +122,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     );
                 })
                 .finally(() => {
-                    setLoading(false);
+                    // setLoading(false);
                 });
         }
     };
@@ -133,6 +143,26 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             }
         });
     });
+
+    const typingHandler = (newText) => {
+        setNewMessage(newText);
+        if (!socketConnected) return;
+
+        if (!typing) {
+            setTyping(true);
+            socket.emit("typing", selectedChat._id);
+        }
+        let lastTypingTime = new Date().getTime();
+        var timerLength = 3000;
+        setTimeout(() => {
+            var timeNow = new Date().getTime();
+            var timeDiff = timeNow - lastTypingTime;
+            if (timeDiff >= timerLength && typing) {
+                socket.emit("stop typing", selectedChat._id);
+                setTyping(false);
+            }
+        }, timerLength);
+    };
 
     return (
         <>
@@ -226,6 +256,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             position={"relative"}
                             alignItems={"center"}
                         >
+                            {isTyping ? <div>Loading...</div> : <></>}
                             <Menu>
                                 <MenuButton
                                     as={IconButton}
@@ -254,7 +285,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             </Menu>
                             <InputEmoji
                                 value={newMessage}
-                                onChange={setNewMessage}
+                                onChange={typingHandler}
                                 placeholder="Enter message.."
                                 width={"50%"}
                             />

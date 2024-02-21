@@ -1,4 +1,4 @@
-module.exports.socketConfig = function(server){
+module.exports.socketConfig = function (server) {
     // Socket.IO setup
     const io = require("socket.io")(server, {
         pingTimeout: 60000,
@@ -10,7 +10,7 @@ module.exports.socketConfig = function(server){
     // Socket.IO event handlers
     io.on("connection", (socket) => {
         // Log a message when a new client connects
-        console.log("connected to socket.io");
+        // console.log("connected to socket.io");
 
         // Handle the "setup" event emitted by the client
         socket.on("setup", (userData) => {
@@ -24,6 +24,13 @@ module.exports.socketConfig = function(server){
         socket.on("join chat", (room) => {
             // Join the specified chat room
             socket.join(room);
+        });
+
+        socket.on("typing", (room) => {
+            socket.in(room).emit("typing");
+        });
+        socket.on("stop typing", (room) => {
+            socket.in(room).emit("stop typing");
         });
 
         // Handle the "new message" event emitted by the client
@@ -47,4 +54,4 @@ module.exports.socketConfig = function(server){
             });
         });
     });
-}
+};
