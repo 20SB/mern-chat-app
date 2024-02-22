@@ -43,7 +43,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [typingUser, setTypingUser] = useState({});
 
-    const { user, selectedChat, setSelectedChat } = ChatState();
+    const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
     const toast = useGlobalToast();
     const typingRef = useRef(false);
 
@@ -137,7 +137,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 });
         }
     };
-
     // Fetch messages when the selected chat changes
     useEffect(() => {
         fecthMessages();
@@ -148,13 +147,17 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     useEffect(() => {
         socket.on("message received", (newMessageReceived) => {
             if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
-                // give notification
+                if (!notification.includes(newMessageReceived)) {
+                    setNotification([newMessageReceived, ...notification]);
+                    setFetchAgain(!fetchAgain);
+                }
             } else {
                 setMessages([...messages, newMessageReceived]);
             }
         });
     });
 
+    console.log("notification----", notification);
     // Typing handler function
     const typingHandler = (newText) => {
         setNewMessage(newText);
