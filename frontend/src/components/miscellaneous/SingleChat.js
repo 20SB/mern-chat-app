@@ -40,8 +40,8 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [loading, setLoading] = useState(false);
     const [newMessage, setNewMessage] = useState("");
     const [socketConnected, setSocketConnected] = useState(true);
-    const [typing, setTyping] = useState(false);
     const [isTyping, setIsTyping] = useState(false);
+    const [typingUser, setTypingUser] = useState({});
 
     const { user, selectedChat, setSelectedChat } = ChatState();
     const toast = useGlobalToast();
@@ -66,11 +66,13 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.on("connection", () => {
             setSocketConnected(true);
         });
-        socket.on("typing", () => {
+        socket.on("typing", (userData) => {
             setIsTyping(true);
+            setTypingUser(userData);
         });
         socket.on("stop typing", () => {
             setIsTyping(false);
+            setTypingUser({});
         });
     }, []);
 
@@ -160,8 +162,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
         if (!typingRef.current) {
             typingRef.current = true; // Update the reference
-            setTyping(true);
-            socket.emit("typing", selectedChat._id);
+            socket.emit("typing", selectedChat._id, user.user);
         }
 
         let lastTypingTime = new Date().getTime();
@@ -171,10 +172,9 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             var timeDiff = timeNow - lastTypingTime;
 
             if (timeDiff >= timerLength && typingRef.current) {
-                console.log("Stopped typing");
                 socket.emit("stop typing", selectedChat._id);
-                typingRef.current = false; // Update the reference
-                setTyping(false);
+                typingRef.current = false;
+                setTypingUser({});
             }
         }, timerLength);
     };
@@ -183,7 +183,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         <>
             {selectedChat ? (
                 <>
-                    <Text
+                    <Box
                         fontSize={{ base: "28px", md: "30px" }}
                         pb={3}
                         px={2}
@@ -277,7 +277,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                                     alignItems: "flex-end",
                                                 }}
                                             >
-                                                Someone is typing
+                                                {typingUser.name} is typing
                                                 <Lottie
                                                     options={getDefaultOptions(loadingDots)}
                                                     width={20}
@@ -302,7 +302,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             icon={<CloseIcon />}
                             onClick={() => setSelectedChat("")}
                         />
-                    </Text>
+                    </Box>
                     <Box
                         display={"flex"}
                         flexDir={"column"}

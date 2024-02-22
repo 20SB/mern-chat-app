@@ -1,12 +1,21 @@
 import React from "react";
 import ScrollableFeed from "react-scrollable-feed";
-import { isLastMessage, isLastMessageOfText, isSameSender, isSameUser } from "../../config/chatLogics";
+import {
+    isLastMessage,
+    isLastMessageOfText,
+    isSameSender,
+    isSameUser,
+} from "../../config/chatLogics";
 import { ChatState } from "./../../context/chatProvider";
 import { Avatar, Tooltip } from "@chakra-ui/react";
 import { isSameSenderMargin } from "./../../config/chatLogics";
 
 export const ScrollableChat = ({ messages }) => {
     const { user } = ChatState();
+
+    // Suppress console logs of ScrollableFeed component
+    console.log = function () {};
+
     return (
         <ScrollableFeed>
             {messages &&

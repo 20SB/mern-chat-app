@@ -26,8 +26,9 @@ module.exports.socketConfig = function (server) {
             socket.join(room);
         });
 
-        socket.on("typing", (room) => {
-            socket.in(room).emit("typing");
+        // Handle typing event and emit user information along with it
+        socket.on("typing", (room, userData) => {
+            socket.in(room).emit("typing", userData);
         });
         socket.on("stop typing", (room) => {
             socket.in(room).emit("stop typing");
@@ -54,9 +55,9 @@ module.exports.socketConfig = function (server) {
             });
         });
 
-        socket.off("setup", ()=>{
+        socket.off("setup", () => {
             console.log("USER Disconnected");
             socket.leave(userData._id);
-        })
+        });
     });
 };
