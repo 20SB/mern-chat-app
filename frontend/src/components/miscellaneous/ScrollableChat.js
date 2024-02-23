@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ScrollableFeed from "react-scrollable-feed";
 import {
     isLastMessage,
@@ -7,20 +7,75 @@ import {
     isSameUser,
 } from "../../config/chatLogics";
 import { ChatState } from "./../../context/chatProvider";
-import { Avatar, Box, Image, Tooltip } from "@chakra-ui/react";
+import { Avatar, Box, Image, Tooltip, position } from "@chakra-ui/react";
 import { isSameSenderMargin } from "./../../config/chatLogics";
 import { Player } from "video-react";
 import { getFileName } from "../../config/messageLogics";
 import pdfLogo from "../../assets/images/file logo/pdf.png";
+import docLogo from "../../assets/images/file logo/doc.png";
+import xlsLogo from "../../assets/images/file logo/xls.png";
+import xmlLogo from "../../assets/images/file logo/xml.png";
+import zipLogo from "../../assets/images/file logo/zip.png";
+import pptLogo from "../../assets/images/file logo/ppt.png";
+import otherLogo from "../../assets/images/file logo/other.png";
+import csvLogo from "../../assets/images/file logo/csv.png";
+import { ImArrowDown } from "react-icons/im";
+import { FaChevronRight } from "react-icons/fa6";
 
 export const ScrollableChat = ({ messages }) => {
     const { user } = ChatState();
 
     // Suppress console logs of ScrollableFeed component
-    console.log = function () {};
+    // console.log = function () {};
+
+    const getExtension = (fileUrl) => {
+        // Split the URL by '.' to get the segments
+        const segments = fileUrl.split(".");
+
+        // Get the last segment, which should be the extension
+        const extension = segments[segments.length - 1];
+        return extension.toUpperCase();
+    };
+
+    const getLogo = (fileUrl) => {
+        // Split the URL by '.' to get the segments
+        const segments = fileUrl.split(".");
+
+        // Get the last segment, which should be the extension
+        const extension = segments[segments.length - 1];
+        let fileLogo;
+        switch (extension) {
+            case "pdf":
+                fileLogo = pdfLogo;
+                break;
+            case "doc":
+            case "docx":
+                fileLogo = docLogo;
+                break;
+            case "ppt":
+                fileLogo = pptLogo;
+                break;
+            case "csv":
+                fileLogo = csvLogo;
+                break;
+            case "xls":
+            case "xlsx":
+                fileLogo = xlsLogo;
+                break;
+            case "xml":
+                fileLogo = xmlLogo;
+                break;
+            case "zip":
+                fileLogo = zipLogo;
+                break;
+            default:
+                fileLogo = otherLogo;
+        }
+        return fileLogo;
+    };
 
     return (
-        <ScrollableFeed>
+        <ScrollableFeed forceScroll="true">
             {messages &&
                 messages.map((m, i) => (
                     <div style={{ display: "flex" }} key={m._id}>
@@ -41,31 +96,36 @@ export const ScrollableChat = ({ messages }) => {
 
                         {m.isFileInput ? (
                             m.filesType === "img" ? (
-                                <Image
-                                    objectFit="cover"
-                                    src={m.file}
-                                    p={1}
-                                    style={{
-                                        borderRadius: "10px",
-                                        maxWidth: "75%",
-                                        height: "200px",
-                                        boxShadow: "0px 1px 1px 0px #adadad ",
-                                        marginBottom: `${
-                                            isLastMessage(messages, i) ? "10px" : "2px"
-                                        }`,
-                                        marginTop: 3,
-                                        boxSizing: "border-box",
-                                        marginLeft: isSameSenderMargin(
-                                            messages,
-                                            m,
-                                            i,
-                                            user.user._id
-                                        ),
-                                        background: `${
-                                            m.sender._id === user.user._id ? "#d9fdd3" : "#ffffff"
-                                        }`,
-                                    }}
-                                />
+                                <>
+                                    <Image
+                                        objectFit="cover"
+                                        src={m.file}
+                                        p={1}
+                                        style={{
+                                            borderRadius: "10px",
+                                            maxWidth: "75%",
+                                            height: "200px",
+                                            boxShadow: "0px 1px 1px 0px #adadad ",
+                                            marginBottom: `${
+                                                isLastMessage(messages, i) ? "10px" : "2px"
+                                            }`,
+                                            marginTop: 3,
+                                            boxSizing: "border-box",
+                                            marginLeft: isSameSenderMargin(
+                                                messages,
+                                                m,
+                                                i,
+                                                user.user._id
+                                            ),
+                                            background: `${
+                                                m.sender._id === user.user._id
+                                                    ? "#d9fdd3"
+                                                    : "#ffffff"
+                                            }`,
+                                        }}
+                                    ></Image>
+                                    <FaChevronRight fontSize={15} />
+                                </>
                             ) : m.filesType === "vid" ? (
                                 <video
                                     id="vp"
@@ -93,58 +153,100 @@ export const ScrollableChat = ({ messages }) => {
                                         }`,
                                         padding: "4px",
                                     }}
-                                ></video>
+                                />
                             ) : (
-                                <>
+                                <div
+                                    style={{
+                                        background: `${
+                                            m.sender._id === user.user._id ? "#d9fdd3" : "#ffffff"
+                                        }`,
+                                        borderRadius: "10px",
+                                        maxWidth: "50%",
+                                        minHeight: "60px",
+                                        marginLeft: isSameSenderMargin(
+                                            messages,
+                                            m,
+                                            i,
+                                            user.user._id
+                                        ),
+                                        marginTop: 3,
+                                        boxSizing: "border-box",
+                                        boxShadow: "0px 1px 1px 0px #adadad ",
+                                        textAlign: "justify",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        marginBottom: `${
+                                            isLastMessage(messages, i) ? "10px" : "2px"
+                                        }`,
+                                        padding: "4px",
+                                    }}
+                                >
                                     <div
                                         style={{
                                             background: `${
                                                 m.sender._id === user.user._id
-                                                    ? "#d9fdd3"
-                                                    : "#ffffff"
+                                                    ? "#D1F4CC"
+                                                    : "#F5F6F6"
                                             }`,
                                             borderRadius: "10px",
-                                            maxWidth: "75%",
-                                            marginLeft: isSameSenderMargin(
-                                                messages,
-                                                m,
-                                                i,
-                                                user.user._id
-                                            ),
-                                            marginTop: 3,
-                                            boxSizing: "border-box",
-                                            boxShadow: "0px 1px 1px 0px #adadad ",
-                                            textAlign: "justify",
+                                            maxWidth: "100%",
+                                            padding: "10px",
                                             display: "flex",
-                                            flexDirection: "column",
-                                            marginBottom: `${
-                                                isLastMessage(messages, i) ? "10px" : "2px"
-                                            }`,
-                                            padding: "4px",
+                                            justifyContent: "space-between",
+                                            alignItems: "flex-start",
+                                            position: "relative",
                                         }}
                                     >
+                                        <Image
+                                            src={getLogo(m.file)}
+                                            height={"40px"}
+                                            marginRight={2}
+                                        />
+                                        {getLogo(m.file) === otherLogo && (
+                                            <div
+                                                style={{
+                                                    position: "absolute",
+                                                    background: "#530000",
+                                                    fontSize: "8px",
+                                                    padding: "2px",
+                                                    fontWeight: "700",
+                                                    borderRadius: "4px",
+                                                    color: "white",
+                                                    minWidth: "32px",
+                                                    textAlign: "center",
+                                                    top: "26px",
+                                                }}
+                                            >
+                                                {getExtension(m.file)}
+                                            </div>
+                                        )}
                                         <div
                                             style={{
-                                                background: `${
-                                                    m.sender._id === user.user._id
-                                                        ? "#D1F4CC"
-                                                        : "#F5F6F6"
-                                                }`,
-                                                borderRadius: "10px",
-                                                width: "100%",
-                                                height: "70px",
-                                                padding: "10px",
-                                                display: "flex",
+                                                width: "calc(100% - 95px)",
+                                                wordWrap: "break-word",
                                             }}
                                         >
-                                            <Image src={pdfLogo} height={"50px"} />
                                             {getFileName(m.file)}
                                         </div>
+
+                                        <Box
+                                            display={"flex"}
+                                            justifyContent={"center"}
+                                            alignItems={"center"}
+                                            w={8}
+                                            h={8}
+                                            border={"1px"}
+                                            borderRadius={"50%"}
+                                            cursor={"pointer"}
+                                            marginLeft={"15px"}
+                                        >
+                                            <ImArrowDown size={15} />
+                                        </Box>
                                     </div>
-                                </>
+                                </div>
                             )
                         ) : (
-                            <span
+                            <div
                                 style={{
                                     background: `${
                                         m.sender._id === user.user._id ? "#d9fdd3" : "#ffffff"
@@ -161,10 +263,11 @@ export const ScrollableChat = ({ messages }) => {
                                     boxShadow: "0px 1px 1px 0px #adadad ",
                                     textAlign: "justify",
                                     marginBottom: `${isLastMessage(messages, i) ? "10px" : "2px"}`,
+                                    wordBreak: "break-all",
                                 }}
                             >
                                 {m.content}
-                            </span>
+                            </div>
                         )}
                     </div>
                 ))}
