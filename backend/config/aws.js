@@ -13,9 +13,18 @@ const BucketName = env.awsBucket;
 
 module.exports.upload = async (fileType, file) => {
     var ext = file.originalname.split(".").slice(1);
+
+    const knownExtensions = [".jpg", ".jpeg", ".png", ".gif", ".mp4", ".avi", ".mov"];
+
+    let fileName;
+    if (!knownExtensions.includes(ext)) {
+        fileName = file.originalname;
+    } else {
+        fileName = `${Date.now() + generateRandomString(5)}.${ext}`;
+    }
     const uploadParams = {
         Bucket: BucketName,
-        Key: `Chit-Chaat/${fileType}/${Date.now() + generateRandomString(5)}.${ext}`,
+        Key: `Chit-Chaat/${fileType}/${fileName}`,
         Body: file.buffer,
     };
 
