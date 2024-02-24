@@ -44,12 +44,31 @@ const SideDrawer = () => {
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingChat, setLoadingChat] = useState();
-    const { user, setSelectedChat, chats, setChats, notification, setNotification } = ChatState();
+    const { user, setSelectedChat, chats, setChats, notifications, setNotifications } = ChatState();
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     // use global toast function
     const toast = useGlobalToast();
+
+    // Convert notification map to array and sort by lastMsgTime
+    const notificationArray = Array.from(notifications.values()).sort((a, b) =>
+        a.lastMsgTime > b.lastMsgTime ? -1 : 1
+    );
+    console.log("notificationArray^^^^^^^", notificationArray);
+
+    const removeNotification = (chatId) => {
+        setNotifications((prevNotifications) => {
+            const updatedNotifications = new Map(prevNotifications);
+
+            if (updatedNotifications.has(chatId)) {
+                // If notification exists for the chat, remove it
+                updatedNotifications.delete(chatId);
+            }
+
+            return updatedNotifications;
+        });
+    };
 
     const logoutHandler = () => {
         localStorage.removeItem("userInfo");
@@ -147,24 +166,27 @@ const SideDrawer = () => {
                 <Box>
                     <Menu>
                         <MenuButton p={1}>
-                            <NotificationBadge count={notification.length} effect={Effect.SCALE} />
+                            <NotificationBadge
+                                count={notificationArray.length}
+                                effect={Effect.SCALE}
+                            />
                             <BellIcon fontSize={"2xl"} m={1} />
                         </MenuButton>
                         <MenuList>
-                            {!notification.length && <MenuItem>No New Messages</MenuItem>}
-                            {notification.map((notif) => (
+                            {!notificationArray.length && <MenuItem>No New Messages</MenuItem>}
+                            {notificationArray.map((notification) => (
                                 <MenuItem
-                                    key={notif._id}
+                                    key={notification.messages[0].chat._id}
                                     onClick={() => {
-                                        setSelectedChat(notif.chat);
-                                        setNotification(notification.filter((n) => n !== notif));
+                                        setSelectedChat(notification.messages[0].chat);
+                                        removeNotification(notification.messages[0].chat._id);
                                     }}
                                 >
-                                    {notif.chat.isGroupChat
-                                        ? `New Message in ${notif.chat.chatName}`
+                                    {notification.messages[0].chat.isGroupChat
+                                        ? `New Message in ${notification.messages[0].chat.chatName}`
                                         : `New Message from ${getSender(
                                               user.user,
-                                              notif.chat.users
+                                              notification.messages[0].chat.users
                                           )}`}
                                 </MenuItem>
                             ))}

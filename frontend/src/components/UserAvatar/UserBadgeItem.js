@@ -29,11 +29,14 @@ export const UserBadgeItem = ({ user, handleFunction }) => {
             {user.name}
             {selectedChat ? (
                 <>
-                    {selectedChat.groupAdmin._id == loggedUser.user._id &&
+                    {selectedChat.groupAdmin &&
+                        selectedChat.groupAdmin._id == loggedUser.user._id &&
                         selectedChat.groupAdmin._id != user._id && (
                             <CloseIcon ml={2} pl={1} onClick={handleFunction} cursor={"pointer"} />
                         )}
-                    {selectedChat.groupAdmin._id == user._id && <Text pl={1}>(Admin)</Text>}
+                    {selectedChat.groupAdmin && selectedChat.groupAdmin._id == user._id && (
+                        <Text pl={1}>(Admin)</Text>
+                    )}
                 </>
             ) : (
                 <>

@@ -6,7 +6,7 @@ const awsS3 = require("../config/aws");
 
 module.exports.sendMessage = expressAsyncHandler(async (req, res) => {
     try {
-        const { content, chatId, isFileInput, filesType } = req.body;
+        const { content, chatId, isFileInput, fileType } = req.body;
 
         // Check if the user is part of the chat
         const chatData = await Chat.find({
@@ -23,17 +23,18 @@ module.exports.sendMessage = expressAsyncHandler(async (req, res) => {
             let latestMessageTillNow;
             let messages = [];
 
+            console.log(req.files);
             // Loop over each uploaded file
             for (const file of req.files) {
-                const fileType = "FILES";
-                const data = await awsS3.upload(fileType, file);
+                const folderName = "FILES";
+                const data = await awsS3.upload(folderName, file);
 
                 // Create a new message for each file
                 const newMessage = {
                     sender: req.user._id,
                     chat: chatId,
                     isFileInput: isFileInput,
-                    filesType: filesType,
+                    fileType: fileType,
                     file: data.Location, // Store file link in an array
                 };
 
@@ -167,7 +168,6 @@ module.exports.updateMessage = expressAsyncHandler(async (req, res) => {
         throw err;
     }
 });
-
 
 module.exports.deleteMessage = expressAsyncHandler(async (req, res) => {
     try {

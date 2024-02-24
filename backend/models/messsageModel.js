@@ -18,7 +18,7 @@ const messageSchema = mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        filesType: {
+        fileType: {
             type: String,
             trim: true,
             validate: {

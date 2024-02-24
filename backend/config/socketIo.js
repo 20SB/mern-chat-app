@@ -55,6 +55,30 @@ module.exports.socketConfig = function (server) {
             });
         });
 
+        // Handle the "multiple new messages" event emitted by the client
+        socket.on("multiple new messages", (newMessagesReceived) => {
+            // Retrieve the chat object from the received message
+
+            // as all messages  should be for the same chat, just use the first one
+            let chat = newMessagesReceived[0].chat;
+            let sender = newMessagesReceived[0].sender;
+
+            // Check if the chat object has a "users" property
+            if (!chat.users) {
+                // Log a message if users are not defined
+                return console.log("chat.users not defined");
+            }
+
+            // Iterate over each user in the chat's user list
+            chat.users.forEach((user) => {
+                // Skip emitting the "message received" event to the sender
+                if (user._id === sender._id) return;
+
+                // Emit a "multiple messages received" event to the user's ID
+                socket.in(user._id).emit("multiple messages received", newMessagesReceived);
+            });
+        });
+
         socket.off("setup", () => {
             console.log("USER Disconnected");
             socket.leave(userData._id);

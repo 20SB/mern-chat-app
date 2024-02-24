@@ -25,7 +25,7 @@ import chatWall from "../../assets/images/wpWall.png";
 import { ScrollableChat } from "./ScrollableChat";
 import InputEmoji from "react-input-emoji";
 import { IoIosDocument, IoMdPhotos } from "react-icons/io";
-import { FaUser, FaCamera } from "react-icons/fa";
+import { FaUser, FaCamera, FaFileVideo } from "react-icons/fa";
 import Lottie from "react-lottie";
 import typingDots from "../../assets/animations/typing.json";
 import loadingDots from "../../assets/animations/loadingDots.json";
@@ -43,9 +43,10 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [typingUser, setTypingUser] = useState({});
 
-    const { user, selectedChat, setSelectedChat, notification, setNotification } = ChatState();
+    const { user, selectedChat, setSelectedChat, notifications, setNotifications } = ChatState();
     const toast = useGlobalToast();
     const typingRef = useRef(false);
+    const fileInputRef = useRef(null);
 
     const getDefaultOptions = (animationData) => {
         let defaultOptions = {
@@ -76,6 +77,49 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         });
     }, []);
 
+    const handleFileSelection = (e, fileType) => {
+        console.log("fileType", fileType);
+        const files = e.target.files;
+
+        const formData = new FormData();
+        formData.append("chatId", selectedChat._id);
+        formData.append("isFileInput", true);
+        formData.append("fileType", fileType);
+
+        // Append each selected file to the FormData object without specifying the key
+        for (let i = 0; i < files.length; i++) {
+            console.log("file", i, " :", files[i]);
+            formData.append("files", files[i]);
+        }
+
+        console.log(user);
+        const config = {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${user.token}`,
+            },
+        };
+
+        setNewMessage("");
+        axios
+            .post(`${BACKEND_URL}/api/message`, formData, config)
+            .then(({ data }) => {
+                // Loop over the array of messages and emit socket event for each message
+                // data.data.message.forEach((message) => {
+                //     socket.emit("new message", message);
+                // });
+                socket.emit("multiple new messages", data.data.message);
+                console.log("new message", data);
+                setMessages([...messages, ...data.data.message]);
+            })
+            .catch((error) => {
+                toast.error(
+                    "Error",
+                    error.response ? error.response.data.message : "Something Went Wrong"
+                );
+            });
+    };
+
     // Fetch messages when the selected chat changes
     const fecthMessages = () => {
         if (!selectedChat) return;
@@ -105,6 +149,13 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 setLoading(false);
                 socket.emit("join chat", selectedChat._id);
             });
+    };
+
+    // Function to handle file input
+    const handleFileInput = () => {
+        console.log("file input func called");
+        // Programmatically trigger the file input click event
+        fileInputRef.current.click();
     };
 
     // Send a new message when the user presses Enter
@@ -147,17 +198,96 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     useEffect(() => {
         socket.on("message received", (newMessageReceived) => {
             if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
-                if (!notification.includes(newMessageReceived)) {
-                    setNotification([newMessageReceived, ...notification]);
-                    setFetchAgain(!fetchAgain);
-                }
+                const { chat } = newMessageReceived;
+                const chatId = chat._id;
+
+                // Update notifications for the chat
+                setNotifications((prevNotifications) => {
+                    const updatedNotifications = new Map(prevNotifications);
+
+                    if (updatedNotifications.has(chatId)) {
+                        // If notification exists for the chat, update it
+                        const notification = updatedNotifications.get(chatId);
+
+                        // Check if the new message is not already in the messages array
+                        if (
+                            !notification.messages.some((msg) => msg._id === newMessageReceived._id)
+                        ) {
+                            // Prepend the new message to the messages array
+                            notification.messages = [newMessageReceived, ...notification.messages];
+                            notification.count++;
+                            notification.lastMsgTime = newMessageReceived.createdAt;
+                        }
+                    } else {
+                        // If notification doesn't exist, create a new one
+                        updatedNotifications.set(chatId, {
+                            messages: [newMessageReceived],
+                            count: 1,
+                            lastMsgTime: newMessageReceived.createdAt,
+                        });
+                    }
+
+                    return updatedNotifications;
+                });
+
+                setFetchAgain(!fetchAgain);
             } else {
                 setMessages([...messages, newMessageReceived]);
             }
         });
+        socket.on("multiple messages received", (newMessagesReceived) => {
+            // check if chat is opened whose new message is received now
+            if (
+                !selectedChatCompare ||
+                selectedChatCompare._id !== newMessagesReceived[0].chat._id
+            ) {
+                newMessagesReceived.forEach((newMessageReceived) => {
+                    const { chat } = newMessageReceived;
+                    const chatId = chat._id;
+
+                    // Update notifications for the chat
+                    setNotifications((prevNotifications) => {
+                        const updatedNotifications = new Map(prevNotifications);
+
+                        if (updatedNotifications.has(chatId)) {
+                            // If notification exists for the chat, update it
+                            const notification = updatedNotifications.get(chatId);
+
+                            // Check if the new message is not already in the messages array
+                            if (
+                                !notification.messages.some(
+                                    (msg) => msg._id === newMessageReceived._id
+                                )
+                            ) {
+                                // Prepend the new message to the messages array
+                                notification.messages = [
+                                    newMessageReceived,
+                                    ...notification.messages,
+                                ];
+                                notification.count++;
+                                notification.lastMsgTime = newMessageReceived.createdAt;
+                            }
+                        } else {
+                            // If notification doesn't exist, create a new one
+                            updatedNotifications.set(chatId, {
+                                messages: [newMessageReceived],
+                                count: 1,
+                                lastMsgTime: newMessageReceived.createdAt,
+                            });
+                        }
+
+                        return updatedNotifications;
+                    });
+
+                    setFetchAgain(!fetchAgain);
+                });
+            } else {
+                setMessages([...messages, ...newMessagesReceived]);
+            }
+        });
     });
 
-    console.log("notification----", notification);
+    console.log("notification----", notifications);
     // Typing handler function
     const typingHandler = (newText) => {
         setNewMessage(newText);
@@ -358,18 +488,32 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                         icon={<AddIcon />}
                                         borderRadius={"50%"}
                                         bg={"#FFFFFF"}
+                                        width={5}
                                     />
                                     <Portal>
                                         <MenuList>
                                             <MenuItem
+                                                onClick={handleFileInput}
                                                 icon={<IoIosDocument size={20} color="#7F66FF" />}
                                             >
                                                 Document
+                                                <input
+                                                    ref={fileInputRef}
+                                                    type="file"
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => handleFileSelection(e, "doc")}
+                                                    multiple
+                                                />
                                             </MenuItem>
                                             <MenuItem
                                                 icon={<IoMdPhotos size={20} color="#007BFC" />}
                                             >
-                                                Photos & Videos
+                                                Photos
+                                            </MenuItem>
+                                            <MenuItem
+                                                icon={<FaFileVideo size={20} color="#6c0101" />}
+                                            >
+                                                Videos
                                             </MenuItem>
                                             <MenuItem icon={<FaCamera size={20} color="#FF2E74" />}>
                                                 Camera
