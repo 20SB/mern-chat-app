@@ -6,6 +6,7 @@ import {
     Menu,
     MenuButton,
     MenuDivider,
+    MenuGroup,
     MenuItem,
     MenuList,
     Spinner,
@@ -22,7 +23,7 @@ import {
     DrawerContent,
     DrawerCloseButton,
 } from "@chakra-ui/react";
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { BellIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 import React, { useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import { ProfileModal } from "./ProfileModal";
@@ -31,10 +32,12 @@ import useGlobalToast from "../../globalFunctions/toast";
 import axios from "axios";
 import { ChatLoading } from "./ChatLoading";
 import { UserListItem } from "../UserAvatar/UserListItem";
-import { getSender } from "../../config/chatLogics";
+import { getSender, getSenderFull } from "../../config/chatLogics";
 import NotificationBadge from "react-notification-badge";
 
 import { Effect } from "react-notification-badge";
+import { GroupChatNotification } from "../UserAvatar/GroupChatNotification";
+import { PersonlaChatNotification } from "../UserAvatar/PersonlaChatNotification";
 
 const SideDrawer = () => {
     // Define the backend URL using an environment variable
@@ -47,14 +50,18 @@ const SideDrawer = () => {
     const { user, setSelectedChat, chats, setChats, notifications, setNotifications } = ChatState();
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
 
     // use global toast function
     const toast = useGlobalToast();
 
-    // Convert notification map to array and sort by lastMsgTime
-    const notificationArray = Array.from(notifications.values()).sort((a, b) =>
-        a.lastMsgTime > b.lastMsgTime ? -1 : 1
-    );
+    console.log("notifications MAP^^^^^^^", notifications);
+    // Convert notification map to array and sort by lastMsgTime if notifications is not null or undefined
+    const notificationArray = notifications
+        ? Array.from(notifications.values()).sort((a, b) =>
+              a.lastMsgTime > b.lastMsgTime ? -1 : 1
+          )
+        : [];
     console.log("notificationArray^^^^^^^", notificationArray);
 
     const removeNotification = (chatId) => {
@@ -72,6 +79,7 @@ const SideDrawer = () => {
 
     const logoutHandler = () => {
         localStorage.removeItem("userInfo");
+        localStorage.removeItem("unseenNotifications");
         navigate("/");
     };
     const handleSearch = async () => {
@@ -182,35 +190,77 @@ const SideDrawer = () => {
                                         removeNotification(notification.messages[0].chat._id);
                                     }}
                                 >
-                                    {notification.messages[0].chat.isGroupChat
+                                    {/* {notification.messages[0].chat.isGroupChat
                                         ? `New Message in ${notification.messages[0].chat.chatName}`
                                         : `New Message from ${getSender(
-                                              user.user,
-                                              notification.messages[0].chat.users
-                                          )}`}
+                                                user.user,
+                                                notification.messages[0].chat.users
+                                          )}`} */}
+                                    {notification.messages[0].chat.isGroupChat ? (
+                                        <>
+                                            <GroupChatNotification
+                                                key={notification.messages[0].chat._id}
+                                                notification={notification}
+                                            />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <PersonlaChatNotification
+                                                key={notification.messages[0].chat._id}
+                                                notification={notification}
+                                                sender={getSenderFull(
+                                                    user.user,
+                                                    notification.messages[0].chat.users
+                                                )}
+                                            />
+                                        </>
+                                    )}
                                 </MenuItem>
                             ))}
                         </MenuList>
                     </Menu>
                     <Menu>
-                        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                            {user.name}
-                            <Avatar
-                                size="sm"
-                                cursor="pointer"
-                                name={user.user.name}
-                                src={user.user.dp}
-                            />
-                        </MenuButton>
-                        <MenuList>
-                            <ProfileModal user={user.user}>
-                                <MenuItem>My Profile</MenuItem>
-                            </ProfileModal>
-                            <MenuDivider />
-                            <MenuItem onClick={logoutHandler}>Logout</MenuItem>
-                            {/* <MenuItem>Open...</MenuItem>
+                        {({ isOpen }) => (
+                            <>
+                                <MenuButton
+                                    as={Button}
+                                    rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                                    isActive={true}
+                                >
+                                    <Box display={"flex"} alignItems={"center"}>
+                                        {user.user.name}
+                                        <Avatar
+                                            size="sm"
+                                            cursor="pointer"
+                                            name={user.user.name}
+                                            src={user.user.dp}
+                                            ml={2}
+                                        />
+                                    </Box>
+                                </MenuButton>
+                                <MenuList>
+                                    <ProfileModal user={user.user}>
+                                        <MenuItem
+                                            onMouseEnter={() => setIsSubMenuOpen(true)}
+                                            onMouseLeave={() => setIsSubMenuOpen(false)}
+                                        >
+                                            My Profile
+                                            {isSubMenuOpen && (
+                                                <MenuList>
+                                                    <MenuItem>File 1</MenuItem>
+                                                    <MenuItem>File 2</MenuItem>
+                                                    <MenuItem>File 3</MenuItem>
+                                                </MenuList>
+                                            )}
+                                        </MenuItem>
+                                    </ProfileModal>
+                                    <MenuDivider />
+                                    <MenuItem onClick={logoutHandler}>Logout</MenuItem>
+                                    {/* <MenuItem>Open...</MenuItem>
                             <MenuItem>Save File</MenuItem> */}
-                        </MenuList>
+                                </MenuList>
+                            </>
+                        )}
                     </Menu>
                 </Box>
             </Box>

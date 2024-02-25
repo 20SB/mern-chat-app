@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { objectToMap } from "../config/notificationLogics";
 
 const ChatContext = createContext();
 
@@ -7,14 +8,15 @@ const ChatProvider = ({ children }) => {
     const [user, setUser] = useState();
     const [selectedChat, setSelectedChat] = useState();
     const [chats, setChats] = useState([]);
-    // const [notification, setNotification] = useState([]);
     const [notifications, setNotifications] = useState(new Map());
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        const unseenNotifications = JSON.parse(localStorage.getItem("unseenNotifications"));
         setUser(userInfo);
+        setNotifications(objectToMap(unseenNotifications));
 
         if (!userInfo) {
             console.log("go to home");

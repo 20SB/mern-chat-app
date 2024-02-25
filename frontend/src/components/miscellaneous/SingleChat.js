@@ -31,6 +31,7 @@ import typingDots from "../../assets/animations/typing.json";
 import loadingDots from "../../assets/animations/loadingDots.json";
 
 import io from "socket.io-client";
+import { mapToObject } from "../../config/notificationLogics";
 const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
 var socket, selectedChatCompare;
 
@@ -227,6 +228,10 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         });
                     }
 
+                    localStorage.setItem(
+                        "unseenNotifications",
+                        JSON.stringify(mapToObject(updatedNotifications))
+                    );
                     return updatedNotifications;
                 });
 
