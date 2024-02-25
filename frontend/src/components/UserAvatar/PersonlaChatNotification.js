@@ -14,7 +14,7 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { getTimeAgoString } from "../../config/notificationLogics";
+import { getTimeAgoString, shortendMsg } from "../../config/notificationLogics";
 import NotificationBadge from "react-notification-badge";
 
 export const PersonlaChatNotification = ({ notification, sender }) => {
@@ -55,19 +55,27 @@ export const PersonlaChatNotification = ({ notification, sender }) => {
                     {notification.messages.length}
                 </Badge>
             </div>
-            <Box display={"flex"} flexDir={"column"} ml={2}>
-                <Text>{sender.name}</Text>
-                <Text
+            <Box display={"flex"} flexDir={"column"} ml={2} maxW={"2xs"}>
+                <Text display={"flex"} justifyContent={"space-between"} alignItems={"center"}>
+                    {shortendMsg(sender.name, 10)}
+                    <span style={{ fontSize: "0.6rem", fontWeight: "bold", color: "#a3a3a3" }}>
+                        {getTimeAgoString(notification.lastMsgTime)}
+                    </span>
+                </Text>
+                <Box
                     fontSize={10}
                     fontFamily={"Arial"}
                     fontWeight={"600"}
                     onClick={handleSubMenuClick}
-                    maxWidth={"100%"}
                     display={"flex"}
-                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                    gap={1}
                     position={"relative"}
+                    w={"150px"}
                 >
-                    {notification.messages[0].content}
+                    {notification.messages[0].isFileInput
+                        ? `Sent a ${notification.messages[0].fileType}`
+                        : shortendMsg(notification.messages[0].content, 20)}
                     {notification.messages.length > 1 && (
                         <>
                             {isSubMenuOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -86,6 +94,7 @@ export const PersonlaChatNotification = ({ notification, sender }) => {
                                     boxShadow={" 0 1px 2px 0 rgba(0, 0, 0, 0.05)"}
                                     maxHeight={"100px"}
                                     overflowY={"scroll"}
+                                    bg={"#fbfeff"}
                                 >
                                     {notification.messages.map((message, index) => (
                                         <Box
@@ -101,7 +110,9 @@ export const PersonlaChatNotification = ({ notification, sender }) => {
                                                 textOverflow={"ellipsis"}
                                                 maxWidth={"80px"}
                                             >
-                                                {message.content}
+                                                {message.isFileInput
+                                                    ? `Sent a ${message.fileType}`
+                                                    : message.content}
                                             </Text>
                                             <Text fontWeight={300}>
                                                 {getTimeAgoString(message.updatedAt)}
@@ -112,7 +123,7 @@ export const PersonlaChatNotification = ({ notification, sender }) => {
                             )}
                         </>
                     )}
-                </Text>
+                </Box>
             </Box>
         </Box>
     );

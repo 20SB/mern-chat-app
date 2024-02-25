@@ -38,6 +38,7 @@ import NotificationBadge from "react-notification-badge";
 import { Effect } from "react-notification-badge";
 import { GroupChatNotification } from "../UserAvatar/GroupChatNotification";
 import { PersonlaChatNotification } from "../UserAvatar/PersonlaChatNotification";
+import { mapToObject } from "../../config/notificationLogics";
 
 const SideDrawer = () => {
     // Define the backend URL using an environment variable
@@ -55,14 +56,12 @@ const SideDrawer = () => {
     // use global toast function
     const toast = useGlobalToast();
 
-    console.log("notifications MAP^^^^^^^", notifications);
     // Convert notification map to array and sort by lastMsgTime if notifications is not null or undefined
     const notificationArray = notifications
         ? Array.from(notifications.values()).sort((a, b) =>
               a.lastMsgTime > b.lastMsgTime ? -1 : 1
           )
         : [];
-    console.log("notificationArray^^^^^^^", notificationArray);
 
     const removeNotification = (chatId) => {
         setNotifications((prevNotifications) => {
@@ -72,7 +71,10 @@ const SideDrawer = () => {
                 // If notification exists for the chat, remove it
                 updatedNotifications.delete(chatId);
             }
-
+            localStorage.setItem(
+                "unseenNotifications",
+                JSON.stringify(mapToObject(updatedNotifications))
+            );
             return updatedNotifications;
         });
     };
@@ -190,12 +192,6 @@ const SideDrawer = () => {
                                         removeNotification(notification.messages[0].chat._id);
                                     }}
                                 >
-                                    {/* {notification.messages[0].chat.isGroupChat
-                                        ? `New Message in ${notification.messages[0].chat.chatName}`
-                                        : `New Message from ${getSender(
-                                                user.user,
-                                                notification.messages[0].chat.users
-                                          )}`} */}
                                     {notification.messages[0].chat.isGroupChat ? (
                                         <>
                                             <GroupChatNotification
@@ -240,24 +236,10 @@ const SideDrawer = () => {
                                 </MenuButton>
                                 <MenuList>
                                     <ProfileModal user={user.user}>
-                                        <MenuItem
-                                            onMouseEnter={() => setIsSubMenuOpen(true)}
-                                            onMouseLeave={() => setIsSubMenuOpen(false)}
-                                        >
-                                            My Profile
-                                            {isSubMenuOpen && (
-                                                <MenuList>
-                                                    <MenuItem>File 1</MenuItem>
-                                                    <MenuItem>File 2</MenuItem>
-                                                    <MenuItem>File 3</MenuItem>
-                                                </MenuList>
-                                            )}
-                                        </MenuItem>
+                                        <MenuItem>My Profile</MenuItem>
                                     </ProfileModal>
                                     <MenuDivider />
                                     <MenuItem onClick={logoutHandler}>Logout</MenuItem>
-                                    {/* <MenuItem>Open...</MenuItem>
-                            <MenuItem>Save File</MenuItem> */}
                                 </MenuList>
                             </>
                         )}

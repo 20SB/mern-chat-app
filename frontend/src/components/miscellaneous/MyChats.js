@@ -7,12 +7,29 @@ import { AddIcon } from "@chakra-ui/icons";
 import { ChatLoading } from "./ChatLoading";
 import { getSender } from "../../config/chatLogics";
 import { GroupChatModal } from "./GroupChatModal";
+import { mapToObject } from "../../config/notificationLogics";
 
 export const MyChats = ({ fetchAgain }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const [loggedUser, setLoggedUser] = useState();
     const toast = useGlobalToast();
-    const { user, selectedChat, setSelectedChat, chats, setChats } = ChatState();
+    const { user, selectedChat, setSelectedChat, chats, setChats, setNotifications } = ChatState();
+
+    const removeNotification = (chat) => {
+        setNotifications((prevNotifications) => {
+            const updatedNotifications = new Map(prevNotifications);
+
+            if (updatedNotifications.has(chat._id)) {
+                // If notification exists for the chat._id, remove it
+                updatedNotifications.delete(chat._id);
+            }
+            localStorage.setItem(
+                "unseenNotifications",
+                JSON.stringify(mapToObject(updatedNotifications))
+            );
+            return updatedNotifications;
+        });
+    };
 
     const fetchChats = async () => {
         const config = {
@@ -90,7 +107,10 @@ export const MyChats = ({ fetchAgain }) => {
                     <Stack overflowY={"scroll"}>
                         {chats.map((chat) => (
                             <Box
-                                onClick={() => setSelectedChat(chat)}
+                                onClick={() => {
+                                    setSelectedChat(chat);
+                                    removeNotification(chat);
+                                }}
                                 cursor={"pointer"}
                                 bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
                                 color={selectedChat === chat ? "white" : "black"}

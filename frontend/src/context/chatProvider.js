@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { objectToMap } from "../config/notificationLogics";
+import { mapToObject, objectToMap } from "../config/notificationLogics";
 
 const ChatContext = createContext();
 
@@ -23,6 +23,7 @@ const ChatProvider = ({ children }) => {
             navigate("/");
         }
     }, [navigate]);
+
     return (
         <ChatContext.Provider
             value={{

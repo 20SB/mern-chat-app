@@ -292,7 +292,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         });
     });
 
-    console.log("notification----", notifications);
     // Typing handler function
     const typingHandler = (newText) => {
         setNewMessage(newText);
