@@ -32,6 +32,7 @@ import loadingDots from "../../assets/animations/loadingDots.json";
 
 import io from "socket.io-client";
 import { mapToObject } from "../../config/notificationLogics";
+import { useNavigate } from "react-router-dom";
 const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
 var socket, selectedChatCompare;
 
@@ -48,7 +49,18 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const toast = useGlobalToast();
     const typingRef = useRef(false);
     const fileInputRef = useRef(null);
+    const fileInputDocRef = useRef(null);
+    const fileInputImgRef = useRef(null);
+    const fileInputVidRef = useRef(null);
 
+    const handleFileInput = (ref) => {
+        ref.current.click();
+    };
+    const navigate = useNavigate();
+
+    const handleCameraOption = () => {
+        navigate("/camera");
+    };
     const getDefaultOptions = (animationData) => {
         let defaultOptions = {
             loop: true,
@@ -152,12 +164,12 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             });
     };
 
-    // Function to handle file input
-    const handleFileInput = () => {
-        console.log("file input func called");
-        // Programmatically trigger the file input click event
-        fileInputRef.current.click();
-    };
+    // // Function to handle file input
+    // const handleFileInput = () => {
+    //     console.log("file input func called");
+    //     // Programmatically trigger the file input click event
+    //     fileInputRef.current.click();
+    // };
 
     // Send a new message when the user presses Enter
     const sendMessage = (e) => {
@@ -473,13 +485,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             flexDir={"column"}
                             alignItems={"flex-start"}
                         >
-                            {/* {isTyping ? (
-                                <div>
-                                    <Lottie options={getDefaultOptions(typingDots)} width={80} />
-                                </div>
-                            ) : (
-                                <></>
-                            )} */}
                             <Box
                                 display={"flex"}
                                 position={"relative"}
@@ -497,12 +502,12 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     <Portal>
                                         <MenuList>
                                             <MenuItem
-                                                onClick={handleFileInput}
+                                                onClick={() => handleFileInput(fileInputDocRef)}
                                                 icon={<IoIosDocument size={20} color="#7F66FF" />}
                                             >
                                                 Document
                                                 <input
-                                                    ref={fileInputRef}
+                                                    ref={fileInputDocRef}
                                                     type="file"
                                                     style={{ display: "none" }}
                                                     onChange={(e) => handleFileSelection(e, "doc")}
@@ -510,21 +515,42 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                                 />
                                             </MenuItem>
                                             <MenuItem
+                                                onClick={() => handleFileInput(fileInputImgRef)}
                                                 icon={<IoMdPhotos size={20} color="#007BFC" />}
                                             >
                                                 Photos
+                                                <input
+                                                    ref={fileInputImgRef}
+                                                    type="file"
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => handleFileSelection(e, "img")}
+                                                    accept="image/*"
+                                                    multiple
+                                                />
                                             </MenuItem>
                                             <MenuItem
+                                                onClick={() => handleFileInput(fileInputVidRef)}
                                                 icon={<FaFileVideo size={20} color="#6c0101" />}
                                             >
                                                 Videos
+                                                <input
+                                                    ref={fileInputVidRef}
+                                                    type="file"
+                                                    style={{ display: "none" }}
+                                                    onChange={(e) => handleFileSelection(e, "vid")}
+                                                    accept="video/*"
+                                                    multiple
+                                                />
                                             </MenuItem>
-                                            <MenuItem icon={<FaCamera size={20} color="#FF2E74" />}>
+                                            {/* <MenuItem
+                                                onClick={handleCameraOption}
+                                                icon={<FaCamera size={20} color="#FF2E74" />}
+                                            >
                                                 Camera
                                             </MenuItem>
                                             <MenuItem icon={<FaUser size={20} color="#009DE2" />}>
                                                 Contact
-                                            </MenuItem>
+                                            </MenuItem> */}
                                         </MenuList>
                                     </Portal>
                                 </Menu>
