@@ -121,13 +121,28 @@ export const ScrollableChat = ({ messages }) => {
         <ScrollableFeed>
             {Object.entries(groupedMessages).map(([date, messagesForDate]) => (
                 <React.Fragment key={date}>
-                    <div style={{ textAlign: "center", fontWeight: "bold", margin: "10px 0" }}>
-                        {getDateDisplay(date)}
-                    </div>
+                    <Box display={"flex"} justifyContent={"center"}>
+                        <Box
+                            padding={"5px 12px 6px"}
+                            textAlign={"center"}
+                            textShadow={"0 1px 0 rgb(255,255,255),.4"}
+                            backgroundColor={"hsla(0,0%,100%,0.95)"}
+                            borderRadius={"lg"}
+                            boxShadow={"0 1px 0.5px rgba(11,20,26),.13"}
+                            boxSizing="border-box"
+                            fontSize={"12.5px"}
+                            lineHeight={"21px"}
+                            color={"#54656f"}
+                            margin={"8px 0"}
+                        >
+                            {getDateDisplay(date)}
+                        </Box>
+                    </Box>
+
                     {messagesForDate.map((m, index) => {
                         messageCounter++;
                         return (
-                            <div style={{ display: "flex" }} key={m._id}>
+                            <div style={{ display: "flex" }} key={m._id} position={"relative"}>
                                 {(isSameSender(messages, m, messageCounter, user.user._id) ||
                                     isLastMessageOfText(
                                         messages,
@@ -153,42 +168,73 @@ export const ScrollableChat = ({ messages }) => {
 
                                 {m.isFileInput ? (
                                     m.fileType === "img" ? (
-                                        <>
+                                        <Box
+                                            onMouseEnter={() => handleMouseEnter(m._id)}
+                                            onMouseLeave={handleMouseLeave}
+                                            style={{
+                                                borderRadius: "10px",
+                                                maxWidth: "75%",
+                                                boxShadow: "0px 1px 1px 0px #adadad ",
+                                                marginBottom: `${
+                                                    isLastMessage(messages, messageCounter)
+                                                        ? "10px"
+                                                        : "2px"
+                                                }`,
+                                                marginTop: 3,
+                                                boxSizing: "border-box",
+                                                marginLeft: isSameSenderMargin(
+                                                    messages,
+                                                    m,
+                                                    messageCounter,
+                                                    user.user._id
+                                                ),
+                                                background: `${
+                                                    m.sender._id === user.user._id
+                                                        ? "#d9fdd3"
+                                                        : "#ffffff"
+                                                }`,
+                                                position: "relative",
+                                            }}
+                                        >
                                             <Image
                                                 objectFit="cover"
                                                 src={m.file}
                                                 p={1}
                                                 style={{
                                                     borderRadius: "10px",
-                                                    maxWidth: "75%",
-                                                    height: "200px",
-                                                    boxShadow: "0px 1px 1px 0px #adadad ",
-                                                    marginBottom: `${
-                                                        isLastMessage(messages, messageCounter)
-                                                            ? "10px"
-                                                            : "2px"
-                                                    }`,
-                                                    marginTop: 3,
+                                                    width: "100%",
+                                                    maxHeight: "200px",
                                                     boxSizing: "border-box",
-                                                    marginLeft: isSameSenderMargin(
-                                                        messages,
-                                                        m,
-                                                        messageCounter,
-                                                        user.user._id
-                                                    ),
-                                                    background: `${
-                                                        m.sender._id === user.user._id
-                                                            ? "#d9fdd3"
-                                                            : "#ffffff"
-                                                    }`,
                                                 }}
                                             ></Image>
-                                            <FaChevronRight fontSize={15} />
-                                        </>
+                                            <div
+                                                style={{
+                                                    cursor: "pointer",
+                                                    position: "absolute",
+                                                    right: "4px",
+                                                    top: "4px",
+                                                    width: "100px",
+                                                    height: "40px",
+                                                    borderRadius: "0px 6px 0px 0px",
+                                                    display: "flex",
+                                                    flexDirection: "row-reverse",
+                                                    padding: "1px 10px 0px 0px",
+                                                    color: "white",
+                                                    zIndex: 999,
+                                                    background:
+                                                        "linear-gradient(200deg, black, rgb(0 0 0 / 0%), transparent)",
+                                                    opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                    transition: "opacity 0.3s ease",
+                                                }}
+                                            >
+                                                <FaChevronDown fontSize={15} />
+                                            </div>
+                                        </Box>
                                     ) : m.fileType === "vid" ? (
-                                        <div
+                                        <Box
                                             onMouseEnter={() => handleMouseEnter(m._id)}
                                             onMouseLeave={handleMouseLeave}
+                                            maxWidth={{ base: "85%", lg: "75%" }}
                                             style={{
                                                 background: `${
                                                     m.sender._id === user.user._id
@@ -196,7 +242,6 @@ export const ScrollableChat = ({ messages }) => {
                                                         : "#ffffff"
                                                 }`,
                                                 borderRadius: "10px",
-                                                maxWidth: "50%",
                                                 minHeight: "60px",
                                                 marginLeft: isSameSenderMargin(
                                                     messages,
@@ -244,6 +289,7 @@ export const ScrollableChat = ({ messages }) => {
                                                     style={{
                                                         width: "calc(100% - 95px)",
                                                         wordWrap: "break-word",
+                                                        fontSize: { base: "12.5px", lg: "inherit" },
                                                     }}
                                                 >
                                                     {getFileName(m.file)}
@@ -277,22 +323,23 @@ export const ScrollableChat = ({ messages }) => {
                                             >
                                                 {formatTime(m.updatedAt)}
                                             </Box>
-                                            {hoveredMessageId === m._id && (
-                                                <FaChevronDown
-                                                    fontSize={15}
-                                                    style={{
-                                                        cursor: "pointer",
-                                                        position: "absolute",
-                                                        right: "10px",
-                                                        top: "5px",
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
+                                            <FaChevronDown
+                                                fontSize={15}
+                                                style={{
+                                                    cursor: "pointer",
+                                                    position: "absolute",
+                                                    right: "10px",
+                                                    top: "5px",
+                                                    opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                    transition: "opacity 0.3s ease",
+                                                }}
+                                            />
+                                        </Box>
                                     ) : (
-                                        <div
+                                        <Box
                                             onMouseEnter={() => handleMouseEnter(m._id)}
                                             onMouseLeave={handleMouseLeave}
+                                            maxWidth={{ base: "85%", lg: "75%" }}
                                             style={{
                                                 background: `${
                                                     m.sender._id === user.user._id
@@ -300,7 +347,6 @@ export const ScrollableChat = ({ messages }) => {
                                                         : "#ffffff"
                                                 }`,
                                                 borderRadius: "10px",
-                                                maxWidth: "50%",
                                                 minHeight: "60px",
                                                 marginLeft: isSameSenderMargin(
                                                     messages,
@@ -366,6 +412,7 @@ export const ScrollableChat = ({ messages }) => {
                                                     style={{
                                                         width: "calc(100% - 95px)",
                                                         wordWrap: "break-word",
+                                                        fontSize: { base: "12.5px", lg: "inherit" },
                                                     }}
                                                 >
                                                     {getFileName(m.file)}
@@ -395,18 +442,18 @@ export const ScrollableChat = ({ messages }) => {
                                             >
                                                 {formatTime(m.updatedAt)}
                                             </Box>
-                                            {hoveredMessageId === m._id && (
-                                                <FaChevronDown
-                                                    fontSize={15}
-                                                    style={{
-                                                        cursor: "pointer",
-                                                        position: "absolute",
-                                                        right: "10px",
-                                                        top: "5px",
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
+                                            <FaChevronDown
+                                                fontSize={15}
+                                                style={{
+                                                    cursor: "pointer",
+                                                    position: "absolute",
+                                                    right: "10px",
+                                                    top: "5px",
+                                                    opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                    transition: "opacity 0.3s ease",
+                                                }}
+                                            />
+                                        </Box>
                                     )
                                 ) : (
                                     <div
@@ -445,17 +492,17 @@ export const ScrollableChat = ({ messages }) => {
                                         }}
                                     >
                                         {m.content}
-                                        {hoveredMessageId === m._id && (
-                                            <FaChevronDown
-                                                fontSize={15}
-                                                style={{
-                                                    position: "absolute",
-                                                    right: "10px",
-                                                    top: "5px",
-                                                    cursor: "pointer",
-                                                }}
-                                            />
-                                        )}
+                                        <FaChevronDown
+                                            fontSize={15}
+                                            style={{
+                                                position: "absolute",
+                                                right: "10px",
+                                                top: "5px",
+                                                cursor: "pointer",
+                                                opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                transition: "opacity 0.3s ease",
+                                            }}
+                                        />
 
                                         <Box
                                             style={{
