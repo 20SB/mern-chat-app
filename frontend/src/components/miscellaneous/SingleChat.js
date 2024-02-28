@@ -474,7 +474,10 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             />
                         ) : (
                             <div className="messages">
-                                <ScrollableChat messages={messages} />
+                                <ScrollableChat
+                                    messages={messages}
+                                    style={{ overflowX: "hidden" }}
+                                />
                             </div>
                         )}
 

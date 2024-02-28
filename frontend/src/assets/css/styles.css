@@ -3,6 +3,10 @@
     flex-direction: column;
     overflow-y: scroll;
     scrollbar-width: none;
+    overflow-x: hidden;
+}
+.messages > div:first-child {
+    overflow-x: hidden;
 }
 .my-btn {
     font-size: 20px;

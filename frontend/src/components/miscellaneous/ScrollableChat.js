@@ -8,7 +8,18 @@ import {
     isSameUser,
 } from "../../config/chatLogics";
 import { ChatState } from "./../../context/chatProvider";
-import { Avatar, Box, Image, Tooltip, position } from "@chakra-ui/react";
+import {
+    Avatar,
+    Box,
+    Button,
+    Image,
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuList,
+    Tooltip,
+    position,
+} from "@chakra-ui/react";
 import { isSameSenderMargin } from "./../../config/chatLogics";
 import { Player } from "video-react";
 import { formatTime, getFileName } from "../../config/messageLogics";
@@ -207,28 +218,44 @@ export const ScrollableChat = ({ messages }) => {
                                                     boxSizing: "border-box",
                                                 }}
                                             ></Image>
-                                            <div
-                                                style={{
-                                                    cursor: "pointer",
-                                                    position: "absolute",
-                                                    right: "4px",
-                                                    top: "4px",
-                                                    width: "100px",
-                                                    height: "40px",
-                                                    borderRadius: "0px 6px 0px 0px",
-                                                    display: "flex",
-                                                    flexDirection: "row-reverse",
-                                                    padding: "1px 10px 0px 0px",
-                                                    color: "white",
-                                                    zIndex: 999,
-                                                    background:
-                                                        "linear-gradient(200deg, black, rgb(0 0 0 / 0%), transparent)",
-                                                    opacity: hoveredMessageId === m._id ? 1 : 0,
-                                                    transition: "opacity 0.3s ease",
-                                                }}
-                                            >
-                                                <FaChevronDown fontSize={15} />
-                                            </div>
+                                            <Menu>
+                                                <div
+                                                    style={{
+                                                        position: "absolute",
+                                                        right: "4px",
+                                                        top: "4px",
+                                                        width: "100px",
+                                                        height: "40px",
+                                                        padding: "0px 6px 0px 0px",
+                                                        borderRadius: "0px 6px 0px 0px",
+                                                        display: "flex",
+                                                        flexDirection: "row-reverse",
+                                                        background:
+                                                            "linear-gradient(200deg, white,white, rgb(0 0 0 / 0%),rgb(0 0 0 / 0%), transparent)",
+                                                        opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                        transition: "opacity 0.3s ease",
+                                                    }}
+                                                >
+                                                    <MenuButton mt={"-15px"}>
+                                                        <FaChevronDown
+                                                            fontSize={15}
+                                                            cursor={"pointer"}
+                                                            style={{
+                                                                right: "8px",
+                                                                top: "3px",
+                                                            }}
+                                                        />
+                                                    </MenuButton>
+                                                </div>
+                                                <MenuList
+                                                    minWidth={"150px"}
+                                                    mt={"-25px"}
+                                                    mb={"-20px"}
+                                                    boxShadow={"0 2px 5px 0 #737373"}
+                                                >
+                                                    <MenuItem>Delete</MenuItem>
+                                                </MenuList>
+                                            </Menu>
                                         </Box>
                                     ) : m.fileType === "vid" ? (
                                         <Box
@@ -323,17 +350,41 @@ export const ScrollableChat = ({ messages }) => {
                                             >
                                                 {formatTime(m.updatedAt)}
                                             </Box>
-                                            <FaChevronDown
-                                                fontSize={15}
-                                                style={{
-                                                    cursor: "pointer",
-                                                    position: "absolute",
-                                                    right: "10px",
-                                                    top: "5px",
-                                                    opacity: hoveredMessageId === m._id ? 1 : 0,
-                                                    transition: "opacity 0.3s ease",
-                                                }}
-                                            />
+                                            <Menu>
+                                                <div
+                                                    style={{
+                                                        position: "absolute",
+                                                        right: "4px",
+                                                        width: "100px",
+                                                        height: "40px",
+                                                        padding: "0px 6px 0px 0px",
+                                                        borderRadius: "0px 6px 0px 0px",
+                                                        display: "flex",
+                                                        flexDirection: "row-reverse",
+                                                        opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                        transition: "opacity 0.3s ease",
+                                                    }}
+                                                >
+                                                    <MenuButton mt={"-15px"}>
+                                                        <FaChevronDown
+                                                            fontSize={15}
+                                                            cursor={"pointer"}
+                                                            style={{
+                                                                right: "8px",
+                                                                top: "3px",
+                                                            }}
+                                                        />
+                                                    </MenuButton>
+                                                </div>
+                                                <MenuList
+                                                    minWidth={"150px"}
+                                                    mt={"-25px"}
+                                                    mb={"-20px"}
+                                                    boxShadow={"0 2px 5px 0 #737373"}
+                                                >
+                                                    <MenuItem>Delete</MenuItem>
+                                                </MenuList>
+                                            </Menu>
                                         </Box>
                                     ) : (
                                         <Box
@@ -442,17 +493,41 @@ export const ScrollableChat = ({ messages }) => {
                                             >
                                                 {formatTime(m.updatedAt)}
                                             </Box>
-                                            <FaChevronDown
-                                                fontSize={15}
-                                                style={{
-                                                    cursor: "pointer",
-                                                    position: "absolute",
-                                                    right: "10px",
-                                                    top: "5px",
-                                                    opacity: hoveredMessageId === m._id ? 1 : 0,
-                                                    transition: "opacity 0.3s ease",
-                                                }}
-                                            />
+                                            <Menu>
+                                                <div
+                                                    style={{
+                                                        position: "absolute",
+                                                        right: "4px",
+                                                        width: "100px",
+                                                        height: "40px",
+                                                        padding: "0px 6px 0px 0px",
+                                                        borderRadius: "0px 6px 0px 0px",
+                                                        display: "flex",
+                                                        flexDirection: "row-reverse",
+                                                        opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                        transition: "opacity 0.3s ease",
+                                                    }}
+                                                >
+                                                    <MenuButton mt={"-15px"}>
+                                                        <FaChevronDown
+                                                            fontSize={15}
+                                                            cursor={"pointer"}
+                                                            style={{
+                                                                right: "8px",
+                                                                top: "3px",
+                                                            }}
+                                                        />
+                                                    </MenuButton>
+                                                </div>
+                                                <MenuList
+                                                    minWidth={"150px"}
+                                                    mt={"-25px"}
+                                                    mb={"-20px"}
+                                                    boxShadow={"0 2px 5px 0 #737373"}
+                                                >
+                                                    <MenuItem>Delete</MenuItem>
+                                                </MenuList>
+                                            </Menu>
                                         </Box>
                                     )
                                 ) : (
@@ -492,17 +567,42 @@ export const ScrollableChat = ({ messages }) => {
                                         }}
                                     >
                                         {m.content}
-                                        <FaChevronDown
-                                            fontSize={15}
-                                            style={{
-                                                position: "absolute",
-                                                right: "10px",
-                                                top: "5px",
-                                                cursor: "pointer",
-                                                opacity: hoveredMessageId === m._id ? 1 : 0,
-                                                transition: "opacity 0.3s ease",
-                                            }}
-                                        />
+                                        <Menu>
+                                            <div
+                                                style={{
+                                                    position: "absolute",
+                                                    right: "4px",
+                                                    width: "100px",
+                                                    height: "40px",
+                                                    padding: "0px 6px 0px 0px",
+                                                    borderRadius: "0px 6px 0px 0px",
+                                                    display: "flex",
+                                                    flexDirection: "row-reverse",
+                                                    opacity: hoveredMessageId === m._id ? 1 : 0,
+                                                    transition: "opacity 0.3s ease",
+                                                }}
+                                            >
+                                                <MenuButton mt={"-15px"}>
+                                                    <FaChevronDown
+                                                        fontSize={15}
+                                                        cursor={"pointer"}
+                                                        style={{
+                                                            right: "8px",
+                                                            top: "2px",
+                                                        }}
+                                                    />
+                                                </MenuButton>
+                                            </div>
+                                            <MenuList
+                                                minWidth={"150px"}
+                                                mt={"-25px"}
+                                                mb={"-20px"}
+                                                boxShadow={"0 2px 5px 0 #737373"}
+                                            >
+                                                <MenuItem>Edit</MenuItem>
+                                                <MenuItem>Delete</MenuItem>
+                                            </MenuList>
+                                        </Menu>
 
                                         <Box
                                             style={{
