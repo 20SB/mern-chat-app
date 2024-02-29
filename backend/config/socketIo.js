@@ -79,6 +79,48 @@ module.exports.socketConfig = function (server) {
             });
         });
 
+        // Handle the "delete message" event emitted by the client
+        socket.on("delete message", (messageDeleted) => {
+            // Retrieve the chat object from the deleted message
+            var chat = messageDeleted.chat;
+
+            // Check if the chat object has a "users" property
+            if (!chat.users) {
+                // Log a message if users are not defined
+                return console.log("chat.users not defined");
+            }
+
+            // Iterate over each user in the chat's user list
+            chat.users.forEach((user) => {
+                // Skip emitting the "message deleted" event to the sender
+                if (user._id === messageDeleted.sender._id) return;
+
+                // Emit a "message deleted" event to the user's ID
+                socket.in(user._id).emit("message deleted", messageDeleted);
+            });
+        });
+
+        // Handle the "update message" event emitted by the client
+        socket.on("update message", (messageUpdated) => {
+            // Retrieve the chat object from the updated message
+            var chat = messageUpdated.chat;
+
+            // Check if the chat object has a "users" property
+            if (!chat.users) {
+                // Log a message if users are not defined
+                return console.log("chat.users not defined");
+            }
+
+            // Iterate over each user in the chat's user list
+            chat.users.forEach((user) => {
+                // Skip emitting the "message updated" event to the sender
+                if (user._id === messageUpdated.sender._id) return;
+
+                // Emit a "message updated" event to the user's ID
+                socket.in(user._id).emit("message updated", messageUpdated);
+            });
+        });
+
         socket.off("setup", () => {
             console.log("USER Disconnected");
             socket.leave(userData._id);

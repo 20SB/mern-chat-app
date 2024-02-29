@@ -164,13 +164,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             });
     };
 
-    // // Function to handle file input
-    // const handleFileInput = () => {
-    //     console.log("file input func called");
-    //     // Programmatically trigger the file input click event
-    //     fileInputRef.current.click();
-    // };
-
     // Send a new message when the user presses Enter
     const sendMessage = (e) => {
         if (e.key === "Enter" && newMessage) {
@@ -200,6 +193,71 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     );
                 });
         }
+    };
+
+    const deleteMessage = (msgId) => {
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${user.token}`,
+            },
+        };
+
+        axios
+            .delete(`${BACKEND_URL}/api/message/unsend?messageId=${msgId}`, config)
+            .then(({ data }) => {
+                // Successfully deleted message, now fetch messages again
+                setMessages(messages.filter((message) => message._id !== msgId));
+
+                // Emit socket event to inform other users to fetch messages again
+                socket.emit("delete message", data.data);
+            })
+            .catch((error) => {
+                toast.error(
+                    "Error",
+                    error.response ? error.response.data.message : "Something Went Wrong"
+                );
+            });
+    };
+
+    const editMessage = (msgId, updatedMsg) => {
+        console.log("request for updating msg of ", msgId, "updated msg is ", updatedMsg);
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${user.token}`,
+            },
+        };
+
+        axios
+            .put(
+                `${BACKEND_URL}/api/message/update?messageId=${msgId}`,
+                { messageId: msgId, content: updatedMsg },
+                config
+            )
+            .then(({ data }) => {
+                // Find the index of the message in your messages array
+                const messageIndex = messages.findIndex((message) => message._id === data.data._id);
+
+                // If the message is found, update its content
+                if (messageIndex !== -1) {
+                    const updatedMessages = [...messages]; // Create a copy of the messages array
+                    updatedMessages[messageIndex].content = data.data.content; // Update the content
+                    setMessages(updatedMessages); // Update the state
+                }
+
+                console.log("updated msg", data.data);
+
+                // Emit socket event to inform other users to update the specified messages
+                socket.emit("update message", data.data);
+            })
+            .catch((error) => {
+                console.log("Error:", error);
+                toast.error(
+                    "Error",
+                    error.response ? error.response.data.message : "Something Went Wrong"
+                );
+            });
     };
     // Fetch messages when the selected chat changes
     useEffect(() => {
@@ -300,6 +358,23 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 });
             } else {
                 setMessages([...messages, ...newMessagesReceived]);
+            }
+        });
+        socket.on("message deleted", (messageDeleted) => {
+            setMessages(messages.filter((message) => message._id !== messageDeleted._id));
+        });
+        socket.on("message updated", (messageUpdated) => {
+            setMessages(messages.filter((message) => message._id !== messageUpdated._id));
+            // Find the index of the message in your messages array
+            const messageIndex = messages.findIndex(
+                (message) => message._id === messageUpdated._id
+            );
+
+            // If the message is found, update its content
+            if (messageIndex !== -1) {
+                const updatedMessages = [...messages]; // Create a copy of the messages array
+                updatedMessages[messageIndex].content = messageUpdated.content; // Update the content
+                setMessages(updatedMessages); // Update the state
             }
         });
     });
@@ -476,6 +551,8 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             <div className="messages">
                                 <ScrollableChat
                                     messages={messages}
+                                    editHandler={editMessage}
+                                    deleteHandler={deleteMessage}
                                     style={{ overflowX: "hidden" }}
                                 />
                             </div>

@@ -154,14 +154,19 @@ module.exports.updateMessage = expressAsyncHandler(async (req, res) => {
 
         // Update the content of the message
         message.content = content;
-        await message.save();
+        let updatedMsg = await message.save();
 
+        // Populate sender and chat fields of the message
+        updatedMsg = await updatedMsg.populate("sender", "name dp");
+        updatedMsg = await updatedMsg.populate("chat");
+        updatedMsg = await User.populate(updatedMsg, {
+            path: "chat.users",
+            select: "name dp email",
+        });
         return res.status(200).json({
             success: true,
             message: "Message updated successfully",
-            data: {
-                message: message,
-            },
+            data: updatedMsg,
         });
     } catch (err) {
         res.status(400);
@@ -174,7 +179,7 @@ module.exports.deleteMessage = expressAsyncHandler(async (req, res) => {
         const messageId = req.query.messageId;
 
         // Find the message to be deleted
-        const message = await Message.findById(messageId);
+        let message = await Message.findById(messageId);
 
         if (!message) {
             res.status(404);
@@ -186,6 +191,14 @@ module.exports.deleteMessage = expressAsyncHandler(async (req, res) => {
             res.status(403);
             throw new Error("You can not delete others message");
         }
+
+        // Populate sender and chat fields of the message
+        message = await message.populate("sender", "name dp");
+        message = await message.populate("chat");
+        let deletedMsg = await User.populate(message, {
+            path: "chat.users",
+            select: "name dp email",
+        });
 
         // If the message contains files and isFileInput is true, delete the files from AWS S3
         if (message.isFileInput && message.file) {
@@ -211,6 +224,7 @@ module.exports.deleteMessage = expressAsyncHandler(async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            data: deletedMsg,
             message: "Message deleted successfully",
         });
     } catch (err) {
