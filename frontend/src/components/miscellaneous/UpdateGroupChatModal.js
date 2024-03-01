@@ -1,5 +1,6 @@
 import { ViewIcon } from "@chakra-ui/icons";
 import {
+    Avatar,
     Box,
     Button,
     FormControl,
@@ -20,8 +21,9 @@ import useGlobalToast from "../../globalFunctions/toast";
 import { UserBadgeItem } from "../UserAvatar/UserBadgeItem";
 import { UserListItem } from "../UserAvatar/UserListItem";
 import axios from "axios";
+import { GroupDisplayPicModal } from "./GroupDisplayPicModal";
 
-export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fecthMessages }) => {
+export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fecthMessages, children }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { user, selectedChat, setSelectedChat } = ChatState();
@@ -179,8 +181,13 @@ export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fecthMessages 
 
     return (
         <>
-            <IconButton display={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />
-
+            {/* <IconButton display={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} /> */}
+            {children ? (
+                <span onClick={onOpen}>{children}</span>
+            ) : (
+                <></>
+                // <IconButton display={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />
+            )}
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
                 <ModalOverlay />
                 <ModalContent>
@@ -189,7 +196,24 @@ export const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fecthMessages 
                         fontFamily={"Work sans"}
                         display={"flex"}
                         justifyContent={"center"}
+                        alignItems={"center"}
                     >
+                        <GroupDisplayPicModal
+                            selectedChat={selectedChat}
+                            fetchAgain={fetchAgain}
+                            setFetchAgain={setFetchAgain}
+                        >
+                            <Avatar
+                                mt={"7px"}
+                                m={1}
+                                cursor={"pointer"}
+                                name={selectedChat.chatName}
+                                src={selectedChat.gdp}
+                                h={"2.5rem"}
+                                w={"2.5rem"}
+                            />
+                        </GroupDisplayPicModal>
+
                         {selectedChat.chatName}
                     </ModalHeader>
                     <ModalCloseButton />

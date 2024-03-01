@@ -48,7 +48,8 @@ const SideDrawer = () => {
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingChat, setLoadingChat] = useState();
-    const { user, setSelectedChat, chats, setChats, notifications, setNotifications } = ChatState();
+    const { user, setUser, setSelectedChat, chats, setChats, notifications, setNotifications } =
+        ChatState();
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -235,7 +236,7 @@ const SideDrawer = () => {
                                     </Box>
                                 </MenuButton>
                                 <MenuList>
-                                    <ProfileModal user={user.user}>
+                                    <ProfileModal selectedUser={user.user}>
                                         <MenuItem>My Profile</MenuItem>
                                     </ProfileModal>
                                     <MenuDivider />

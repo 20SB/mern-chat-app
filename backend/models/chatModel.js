@@ -24,6 +24,9 @@ const chatSchema = mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
+        gdp: {
+            type: String,
+        },
     },
     {
         timestamps: true,

@@ -145,7 +145,41 @@ module.exports.updateUser = asyncHandler(async (req, res) => {
                 email: user.email,
                 isAdmin: user.isAdmin,
                 dp: user.dp,
-            }}
+            },
+        },
+    });
+});
+
+// Update user DP
+module.exports.updateDP = asyncHandler(async (req, res) => {
+    const user = req.user;
+
+    // Check if user wants to update dp
+    let dp = "";
+    if (req.file) {
+        // Delete previous dp from AWS S3
+        if (dp) {
+            await awsS3.delete(user.dp);
+        }
+
+        // Upload new dp to AWS S3
+        const fileType = "DP";
+        const data = await awsS3.upload(fileType, req.file);
+        dp = data.Location;
+    }
+
+    // Update user in database
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, { dp }, { new: true });
+
+    if (!user) {
+        res.status(400);
+        throw new Error("Failed to update your DP");
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Your DP updated successfully",
+        data: updatedUser,
     });
 });
 

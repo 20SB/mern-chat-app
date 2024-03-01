@@ -15,10 +15,15 @@ import {
     useDisclosure,
 } from "@chakra-ui/react";
 import React from "react";
+import { DisplayProfilePicModal } from "./DisplayProfilePicModal";
+import { ChatState } from "../../context/chatProvider";
+import { UpdateProfileModal } from "./UpdateProfileModal";
 
-export const ProfileModal = ({ user, children }) => {
+export const ProfileModal = ({ selectedUser, children }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { user } = ChatState();
 
+    console.log("selectedUser", selectedUser);
     return (
         <>
             {children ? (
@@ -37,7 +42,7 @@ export const ProfileModal = ({ user, children }) => {
                         display={"flex"}
                         justifyContent={"center"}
                     >
-                        {user.name}
+                        {selectedUser.name}
                     </ModalHeader>
                     <ModalCloseButton />
                     <ModalBody
@@ -46,19 +51,27 @@ export const ProfileModal = ({ user, children }) => {
                         alignItems={"center"}
                         justifyContent={"space-evenly"}
                     >
-                        {/* <Image
-                            borderRadius={"full"}
-                            boxSize={"150px"}
-                            src={user.dp}
-                            alt={user.name}
-                        ></Image> */}
-                        <Avatar size="2xl" name={user.name} src={user.dp} />
+                        <DisplayProfilePicModal selectedUser={selectedUser}>
+                            <Avatar
+                                size="2xl"
+                                name={selectedUser.name}
+                                src={selectedUser.dp}
+                                cursor={"pointer"}
+                            />
+                        </DisplayProfilePicModal>
                         <Text fontSize={{ base: "20px", md: "30px" }} fontFamily={"Work sans"}>
-                            Email: {user.email}
+                            Email: {selectedUser.email}
                         </Text>
                     </ModalBody>
 
                     <ModalFooter>
+                        {user.user._id === selectedUser._id && (
+                            <UpdateProfileModal>
+                                <Button colorScheme="blue" mr={3}>
+                                    Update Profile
+                                </Button>
+                            </UpdateProfileModal>
+                        )}
                         <Button colorScheme="blue" mr={3} onClick={onClose}>
                             Close
                         </Button>

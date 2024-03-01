@@ -169,7 +169,6 @@ export const ScrollableChat = ({ messages, deleteHandler, editHandler }) => {
                                         <Avatar
                                             mt={"7px"}
                                             m={1}
-                                            cursor={"pointer"}
                                             name={m.sender.name}
                                             src={m.sender.dp}
                                             h={"2.5rem"}

@@ -425,7 +425,9 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         >
                             {!selectedChat.isGroupChat ? (
                                 <>
-                                    <ProfileModal user={getSenderFull(user, selectedChat.users)}>
+                                    <ProfileModal
+                                        selectedUser={getSenderFull(user, selectedChat.users)}
+                                    >
                                         <div style={{ display: "flex" }}>
                                             <Avatar
                                                 mt={"7px"}
@@ -471,52 +473,51 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                 </>
                             ) : (
                                 <>
-                                    {/* <div>
-                                    <Avatar
-                                        mt={"7px"}
-                                        m={1}
-                                        cursor={"pointer"}
-                                        name={selectedChat.chatName.toUpperCase()}
-                                        src={selectedChat.dp}
-                                        h={"2.5rem"}
-                                        w={"2.5rem"}
-                                    />
-                                    {selectedChat.chatName.toUpperCase()}
-                                </div> */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "flex-end",
-                                        }}
-                                    >
-                                        {selectedChat.chatName.toUpperCase()}{" "}
-                                        {isTyping ? (
-                                            <div
-                                                style={{
-                                                    fontSize: "13px",
-                                                    fontFamily: "Segoe UI",
-                                                    color: "#667781",
-                                                    display: "flex",
-                                                    padding: "0px 0px 7px 10px",
-                                                    alignItems: "flex-end",
-                                                }}
-                                            >
-                                                {typingUser.name} is typing
-                                                <Lottie
-                                                    options={getDefaultOptions(loadingDots)}
-                                                    width={20}
-                                                    height={"50%"}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <></>
-                                        )}
-                                    </div>
                                     <UpdateGroupChatModal
                                         fetchAgain={fetchAgain}
                                         setFetchAgain={setFetchAgain}
                                         fecthMessages={fecthMessages}
-                                    />
+                                    >
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                cursor: "pointer",
+                                            }}
+                                        >
+                                            <div>
+                                                <Avatar
+                                                    mt={"7px"}
+                                                    m={1}
+                                                    name={selectedChat.chatName}
+                                                    src={selectedChat.gdp}
+                                                    h={"2.5rem"}
+                                                    w={"2.5rem"}
+                                                />
+                                                {selectedChat.chatName.toUpperCase()}
+                                            </div>
+                                            {isTyping ? (
+                                                <div
+                                                    style={{
+                                                        fontSize: "13px",
+                                                        fontFamily: "Segoe UI",
+                                                        color: "#667781",
+                                                        display: "flex",
+                                                        padding: "0px 0px 7px 10px",
+                                                        alignItems: "flex-end",
+                                                    }}
+                                                >
+                                                    {typingUser.name} is typing
+                                                    <Lottie
+                                                        options={getDefaultOptions(loadingDots)}
+                                                        width={20}
+                                                        height={"50%"}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </div>
+                                    </UpdateGroupChatModal>
                                 </>
                             )}
                         </Box>

@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chatModel");
 const User = require("../models/userModel");
+const awsS3 = require("../config/aws");
 
 module.exports.accessChat = asyncHandler(async (req, res) => {
     const { userId } = req.body;
@@ -96,11 +97,18 @@ module.exports.createGroupChat = asyncHandler(async (req, res) => {
 
     users.push(req.user);
 
+    let gdp = "";
+    if (req.file) {
+        const fileType = "DP";
+        const data = await awsS3.upload(fileType, req.file);
+        gdp = data.Location;
+    }
     Chat.create({
         chatName: req.body.name,
         users: users,
         isGroupChat: true,
         groupAdmin: req.user,
+        gdp,
     })
         .then((groupChat) => {
             return Chat.findOne({ _id: groupChat._id })
@@ -130,6 +138,36 @@ module.exports.renameGroup = asyncHandler(async (req, res) => {
             res.status(200).json({
                 success: true,
                 message: "group chat name updated",
+                data: updatedChat,
+            });
+        })
+        .catch((err) => {
+            res.status(500);
+            throw new Error(err.message);
+        });
+});
+
+module.exports.updateDP = asyncHandler(async (req, res) => {
+    const { chatId } = req.body;
+
+    let chat = await Chat.findById(chatId);
+    let gdp = "";
+    if (req.file) {
+        if (chat.gdp) {
+            await awsS3.delete(chat.gdp);
+        }
+        const fileType = "DP";
+        const data = await awsS3.upload(fileType, req.file);
+        gdp = data.Location;
+    }
+
+    Chat.findByIdAndUpdate(chatId, { gdp }, { new: true })
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password")
+        .then((updatedChat) => {
+            res.status(200).json({
+                success: true,
+                message: "group chat DP updated",
                 data: updatedChat,
             });
         })

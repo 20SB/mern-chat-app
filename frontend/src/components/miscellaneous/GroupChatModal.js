@@ -2,6 +2,7 @@ import {
     Box,
     Button,
     FormControl,
+    FormLabel,
     Input,
     Modal,
     ModalBody,
@@ -29,6 +30,7 @@ export const GroupChatModal = ({ children }) => {
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [loadingCreateGroup, setLoadingCreateGroup] = useState(false);
     const toast = useGlobalToast();
+    const [gdp, setGdp] = useState();
 
     const { user, chats, setChats } = ChatState();
 
@@ -75,12 +77,14 @@ export const GroupChatModal = ({ children }) => {
             },
         };
 
+        // Create form data to send to the backend
+        let formDatas = new FormData();
+        formDatas.append("name", groupChatName);
+        formDatas.append("users", JSON.stringify(selectedUsers.map((u) => u._id)));
+        formDatas.append("gdp", gdp);
+
         axios
-            .post(
-                `${BACKEND_URL}/api/chat/group`,
-                { name: groupChatName, users: JSON.stringify(selectedUsers.map((u) => u._id)) },
-                config
-            )
+            .post(`${BACKEND_URL}/api/chat/group`, formDatas, config)
             .then(({ data }) => {
                 console.log("data", data);
                 toast.success(data.message, "");
@@ -140,6 +144,7 @@ export const GroupChatModal = ({ children }) => {
                                 }}
                             />
                         </FormControl>
+
                         <FormControl>
                             <Input
                                 placeholder="Add Users eg: Rakesh, Mahesh, Arpan"
@@ -172,6 +177,17 @@ export const GroupChatModal = ({ children }) => {
                                 />
                             ))
                         )}
+                        <FormControl id="gdp" isRequired>
+                            <FormLabel>Upload Group Profile Picture</FormLabel>
+                            <Input
+                                name="gdp"
+                                type={"file"}
+                                p={"1.5"}
+                                pb={"35px"}
+                                accept="image/*"
+                                onChange={(e) => setGdp(e.target.files[0])}
+                            />
+                        </FormControl>
                     </ModalBody>
 
                     <ModalFooter>

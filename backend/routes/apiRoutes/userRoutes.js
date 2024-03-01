@@ -35,6 +35,16 @@ router.put(
     upload.single("dp"),
     userController.updateUser
 );
-router.delete("/delete", passport.authenticate("jwt", { session: false }), userController.deleteUser);
+router.put(
+    "/update_dp",
+    passport.authenticate("jwt", { session: false }),
+    upload.single("dp"),
+    userController.updateDP
+);
+router.delete(
+    "/delete",
+    passport.authenticate("jwt", { session: false }),
+    userController.deleteUser
+);
 
 module.exports = router;

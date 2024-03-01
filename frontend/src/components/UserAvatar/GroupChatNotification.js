@@ -31,7 +31,11 @@ export const GroupChatNotification = ({ notification }) => {
     return (
         <Box display={"flex"} alignItems={"center"} width={"100%"}>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-                <Avatar size="sm" name="" src=""></Avatar>
+                <Avatar
+                    size="sm"
+                    name={notification.messages[0].chat.chatName}
+                    src={notification.messages[0].chat.gdp}
+                ></Avatar>
                 <Badge
                     variant="solid"
                     colorScheme="red"
