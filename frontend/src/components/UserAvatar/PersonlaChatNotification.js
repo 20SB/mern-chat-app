@@ -14,7 +14,7 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { getTimeAgoString, shortendMsg } from "../../config/notificationLogics";
+import { fileMsg, getTimeAgoString, shortendMsg } from "../../config/notificationLogics";
 import NotificationBadge from "react-notification-badge";
 
 export const PersonlaChatNotification = ({ notification, sender }) => {
@@ -74,7 +74,7 @@ export const PersonlaChatNotification = ({ notification, sender }) => {
                     w={"150px"}
                 >
                     {notification.messages[0].isFileInput
-                        ? `Sent a ${notification.messages[0].fileType}`
+                        ? fileMsg(notification.messages[0].fileType)
                         : shortendMsg(notification.messages[0].content, 20)}
                     {notification.messages.length > 1 && (
                         <>
@@ -111,7 +111,7 @@ export const PersonlaChatNotification = ({ notification, sender }) => {
                                                 maxWidth={"80px"}
                                             >
                                                 {message.isFileInput
-                                                    ? `Sent a ${message.fileType}`
+                                                    ? fileMsg(notification.messages[0].fileType)
                                                     : message.content}
                                             </Text>
                                             <Text fontWeight={300}>

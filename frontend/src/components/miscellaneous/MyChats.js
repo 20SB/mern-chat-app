@@ -2,12 +2,17 @@ import React, { useEffect, useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import useGlobalToast from "../../globalFunctions/toast";
 import axios from "axios";
-import { Box, Button, Stack, Text } from "@chakra-ui/react";
+import { Avatar, Box, Button, Stack, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { ChatLoading } from "./ChatLoading";
-import { getSender } from "../../config/chatLogics";
+import { formatDateForChats, getSender, getSenderFull } from "../../config/chatLogics";
 import { GroupChatModal } from "./GroupChatModal";
-import { mapToObject } from "../../config/notificationLogics";
+import {
+    fileMsg,
+    getTimeAgoString,
+    mapToObject,
+    shortendMsg,
+} from "../../config/notificationLogics";
 
 export const MyChats = ({ fetchAgain }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -53,6 +58,7 @@ export const MyChats = ({ fetchAgain }) => {
                 );
             });
     };
+    console.log("chats", chats);
     useEffect(() => {
         setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
         fetchChats();
@@ -118,12 +124,66 @@ export const MyChats = ({ fetchAgain }) => {
                                 py={2}
                                 borderRadius={"lg"}
                                 key={chat._id}
+                                display={"flex"}
+                                gap={2}
                             >
-                                <Text>
-                                    {!chat.isGroupChat
-                                        ? getSender(loggedUser, chat.users)
-                                        : chat.chatName}
-                                </Text>
+                                <Avatar
+                                    size="md"
+                                    name={
+                                        !chat.isGroupChat
+                                            ? getSender(loggedUser, chat.users)
+                                            : chat.chatName
+                                    }
+                                    src={
+                                        !chat.isGroupChat
+                                            ? getSenderFull(loggedUser, chat.users).dp
+                                            : chat.gdp
+                                    }
+                                />
+                                <Box
+                                    display={"flex"}
+                                    flexDir={"column"}
+                                    w={"100%"}
+                                    color={selectedChat === chat ? "white" : "black"}
+                                >
+                                    <Box
+                                        display={"flex"}
+                                        justifyContent={"space-between"}
+                                        w={"100%"}
+                                    >
+                                        <Text fontWeight={"450"}>
+                                            {!chat.isGroupChat
+                                                ? getSender(loggedUser, chat.users)
+                                                : chat.chatName}
+                                        </Text>
+                                        <Text
+                                            color={selectedChat === chat ? "white" : "#667781"}
+                                            fontSize={"14px"}
+                                        >
+                                            {chat.latestMessage &&
+                                                formatDateForChats(chat.latestMessage.updatedAt)}
+                                        </Text>
+                                    </Box>
+                                    <Box
+                                        color={selectedChat === chat ? "white" : "#667781"}
+                                        fontSize="15px"
+                                        display={"flex"}
+                                    >
+                                        <Box fontWeight={"bold"}>
+                                            {chat.latestMessage &&
+                                                chat.isGroupChat &&
+                                                `${chat.latestMessage.sender.name}: \u00A0`}
+                                        </Box>
+
+                                        <Box>
+                                            {chat.latestMessage && chat.latestMessage.isFileInput
+                                                ? fileMsg(chat.latestMessage.fileType)
+                                                : chat.latestMessage &&
+                                                  chat.latestMessage.content &&
+                                                  shortendMsg(chat.latestMessage.content, 30)}
+                                        </Box>
+                                    </Box>
+                                </Box>
                             </Box>
                         ))}
                     </Stack>

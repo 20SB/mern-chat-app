@@ -14,7 +14,7 @@ import {
     VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { getTimeAgoString, shortendMsg } from "../../config/notificationLogics";
+import { fileMsg, getTimeAgoString, shortendMsg } from "../../config/notificationLogics";
 import NotificationBadge from "react-notification-badge";
 
 export const GroupChatNotification = ({ notification }) => {
@@ -89,7 +89,7 @@ export const GroupChatNotification = ({ notification }) => {
                         {/* <AvatarBadge boxSize="1.25em" bg="green.500" /> */}
                     </Avatar>
                     {notification.messages[0].isFileInput
-                        ? `Sent a ${notification.messages[0].fileType}`
+                        ? fileMsg(notification.messages[0].fileType)
                         : shortendMsg(notification.messages[0].content, 20)}
                     {notification.messages.length > 1 && (
                         <>
@@ -134,7 +134,7 @@ export const GroupChatNotification = ({ notification }) => {
                                                     {/* <AvatarBadge boxSize="1.25em" bg="green.500" /> */}
                                                 </Avatar>
                                                 {message.isFileInput
-                                                    ? `Sent a ${message.fileType}`
+                                                    ? fileMsg(notification.messages[0].fileType)
                                                     : message.content}
                                             </Text>
                                             <Text fontWeight={300}>

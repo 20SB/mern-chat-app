@@ -68,7 +68,7 @@ module.exports.fetchChat = asyncHandler(async (req, res) => {
         .sort({ updatedAt: -1 })
         .then(async (results) => {
             results = await User.populate(results, {
-                path: "latestMessage.senderName",
+                path: "latestMessage.sender",
                 select: "name dp email",
             });
             return res.status(200).json({

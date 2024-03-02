@@ -3,6 +3,7 @@ import { ChatState } from "../../context/chatProvider";
 import {
     Avatar,
     Box,
+    CircularProgress,
     FormControl,
     IconButton,
     Input,
@@ -44,6 +45,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [socketConnected, setSocketConnected] = useState(true);
     const [isTyping, setIsTyping] = useState(false);
     const [typingUser, setTypingUser] = useState({});
+    const [isSendingMsg, setIsSendingMsg] = useState(false);
 
     const { user, selectedChat, setSelectedChat, notifications, setNotifications } = ChatState();
     const toast = useGlobalToast();
@@ -73,7 +75,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         return defaultOptions;
     };
 
-    // Establish a connection to the Socket.IO server when the component mounts
     useEffect(() => {
         socket = io(ENDPOINT);
         socket.emit("setup", user);
@@ -101,11 +102,9 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
         // Append each selected file to the FormData object without specifying the key
         for (let i = 0; i < files.length; i++) {
-            console.log("file", i, " :", files[i]);
             formData.append("files", files[i]);
         }
-
-        console.log(user);
+        setIsSendingMsg(true);
         const config = {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -117,10 +116,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         axios
             .post(`${BACKEND_URL}/api/message`, formData, config)
             .then(({ data }) => {
-                // Loop over the array of messages and emit socket event for each message
-                // data.data.message.forEach((message) => {
-                //     socket.emit("new message", message);
-                // });
                 socket.emit("multiple new messages", data.data.message);
                 console.log("new message", data);
                 setMessages([...messages, ...data.data.message]);
@@ -130,6 +125,9 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     "Error",
                     error.response ? error.response.data.message : "Something Went Wrong"
                 );
+            })
+            .finally(() => {
+                setIsSendingMsg(false);
             });
     };
 
@@ -221,7 +219,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
 
     const editMessage = (msgId, updatedMsg) => {
-        console.log("request for updating msg of ", msgId, "updated msg is ", updatedMsg);
         const config = {
             headers: {
                 "Content-Type": "application/json",
@@ -253,6 +250,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             })
             .catch((error) => {
                 console.log("Error:", error);
+
                 toast.error(
                     "Error",
                     error.response ? error.response.data.message : "Something Went Wrong"
@@ -556,6 +554,15 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     deleteHandler={deleteMessage}
                                     style={{ overflowX: "hidden" }}
                                 />
+                                <Box w={"100%"} display={"flex"} justifyContent={"flex-end"}>
+                                    {isSendingMsg && (
+                                        <CircularProgress
+                                            isIndeterminate
+                                            color="green.300"
+                                            size={8}
+                                        />
+                                    )}
+                                </Box>
                             </div>
                         )}
 

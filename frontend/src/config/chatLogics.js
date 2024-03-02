@@ -43,8 +43,29 @@ export const isSameSenderMargin = (messages, m, i, userId) => {
     else return "auto";
 };
 
-// export const isSameUser = (messages, m, i) => {
-//     let res = i > 0 && messages[i - 1].sender._id === m.sender._id;
-//     console.log("res", res);
-//     return res;
-// };
+export const formatDateForChats = (timestamp) => {
+    const currentDate = new Date();
+    const inputDate = new Date(timestamp);
+
+    // Check if the input date is today
+    if (inputDate.toDateString() === currentDate.toDateString()) {
+        // Format the time to 12-hour format
+        const hours = inputDate.getHours();
+        const minutes = inputDate.getMinutes().toString().padStart(2, "0");
+        const ampm = hours >= 12 ? "pm" : "am";
+        const formattedTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+        return formattedTime;
+    }
+
+    // Check if the input date is yesterday
+    currentDate.setDate(currentDate.getDate() - 1);
+    if (inputDate.toDateString() === currentDate.toDateString()) {
+        return "Yesterday";
+    }
+
+    // Return date in the format dd/mm/yyyy
+    const dd = String(inputDate.getDate()).padStart(2, "0");
+    const mm = String(inputDate.getMonth() + 1).padStart(2, "0"); // January is 0!
+    const yyyy = inputDate.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+};

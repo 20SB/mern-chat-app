@@ -52,7 +52,6 @@ const SideDrawer = () => {
         ChatState();
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
 
     // use global toast function
     const toast = useGlobalToast();
@@ -64,6 +63,9 @@ const SideDrawer = () => {
           )
         : [];
 
+    // Show no of notifications on the document title
+    document.title =
+        notificationArray.length == 0 ? "Chit Chaat" : `(${notificationArray.length}) Chit Chaat`;
     const removeNotification = (chatId) => {
         setNotifications((prevNotifications) => {
             const updatedNotifications = new Map(prevNotifications);

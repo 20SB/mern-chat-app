@@ -1,3 +1,7 @@
+import { Box, Text } from "@chakra-ui/react";
+import { FaFileVideo, FaVideo } from "react-icons/fa6";
+import { IoIosDocument, IoMdCamera } from "react-icons/io";
+
 // Helper function to convert Map to plain object
 export const mapToObject = (map) => {
     const obj = {};
@@ -38,4 +42,26 @@ export const getTimeAgoString = (time) => {
 export const shortendMsg = (text, limit) => {
     const shortenedText = text.length > limit ? text.substring(0, limit) + "..." : text;
     return shortenedText;
+};
+
+export const fileMsg = (fileType) => {
+    if (fileType === "doc") {
+        return (
+            <Text display={"flex"} alignItems={"center"} gap={1}>
+                <IoIosDocument /> Document
+            </Text>
+        );
+    } else if (fileType === "img") {
+        return (
+            <Text display={"flex"} alignItems={"center"} gap={1}>
+                <IoMdCamera /> Photo
+            </Text>
+        );
+    } else {
+        return (
+            <Text display={"flex"} alignItems={"center"} gap={1}>
+                <FaVideo /> Video
+            </Text>
+        );
+    }
 };

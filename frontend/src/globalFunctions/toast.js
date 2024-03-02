@@ -3,7 +3,7 @@ import { useToast } from "@chakra-ui/react";
 const useGlobalToast = () => {
     const toast = useToast();
 
-    const showToast = (status, title, description) => {
+    const showToast = (status, title, description, autoClose = true) => {
         toast({
             title: title,
             description: description,
@@ -11,6 +11,7 @@ const useGlobalToast = () => {
             duration: 5000,
             isClosable: true,
             position: "top-right",
+            autoClose: autoClose,
         });
     };
 
@@ -19,6 +20,7 @@ const useGlobalToast = () => {
         error: (title, description) => showToast("error", title, description),
         warning: (title, description) => showToast("warning", title, description),
         info: (title, description) => showToast("info", title, description),
+        loading: (title, description) => showToast("loading", title, description),
     };
 };
 
