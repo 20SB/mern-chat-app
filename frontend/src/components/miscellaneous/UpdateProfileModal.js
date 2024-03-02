@@ -2,6 +2,7 @@ import {
     Avatar,
     Box,
     Button,
+    Divider,
     FormControl,
     FormLabel,
     Input,
@@ -15,27 +16,25 @@ import {
     ModalHeader,
     ModalOverlay,
     Text,
+    Tooltip,
     useDisclosure,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import useGlobalToast from "../../globalFunctions/toast";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 export const UpdateProfileModal = ({ children }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { user } = ChatState();
+    const { user, setUser } = ChatState();
 
-    const [dp, setDp] = useState(); // For storing the user's profile picture
     const [loading, setLoading] = useState(false); // For managing loading state
     const [showPass, setShowPass] = useState(false); // For toggling password visibility
     const [showConfPass, setShowConfPass] = useState(false); // For toggling confirm password visibility
     const [isPasswordValid, setIsPasswordValid] = useState(false); // For checking password validity
 
-    const navigate = useNavigate();
     // use global toast function
     const toast = useGlobalToast();
 
@@ -68,12 +67,6 @@ export const UpdateProfileModal = ({ children }) => {
 
     // Form submission handler
     const submitHandler = async () => {
-        // check if all fields are filled or not
-        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-            toast.warning("Please Fill all the Fileds");
-            return;
-        }
-
         // Check if passwords match before submitting
         if (formData.password !== formData.confirmPassword) {
             toast.warning("Warning", "Please Fill all the Fileds");
@@ -85,26 +78,45 @@ export const UpdateProfileModal = ({ children }) => {
         formDatas.append("name", formData.name);
         formDatas.append("email", formData.email);
         formDatas.append("password", formData.password);
-        formDatas.append("dp", dp);
 
         // set loader true
         setLoading(true);
+
+        const config = {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${user.token}`,
+            },
+        };
+
         // Make a POST request to the backend API
         axios
-            .post(`${BACKEND_URL}/api/user/signup`, formDatas)
-            .then((res) => {
-                console.log("res.data", res.data);
-                toast.success(res.data.message, "");
+            .put(`${BACKEND_URL}/api/user/update`, formDatas, config)
+            .then(({ data }) => {
+                toast.success(data.message, "");
 
-                // setUser(data);
-                localStorage.setItem("userInfo", JSON.stringify(res.data.data));
-                navigate("/chats");
+                setUser((prevUser) => ({
+                    ...prevUser,
+                    user: {
+                        ...prevUser.user,
+                        name: data.data.user.name,
+                        email: data.data.user.email,
+                    },
+                }));
             })
             .catch((error) => {
                 toast.error("Error", error.response.data.message);
             })
             .finally(() => {
+                // Reset formData to null values
+                setFormData({
+                    name: null,
+                    email: null,
+                    password: null,
+                    confirmPassword: null,
+                });
                 setLoading(false);
+                onClose();
             });
     };
 
@@ -135,7 +147,17 @@ export const UpdateProfileModal = ({ children }) => {
                         </Box>
                     </ModalHeader>
                     <ModalCloseButton />
-                    <hr />
+                    <Divider />
+                    <Box
+                        display={"flex"}
+                        justifyContent={"center"}
+                        fontWeight={"bold"}
+                        fontSize={"2xl"}
+                        fontFamily={"Work sans"}
+                    >
+                        Update Profile
+                    </Box>
+                    <Divider />
                     <ModalBody>
                         <FormControl id="name" isRequired>
                             <FormLabel>Name</FormLabel>
@@ -183,15 +205,24 @@ export const UpdateProfileModal = ({ children }) => {
                         <FormControl id="confirmPassword">
                             <FormLabel>ConfirmPassword</FormLabel>
                             <InputGroup size="md">
-                                <Input
-                                    name="confirmPassword"
-                                    pr="4.5rem"
-                                    type={showConfPass ? "text" : "password"}
-                                    placeholder="Enter ConfirmPassword"
-                                    onChange={handleChange}
-                                    required
-                                    focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
-                                />
+                                <Tooltip
+                                    hasArrow
+                                    label="Password Not Matching"
+                                    bg="gray.300"
+                                    color="black"
+                                    isOpen={isPasswordValid}
+                                    placement="bottom-end"
+                                >
+                                    <Input
+                                        name="confirmPassword"
+                                        pr="4.5rem"
+                                        type={showConfPass ? "text" : "password"}
+                                        placeholder="Enter ConfirmPassword"
+                                        onChange={handleChange}
+                                        required
+                                        focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
+                                    />
+                                </Tooltip>
                                 <InputRightElement width="2.5rem">
                                     <Button
                                         h="1.75rem"
@@ -205,18 +236,6 @@ export const UpdateProfileModal = ({ children }) => {
                                 </InputRightElement>
                             </InputGroup>
                         </FormControl>
-
-                        <FormControl id="dp" isRequired>
-                            <FormLabel>Upload your Picture</FormLabel>
-                            <Input
-                                name="dp"
-                                type={"file"}
-                                p={"1.5"}
-                                pb={"35px"}
-                                accept="image/*"
-                                onChange={(e) => setDp(e.target.files[0])}
-                            />
-                        </FormControl>
                     </ModalBody>
 
                     <ModalFooter>
@@ -226,9 +245,8 @@ export const UpdateProfileModal = ({ children }) => {
                             onClick={submitHandler}
                             isLoading={loading}
                         >
-                            Close
+                            Update
                         </Button>
-                        <Button variant="ghost">Secondary Action</Button>
                     </ModalFooter>
                 </ModalContent>
             </Modal>

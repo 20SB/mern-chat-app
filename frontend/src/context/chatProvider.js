@@ -19,7 +19,7 @@ const ChatProvider = ({ children }) => {
         setNotifications(objectToMap(unseenNotifications));
 
         if (!userInfo) {
-            console.log("go to home");
+            // console.log("go to home");
             navigate("/");
         }
     }, [navigate]);

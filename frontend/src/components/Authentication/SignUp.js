@@ -6,6 +6,7 @@ import {
     InputRightElement,
     VStack,
     Button,
+    Tooltip,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -144,15 +145,24 @@ const SignUp = () => {
                 <FormControl id="confirmPassword">
                     <FormLabel>ConfirmPassword</FormLabel>
                     <InputGroup size="md">
-                        <Input
-                            name="confirmPassword"
-                            pr="4.5rem"
-                            type={showConfPass ? "text" : "password"}
-                            placeholder="Enter ConfirmPassword"
-                            onChange={handleChange}
-                            required
-                            focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
-                        />
+                        <Tooltip
+                            hasArrow
+                            label="Password Not Matching"
+                            bg="gray.300"
+                            color="black"
+                            isOpen={isPasswordValid}
+                            placement="bottom-end"
+                        >
+                            <Input
+                                name="confirmPassword"
+                                pr="4.5rem"
+                                type={showConfPass ? "text" : "password"}
+                                placeholder="Enter ConfirmPassword"
+                                onChange={handleChange}
+                                required
+                                focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
+                            />
+                        </Tooltip>
                         <InputRightElement width="2.5rem">
                             <Button
                                 h="1.75rem"

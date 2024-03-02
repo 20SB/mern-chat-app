@@ -23,7 +23,7 @@ export const ProfileModal = ({ selectedUser, children }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { user } = ChatState();
 
-    console.log("selectedUser", selectedUser);
+    // console.log("selectedUser", selectedUser);
     return (
         <>
             {children ? (

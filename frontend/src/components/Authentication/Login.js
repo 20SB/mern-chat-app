@@ -59,7 +59,7 @@ const Login = () => {
         axios
             .post(`${BACKEND_URL}/api/user/login`, formData)
             .then(({ data }) => {
-                console.log("data", data);
+                // console.log("data", data);
                 toast.success(data.message, "");
 
                 setUser(data.data);

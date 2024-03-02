@@ -11,7 +11,6 @@ const upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
         var ext = path.extname(file.originalname);
-        // console.log("file", file, "ext", ext);
         if (
             ext !== ".jpg" &&
             ext !== ".jpeg" &&
@@ -29,12 +28,7 @@ const upload = multer({
 router.post("/signup", upload.single("dp"), userController.register);
 router.post("/login", userController.login);
 router.get("/", passport.authenticate("jwt", { session: false }), userController.allSearchedUsers);
-router.put(
-    "/update",
-    passport.authenticate("jwt", { session: false }),
-    upload.single("dp"),
-    userController.updateUser
-);
+router.put("/update", passport.authenticate("jwt", { session: false }), userController.updateUser);
 router.put(
     "/update_dp",
     passport.authenticate("jwt", { session: false }),

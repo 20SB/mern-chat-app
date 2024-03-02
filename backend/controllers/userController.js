@@ -37,7 +37,6 @@ module.exports.register = asyncHandler(async (req, res) => {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
-                    isAdmin: user.isAdmin,
                     dp: user.dp,
                 },
                 token: jwt.sign(user.toJSON(), env.jwtSecret, {
@@ -66,7 +65,6 @@ module.exports.login = asyncHandler(async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                isAdmin: user.isAdmin,
                 dp: user.dp,
             },
             token: jwt.sign(user.toJSON(), env.jwtSecret, {
@@ -98,7 +96,7 @@ module.exports.allSearchedUsers = asyncHandler(async (req, res) => {
 
 // Update user profile
 module.exports.updateUser = asyncHandler(async (req, res) => {
-    const { name, email, password } = req.body;
+    let { name, email, password } = req.body;
 
     // Check if email is provided and unique
     if (email) {
@@ -109,27 +107,30 @@ module.exports.updateUser = asyncHandler(async (req, res) => {
         }
     }
 
-    // Check if user wants to update dp
-    let dp = req.user.dp;
-    if (req.file) {
-        // Delete previous dp from AWS S3
-        if (dp) {
-            await awsS3.delete(dp);
-        }
-
-        // Upload new dp to AWS S3
-        const fileType = "DP";
-        const data = await awsS3.upload(fileType, req.file);
-        dp = data.Location;
+    console.log("name", name);
+    console.log("email", email);
+    console.log("password", password);
+    console.log("user", req.user);
+    if (name == "null") {
+        console.log("name is null, reassigning...");
+        name = req.user.name;
     }
-
+    if (email == "null") {
+        console.log("email is null, reassigning...");
+        email = req.user.email;
+    }
+    if (password == "null") {
+        console.log("password is null, reassigning...");
+        password = req.user.password;
+    }
     // Update user in database
     const user = await User.findByIdAndUpdate(
         req.user._id,
-        { name, email, password, dp },
+        { name, email, password },
         { new: true }
     );
 
+    console.log("user", user);
     if (!user) {
         res.status(400);
         throw new Error("Failed to update user");
@@ -143,8 +144,6 @@ module.exports.updateUser = asyncHandler(async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                isAdmin: user.isAdmin,
-                dp: user.dp,
             },
         },
     });

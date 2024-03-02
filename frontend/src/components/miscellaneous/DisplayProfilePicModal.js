@@ -36,6 +36,7 @@ export const DisplayProfilePicModal = ({ children, selectedUser }) => {
         const formData = new FormData();
         formData.append("userId", selectedUser._id);
         formData.append("dp", file);
+        console.log("dp", file);
         const config = {
             headers: {
                 Authorization: `Bearer ${user.token}`,
@@ -52,7 +53,7 @@ export const DisplayProfilePicModal = ({ children, selectedUser }) => {
                         dp: data.data.dp,
                     },
                 }));
-                console.log("updatedUser", data.data);
+                // console.log("updatedUser", data.data);
                 toast.success(data.message, "");
             })
             .catch((error) => {
