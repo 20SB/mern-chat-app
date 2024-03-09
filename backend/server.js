@@ -7,8 +7,13 @@ const connectDB = require("./config/mongoose"); // Connect to MongoDB database
 const cors = require("cors"); // Middleware to enable CORS (Cross-Origin Resource Sharing)
 const passport = require("passport"); // Authentication middleware for Node.js
 const passportJWT = require("./config/passportJWT"); // Passport strategy for JSON Web Token (JWT) authentication
+const passportGoogleOauth = require("./config/passportGoogleOauth"); // Passport strategy for Gooogle Oauth authentication
+const session = require("express-session");
 const colors = require("colors"); // Library for terminal output coloring
-const { notFound, errorHandler } = require("./config/errorHandlerMiddleware"); // Middleware for handling 404 errors and other errors
+const {
+    notFound,
+    errorHandler,
+} = require("./config/errorHandlerMiddleware"); // Middleware for handling 404 errors and other errors
 const path = require("path"); // Module for working with file paths
 const fs = require("fs"); // File system module
 const { useTreblle } = require("treblle"); // Integration for error tracking with Treblle
@@ -25,13 +30,22 @@ connectDB();
 app.use(express.json()); // Parse JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 
+app.use(
+    session({
+        secret: "your_secret_key_here",
+        resave: false,
+        saveUninitialized: false,
+    })
+);
+
 // Initialize passport for authentication
 app.use(passport.initialize());
+app.use(passport.session());
 
 // Enable CORS
 app.use(
     cors({
-        origin: "*",
+        origin: env.client_url,
         methods: "GET,POST,PUT,DELETE,PATCH",
         credentials: true,
     })
@@ -57,6 +71,9 @@ app.use(errorHandler);
 const port = env.port || 5000;
 
 // Start server
-const server = app.listen(port, console.log(`Server Started on PORT ${port}`.yellow.bold));
+const server = app.listen(
+    port,
+    console.log(`Server Started on PORT ${port}`.yellow.bold)
+);
 
 const io = require("./config/socketIo").socketConfig(server);

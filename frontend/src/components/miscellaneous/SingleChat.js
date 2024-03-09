@@ -28,12 +28,10 @@ import InputEmoji from "react-input-emoji";
 import { IoIosDocument, IoMdPhotos } from "react-icons/io";
 import { FaUser, FaCamera, FaFileVideo } from "react-icons/fa";
 import Lottie from "react-lottie";
-import typingDots from "../../assets/animations/typing.json";
 import loadingDots from "../../assets/animations/loadingDots.json";
 
 import io from "socket.io-client";
 import { mapToObject } from "../../config/notificationLogics";
-import { useNavigate } from "react-router-dom";
 const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
 var socket, selectedChatCompare;
 
@@ -50,7 +48,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const { user, selectedChat, setSelectedChat, notifications, setNotifications } = ChatState();
     const toast = useGlobalToast();
     const typingRef = useRef(false);
-    const fileInputRef = useRef(null);
     const fileInputDocRef = useRef(null);
     const fileInputImgRef = useRef(null);
     const fileInputVidRef = useRef(null);
@@ -58,11 +55,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const handleFileInput = (ref) => {
         ref.current.click();
     };
-    const navigate = useNavigate();
 
-    const handleCameraOption = () => {
-        navigate("/camera");
-    };
     const getDefaultOptions = (animationData) => {
         let defaultOptions = {
             loop: true,
@@ -257,6 +250,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 );
             });
     };
+
     // Fetch messages when the selected chat changes
     useEffect(() => {
         fecthMessages();
@@ -630,15 +624,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                                     multiple
                                                 />
                                             </MenuItem>
-                                            {/* <MenuItem
-                                                onClick={handleCameraOption}
-                                                icon={<FaCamera size={20} color="#FF2E74" />}
-                                            >
-                                                Camera
-                                            </MenuItem>
-                                            <MenuItem icon={<FaUser size={20} color="#009DE2" />}>
-                                                Contact
-                                            </MenuItem> */}
                                         </MenuList>
                                     </Portal>
                                 </Menu>

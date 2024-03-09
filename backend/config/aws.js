@@ -33,8 +33,7 @@ module.exports.upload = async (fileType, file) => {
         return (data = await s3.upload(uploadParams).promise());
     } catch (err) {
         console.error("Error uploading file to S3:", err);
-        res.status(500);
-        throw new Error("Error in storing DP, try after sometime");
+        throw new Error("Error in storing file, try after sometime");
     }
 };
 

@@ -23,7 +23,11 @@ import {
     DrawerContent,
     DrawerCloseButton,
 } from "@chakra-ui/react";
-import { BellIcon, ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import {
+    BellIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+} from "@chakra-ui/icons";
 import React, { useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import { ProfileModal } from "./ProfileModal";
@@ -48,8 +52,15 @@ const SideDrawer = () => {
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingChat, setLoadingChat] = useState();
-    const { user, setUser, setSelectedChat, chats, setChats, notifications, setNotifications } =
-        ChatState();
+    const {
+        user,
+        setUser,
+        setSelectedChat,
+        chats,
+        setChats,
+        notifications,
+        setNotifications,
+    } = ChatState();
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -65,7 +76,9 @@ const SideDrawer = () => {
 
     // Show no of notifications on the document title
     document.title =
-        notificationArray.length == 0 ? "Chit Chaat" : `(${notificationArray.length}) Chit Chaat`;
+        notificationArray.length == 0
+            ? "Chit Chaat"
+            : `(${notificationArray.length}) Chit Chaat`;
     const removeNotification = (chatId) => {
         setNotifications((prevNotifications) => {
             const updatedNotifications = new Map(prevNotifications);
@@ -85,11 +98,15 @@ const SideDrawer = () => {
     const logoutHandler = () => {
         localStorage.removeItem("userInfo");
         localStorage.removeItem("unseenNotifications");
+        localStorage.removeItem("needToGetGoogleUser");
         navigate("/");
     };
     const handleSearch = async () => {
         if (!search) {
-            toast.warning("Warning", "Please Enter something in search");
+            toast.warning(
+                "Warning",
+                "Please Enter something in search"
+            );
             return;
         } else {
             setLoading(true);
@@ -101,7 +118,10 @@ const SideDrawer = () => {
             };
 
             axios
-                .get(`${BACKEND_URL}/api/user?search=${search}`, config)
+                .get(
+                    `${BACKEND_URL}/api/user?search=${search}`,
+                    config
+                )
                 .then(({ data }) => {
                     console.log("users", data.users);
                     toast.success(data.message, "");
@@ -111,7 +131,9 @@ const SideDrawer = () => {
                 .catch((error) => {
                     toast.error(
                         "Error",
-                        error.response ? error.response.data.message : "Something Went Wrong"
+                        error.response
+                            ? error.response.data.message
+                            : "Something Went Wrong"
                     );
                 })
                 .finally(() => {
@@ -138,14 +160,17 @@ const SideDrawer = () => {
                 console.log("res", data);
                 toast.success(data.message, "");
 
-                if (!chats.find((c) => c._id === data.data._id)) setChats([data.data, ...chats]);
+                if (!chats.find((c) => c._id === data.data._id))
+                    setChats([data.data, ...chats]);
                 setSelectedChat(data.data);
             })
             .catch((error) => {
                 console.log("error", error);
                 toast.error(
                     "Error",
-                    error.response ? error.response.data.message : "Something Went Wrong"
+                    error.response
+                        ? error.response.data.message
+                        : "Something Went Wrong"
                 );
             })
             .finally(() => {
@@ -164,10 +189,17 @@ const SideDrawer = () => {
                 p={"5px 10px 5px 10px"}
                 borderWidth={"5px"}
             >
-                <Tooltip label="Search users to chat" hasArrow placement="bottom-end">
+                <Tooltip
+                    label="Search users to chat"
+                    hasArrow
+                    placement="bottom-end"
+                >
                     <Button variant={"ghost"} onClick={onOpen}>
                         <i className="fa-solid fa-magnifying-glass"></i>
-                        <Text display={{ base: "none", md: "flex" }} px={"4"}>
+                        <Text
+                            display={{ base: "none", md: "flex" }}
+                            px={"4"}
+                        >
                             Search User
                         </Text>
                     </Button>
@@ -186,30 +218,56 @@ const SideDrawer = () => {
                             <BellIcon fontSize={"2xl"} m={1} />
                         </MenuButton>
                         <MenuList>
-                            {!notificationArray.length && <MenuItem>No New Messages</MenuItem>}
+                            {!notificationArray.length && (
+                                <MenuItem>No New Messages</MenuItem>
+                            )}
                             {notificationArray.map((notification) => (
                                 <MenuItem
-                                    key={notification.messages[0].chat._id}
+                                    key={
+                                        notification.messages[0].chat
+                                            ._id
+                                    }
                                     onClick={() => {
-                                        setSelectedChat(notification.messages[0].chat);
-                                        removeNotification(notification.messages[0].chat._id);
+                                        setSelectedChat(
+                                            notification.messages[0]
+                                                .chat
+                                        );
+                                        removeNotification(
+                                            notification.messages[0]
+                                                .chat._id
+                                        );
                                     }}
                                 >
-                                    {notification.messages[0].chat.isGroupChat ? (
+                                    {notification.messages[0].chat
+                                        .isGroupChat ? (
                                         <>
                                             <GroupChatNotification
-                                                key={notification.messages[0].chat._id}
-                                                notification={notification}
+                                                key={
+                                                    notification
+                                                        .messages[0]
+                                                        .chat._id
+                                                }
+                                                notification={
+                                                    notification
+                                                }
                                             />
                                         </>
                                     ) : (
                                         <>
                                             <PersonlaChatNotification
-                                                key={notification.messages[0].chat._id}
-                                                notification={notification}
+                                                key={
+                                                    notification
+                                                        .messages[0]
+                                                        .chat._id
+                                                }
+                                                notification={
+                                                    notification
+                                                }
                                                 sender={getSenderFull(
                                                     user.user,
-                                                    notification.messages[0].chat.users
+                                                    notification
+                                                        .messages[0]
+                                                        .chat.users
                                                 )}
                                             />
                                         </>
@@ -223,10 +281,19 @@ const SideDrawer = () => {
                             <>
                                 <MenuButton
                                     as={Button}
-                                    rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                                    rightIcon={
+                                        isOpen ? (
+                                            <ChevronUpIcon />
+                                        ) : (
+                                            <ChevronDownIcon />
+                                        )
+                                    }
                                     isActive={true}
                                 >
-                                    <Box display={"flex"} alignItems={"center"}>
+                                    <Box
+                                        display={"flex"}
+                                        alignItems={"center"}
+                                    >
                                         {user.user.name}
                                         <Avatar
                                             size="sm"
@@ -238,11 +305,17 @@ const SideDrawer = () => {
                                     </Box>
                                 </MenuButton>
                                 <MenuList>
-                                    <ProfileModal selectedUser={user.user}>
-                                        <MenuItem>My Profile</MenuItem>
+                                    <ProfileModal
+                                        selectedUser={user.user}
+                                    >
+                                        <MenuItem>
+                                            My Profile
+                                        </MenuItem>
                                     </ProfileModal>
                                     <MenuDivider />
-                                    <MenuItem onClick={logoutHandler}>Logout</MenuItem>
+                                    <MenuItem onClick={logoutHandler}>
+                                        Logout
+                                    </MenuItem>
                                 </MenuList>
                             </>
                         )}
@@ -250,11 +323,17 @@ const SideDrawer = () => {
                 </Box>
             </Box>
 
-            <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+            <Drawer
+                isOpen={isOpen}
+                placement="left"
+                onClose={onClose}
+            >
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
-                    <DrawerHeader borderBottomWidth={"1px"}>Search Users</DrawerHeader>
+                    <DrawerHeader borderBottomWidth={"1px"}>
+                        Search Users
+                    </DrawerHeader>
 
                     <DrawerBody>
                         <Box display={"flex"} mb={2}>
@@ -262,7 +341,9 @@ const SideDrawer = () => {
                                 placeholder="Search by name or email"
                                 mr={2}
                                 value={search}
-                                onChange={(e) => setSearch(e.target.value)}
+                                onChange={(e) =>
+                                    setSearch(e.target.value)
+                                }
                             />
                             <Button onClick={handleSearch}>Go</Button>
                         </Box>
@@ -273,11 +354,15 @@ const SideDrawer = () => {
                                 <UserListItem
                                     key={user._id}
                                     user={user}
-                                    handleFunction={() => accessChat(user._id)}
+                                    handleFunction={() =>
+                                        accessChat(user._id)
+                                    }
                                 />
                             ))
                         )}
-                        {loadingChat && <Spinner ml={"auto"} display={"flex"} />}
+                        {loadingChat && (
+                            <Spinner ml={"auto"} display={"flex"} />
+                        )}
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>

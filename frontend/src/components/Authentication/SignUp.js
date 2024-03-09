@@ -13,6 +13,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useGlobalToast from "../../globalFunctions/toast";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { ChatState } from "../../context/chatProvider";
 
 const SignUp = () => {
     // Define the backend URL using an environment variable
@@ -28,7 +29,7 @@ const SignUp = () => {
     const [showConfPass, setShowConfPass] = useState(false); // For toggling confirm password visibility
     const [isPasswordValid, setIsPasswordValid] = useState(false); // For checking password validity
     const navigate = useNavigate();
-    // const { setUser } = ChatState();
+    const { setUser } = ChatState();
 
     // Form data state
     const [formData, setFormData] = useState({
@@ -60,7 +61,12 @@ const SignUp = () => {
     // Form submission handler
     const submitHandler = async () => {
         // check if all fields are filled or not
-        if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        if (
+            !formData.name ||
+            !formData.email ||
+            !formData.password ||
+            !formData.confirmPassword
+        ) {
             toast.warning("Please Fill all the Fileds");
             return;
         }
@@ -84,11 +90,13 @@ const SignUp = () => {
         axios
             .post(`${BACKEND_URL}/api/user/signup`, formDatas)
             .then((res) => {
-                console.log("res.data", res.data);
                 toast.success(res.data.message, "");
 
-                // setUser(data);
-                localStorage.setItem("userInfo", JSON.stringify(res.data.data));
+                setUser(res.data.data);
+                localStorage.setItem(
+                    "userInfo",
+                    JSON.stringify(res.data.data)
+                );
                 navigate("/chats");
             })
             .catch((error) => {
@@ -105,7 +113,11 @@ const SignUp = () => {
             <VStack>
                 <FormControl id="name" isRequired>
                     <FormLabel>Name</FormLabel>
-                    <Input name="name" placeholder="Enter your Name" onChange={handleChange} />
+                    <Input
+                        name="name"
+                        placeholder="Enter your Name"
+                        onChange={handleChange}
+                    />
                 </FormControl>
 
                 <FormControl id="email" isRequired>
@@ -136,7 +148,11 @@ const SignUp = () => {
                                 bg={"transparent"}
                                 padding={5}
                             >
-                                {showPass ? <ViewOffIcon /> : <ViewIcon />}
+                                {showPass ? (
+                                    <ViewOffIcon />
+                                ) : (
+                                    <ViewIcon />
+                                )}
                             </Button>
                         </InputRightElement>
                     </InputGroup>
@@ -156,22 +172,34 @@ const SignUp = () => {
                             <Input
                                 name="confirmPassword"
                                 pr="4.5rem"
-                                type={showConfPass ? "text" : "password"}
+                                type={
+                                    showConfPass ? "text" : "password"
+                                }
                                 placeholder="Enter ConfirmPassword"
                                 onChange={handleChange}
                                 required
-                                focusBorderColor={isPasswordValid ? "red.300" : "#3182ce"}
+                                focusBorderColor={
+                                    isPasswordValid
+                                        ? "red.300"
+                                        : "#3182ce"
+                                }
                             />
                         </Tooltip>
                         <InputRightElement width="2.5rem">
                             <Button
                                 h="1.75rem"
                                 size="sm"
-                                onClick={() => setShowConfPass(!showConfPass)}
+                                onClick={() =>
+                                    setShowConfPass(!showConfPass)
+                                }
                                 bg={"transparent"}
                                 padding={5}
                             >
-                                {showConfPass ? <ViewOffIcon /> : <ViewIcon />}
+                                {showConfPass ? (
+                                    <ViewOffIcon />
+                                ) : (
+                                    <ViewIcon />
+                                )}
                             </Button>
                         </InputRightElement>
                     </InputGroup>

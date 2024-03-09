@@ -27,8 +27,16 @@ const upload = multer({
 
 router.post("/signup", upload.single("dp"), userController.register);
 router.post("/login", userController.login);
-router.get("/", passport.authenticate("jwt", { session: false }), userController.allSearchedUsers);
-router.put("/update", passport.authenticate("jwt", { session: false }), userController.updateUser);
+router.get(
+    "/",
+    passport.authenticate("jwt", { session: false }),
+    userController.allSearchedUsers
+);
+router.put(
+    "/update",
+    passport.authenticate("jwt", { session: false }),
+    userController.updateUser
+);
 router.put(
     "/update_dp",
     passport.authenticate("jwt", { session: false }),

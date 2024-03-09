@@ -22,9 +22,6 @@ export const DisplayProfilePicModal = ({ children, selectedUser }) => {
     const { user, setUser } = ChatState();
     const toast = useGlobalToast();
 
-    console.log("Logged in User", user.user);
-    console.log("Selected User", selectedUser);
-
     const handleFileInput = (ref) => {
         ref.current.click();
     };
@@ -70,7 +67,7 @@ export const DisplayProfilePicModal = ({ children, selectedUser }) => {
     return (
         <div>
             <span onClick={onOpen}>{children}</span>
-            <Modal isOpen={isOpen} onClose={onClose} size={"lg"}>
+            <Modal isOpen={isOpen} onClose={onClose} size={"lg"} isCentered>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>{selectedUser.name}</ModalHeader>

@@ -1,6 +1,14 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
-import { mapToObject, objectToMap } from "../config/notificationLogics";
+import {
+    mapToObject,
+    objectToMap,
+} from "../config/notificationLogics";
 
 const ChatContext = createContext();
 
@@ -9,12 +17,16 @@ const ChatProvider = ({ children }) => {
     const [selectedChat, setSelectedChat] = useState();
     const [chats, setChats] = useState([]);
     const [notifications, setNotifications] = useState(new Map());
+    const [getGoogleUser, setGetGoogleUser] = useState();
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-        const unseenNotifications = JSON.parse(localStorage.getItem("unseenNotifications"));
+        const unseenNotifications = JSON.parse(
+            localStorage.getItem("unseenNotifications")
+        );
+
         setUser(userInfo);
         setNotifications(objectToMap(unseenNotifications));
 
@@ -35,6 +47,8 @@ const ChatProvider = ({ children }) => {
                 setChats,
                 notifications,
                 setNotifications,
+                getGoogleUser,
+                setGetGoogleUser,
             }}
         >
             {children}

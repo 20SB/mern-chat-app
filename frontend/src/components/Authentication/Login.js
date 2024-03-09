@@ -1,5 +1,7 @@
 import {
+    Box,
     Button,
+    Flex,
     FormControl,
     FormLabel,
     Input,
@@ -25,7 +27,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
     const navigate = useNavigate();
-    const { user, setUser } = ChatState();
+    const { user, setUser, setGetGoogleUser } = ChatState();
 
     // console.log("user", user);
     // Form data state
@@ -63,13 +65,18 @@ const Login = () => {
                 toast.success(data.message, "");
 
                 setUser(data.data);
-                localStorage.setItem("userInfo", JSON.stringify(data.data));
+                localStorage.setItem(
+                    "userInfo",
+                    JSON.stringify(data.data)
+                );
                 navigate("/chats");
             })
             .catch((error) => {
                 toast.error(
                     "Error",
-                    error.response ? error.response.data.message : "Something Went Wrong"
+                    error.response
+                        ? error.response.data.message
+                        : "Something Went Wrong"
                 );
             })
             .finally(() => {
@@ -87,6 +94,12 @@ const Login = () => {
         }));
     };
 
+    const handlegoogleAuth = () => {
+        setGetGoogleUser(true);
+        localStorage.setItem("needToGetGoogleUser", true);
+        window.open(`${BACKEND_URL}/auth/google`, "_self");
+    };
+
     return (
         <VStack>
             <FormControl id="email" isRequired>
@@ -99,13 +112,14 @@ const Login = () => {
                     onChange={handleChange}
                 />
             </FormControl>
-
             <FormControl id="password" isRequired>
                 <FormLabel>Password</FormLabel>
                 <InputGroup size="md">
                     <Input
                         name="password"
-                        value={formData.password ? formData.password : ""}
+                        value={
+                            formData.password ? formData.password : ""
+                        }
                         pr="4.5rem"
                         type={showPass ? "text" : "password"}
                         placeholder="Enter password"
@@ -119,12 +133,15 @@ const Login = () => {
                             bg={"transparent"}
                             padding={5}
                         >
-                            {showPass ? <ViewOffIcon /> : <ViewIcon />}
+                            {showPass ? (
+                                <ViewOffIcon />
+                            ) : (
+                                <ViewIcon />
+                            )}
                         </Button>
                     </InputRightElement>
                 </InputGroup>
             </FormControl>
-
             <Button
                 colorScheme="blue"
                 width={"100%"}
@@ -134,10 +151,27 @@ const Login = () => {
             >
                 Login
             </Button>
-
-            <Button colorScheme="red" width={"100%"} onClick={handleGetGuestCredentials}>
-                Get Guest User Credentials
-            </Button>
+            <Box fontWeight={"bold"}>or</Box>
+            <Flex
+                w={"100%"}
+                gap={2}
+                flexDir={{ base: "column", md: "row" }}
+            >
+                <Button
+                    colorScheme="red"
+                    width={"100%"}
+                    onClick={handleGetGuestCredentials}
+                >
+                    Get Guest User Credentials
+                </Button>
+                <Button
+                    colorScheme="green"
+                    width={"100%"}
+                    onClick={handlegoogleAuth}
+                >
+                    Login with Google
+                </Button>
+            </Flex>
         </VStack>
     );
 };

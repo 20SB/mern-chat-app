@@ -1,8 +1,0 @@
-02/03/2024, 10:22:53 pm error: Error: Assignment to constant variable.
-Stack: TypeError: Assignment to constant variable.
-    at D:\VS_Code\practice mern stack\chat_app\backend\controllers\userController.js:112:14
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-02/03/2024, 10:23:09 pm error: Error: Assignment to constant variable.
-Stack: TypeError: Assignment to constant variable.
-    at D:\VS_Code\practice mern stack\chat_app\backend\controllers\userController.js:112:14
-    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

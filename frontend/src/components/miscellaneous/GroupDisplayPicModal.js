@@ -60,7 +60,7 @@ export const GroupDisplayPicModal = ({ children, fetchAgain, setFetchAgain }) =>
     return (
         <div>
             <span onClick={onOpen}>{children}</span>
-            <Modal isOpen={isOpen} onClose={onClose} size={"lg"}>
+            <Modal isOpen={isOpen} onClose={onClose} size={"lg"} isCentered>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>{selectedChat.chatName}</ModalHeader>

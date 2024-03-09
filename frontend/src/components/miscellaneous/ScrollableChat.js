@@ -37,12 +37,18 @@ import { FaChevronDown, FaChevronRight } from "react-icons/fa6";
 import { FaPlay } from "react-icons/fa";
 import { getTimeAgoString } from "../../config/notificationLogics";
 import { EditMsgModal } from "./EditMsgModal";
+import { DisplayImagesModal } from "./DisplayImagesModal";
+import { VideoPlayerModal } from "./VideoPlayerModal";
 
 export const ScrollableChat = ({ messages, deleteHandler, editHandler }) => {
     const { user } = ChatState();
 
     const [hoveredMessageId, setHoveredMessageId] = useState(null);
     let messageCounter = -1;
+
+    const openDocument = (documentUrl) => {
+        window.open(documentUrl, "_blank"); // Open document in a new tab
+    };
 
     const handleMouseEnter = (messageId) => {
         setHoveredMessageId(messageId);
@@ -207,17 +213,20 @@ export const ScrollableChat = ({ messages, deleteHandler, editHandler }) => {
                                                 position: "relative",
                                             }}
                                         >
-                                            <Image
-                                                objectFit="cover"
-                                                src={m.file}
-                                                p={1}
-                                                style={{
-                                                    borderRadius: "10px",
-                                                    width: "100%",
-                                                    maxHeight: "200px",
-                                                    boxSizing: "border-box",
-                                                }}
-                                            ></Image>
+                                            <DisplayImagesModal image={m.file}>
+                                                <Image
+                                                    objectFit="cover"
+                                                    src={m.file}
+                                                    p={1}
+                                                    style={{
+                                                        borderRadius: "10px",
+                                                        width: "100%",
+                                                        maxHeight: "200px",
+                                                        boxSizing: "border-box",
+                                                        cursor: "pointer",
+                                                    }}
+                                                ></Image>
+                                            </DisplayImagesModal>
                                             {m.sender._id === user.user._id && (
                                                 <Menu>
                                                     <div
@@ -329,22 +338,24 @@ export const ScrollableChat = ({ messages, deleteHandler, editHandler }) => {
                                                     {getFileName(m.file)}
                                                 </div>
 
-                                                <Box
-                                                    display={"flex"}
-                                                    justifyContent={"center"}
-                                                    alignItems={"center"}
-                                                    w={8}
-                                                    h={8}
-                                                    border={"1px"}
-                                                    borderRadius={"50%"}
-                                                    cursor={"pointer"}
-                                                    marginLeft={"15px"}
-                                                >
-                                                    <FaPlay
-                                                        size={15}
-                                                        style={{ paddingLeft: "2px" }}
-                                                    />
-                                                </Box>
+                                                <VideoPlayerModal video={m.file}>
+                                                    <Box
+                                                        display={"flex"}
+                                                        justifyContent={"center"}
+                                                        alignItems={"center"}
+                                                        w={8}
+                                                        h={8}
+                                                        border={"1px"}
+                                                        borderRadius={"50%"}
+                                                        cursor={"pointer"}
+                                                        marginLeft={"15px"}
+                                                    >
+                                                        <FaPlay
+                                                            size={15}
+                                                            style={{ paddingLeft: "2px" }}
+                                                        />
+                                                    </Box>
+                                                </VideoPlayerModal>
                                             </div>
 
                                             <Box
@@ -493,6 +504,7 @@ export const ScrollableChat = ({ messages, deleteHandler, editHandler }) => {
                                                     borderRadius={"50%"}
                                                     cursor={"pointer"}
                                                     marginLeft={"15px"}
+                                                    onClick={() => openDocument(m.file)}
                                                 >
                                                     <ImArrowDown size={15} />
                                                 </Box>

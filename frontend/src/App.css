@@ -5,7 +5,7 @@
     display: flex;
     background: url(./background.png);
     background-size: cover;
-    background-position: center;
+    background-position: bottom;
     background-attachment: fixed;
 }
 ::-webkit-scrollbar {
