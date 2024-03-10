@@ -2,6 +2,7 @@
 require("dotenv").config(); // Load environment variables from .env file
 const env = require("./config/environment"); // Import environment configuration
 const express = require("express"); // Import Express.js framework
+const https = require("https");
 const bodyParser = require("body-parser"); // Middleware to parse incoming request bodies
 const connectDB = require("./config/mongoose"); // Connect to MongoDB database
 const cors = require("cors"); // Middleware to enable CORS (Cross-Origin Resource Sharing)
@@ -71,9 +72,38 @@ app.use(errorHandler);
 const port = env.port || 5000;
 
 // Start server
-const server = app.listen(
-    port,
-    console.log(`Server Started on PORT ${port}`.yellow.bold)
-);
+if (env.name === "production") {
+    try {
+        const httpsoptions = {
+            key: fs.readFileSync(
+                "/home/dayacscpanel/public_html/ems/ssl/private.key"
+            ),
+            cert: fs.readFileSync(
+                "/home/dayacscpanel/public_html/ems/ssl/certificate.crt"
+            ),
+            ca: fs.readFileSync(
+                "/home/dayacscpanel/public_html/ems/ssl/ca.crt"
+            ),
+        };
+        const server = https
+            .createServer(httpsoptions, app)
+            .listen(port, () => {
+                console.log(`CC Server Started on PORT ${port}`);
+            });
+        const io = require("./config/socketIo").socketConfig(server);
+    } catch (err) {
+        console.log("Error but CC Server Started on PORT : ", err);
+        const server = app.listen(port, () => {
+            console.log("CC Server Started on PORT  ", port);
+        });
+        const io = require("./config/socketIo").socketConfig(server);
+    }
+} else {
+    // Start server
+    const server = app.listen(
+        port,
+        console.log(`CC Server Started on PORT ${port}`.yellow.bold)
+    );
 
-const io = require("./config/socketIo").socketConfig(server);
+    const io = require("./config/socketIo").socketConfig(server);
+}

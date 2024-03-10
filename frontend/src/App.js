@@ -20,7 +20,7 @@ function App() {
 
     const handleGetGoogleUser = async () => {
         axios
-            .get(`http://localhost:8000/auth/login/success`, {
+            .get(`${BACKEND_URL}/auth/login/success`, {
                 withCredentials: true,
             })
             .then(({ data }) => {
