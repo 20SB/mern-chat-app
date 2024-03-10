@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/static/css/main.127b5a07.css",
+    "main.js": "/static/js/main.0a57585b.js",
+    "static/media/other.png": "/static/media/other.9ac363d0543eb1601612.png",
+    "static/media/background.png": "/static/media/background.0559fa11d16294f622ea.png",
+    "static/media/wpWall.png": "/static/media/wpWall.0723f8f06902ea988dfc.png",
+    "static/media/xls.png": "/static/media/xls.58287befffb9933bbc63.png",
+    "static/media/doc.png": "/static/media/doc.cec19275334ffac564ae.png",
+    "static/media/video.png": "/static/media/video.53f17a2efb1f42e69f44.png",
+    "static/media/ppt.png": "/static/media/ppt.5f68e53f4350bec80648.png",
+    "static/media/xml.png": "/static/media/xml.e76b5a054aaa67ba11ee.png",
+    "static/media/pdf.png": "/static/media/pdf.7f3c5fe3c18194421702.png",
+    "index.html": "/index.html",
+    "main.127b5a07.css.map": "/static/css/main.127b5a07.css.map",
+    "main.0a57585b.js.map": "/static/js/main.0a57585b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.127b5a07.css",
+    "static/js/main.0a57585b.js"
+  ]
+}
