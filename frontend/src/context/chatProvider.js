@@ -17,8 +17,6 @@ const ChatProvider = ({ children }) => {
     const [selectedChat, setSelectedChat] = useState();
     const [chats, setChats] = useState([]);
     const [notifications, setNotifications] = useState(new Map());
-    const [getGoogleUser, setGetGoogleUser] = useState();
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -47,8 +45,6 @@ const ChatProvider = ({ children }) => {
                 setChats,
                 notifications,
                 setNotifications,
-                getGoogleUser,
-                setGetGoogleUser,
             }}
         >
             {children}

@@ -1,56 +1,44 @@
-const {
-    S3Client,
-    PutObjectCommand,
-    DeleteObjectCommand,
-} = require("@aws-sdk/client-s3");
-
+const AWS = require("aws-sdk");
 const env = require("./environment");
 const { generateRandomString } = require("./randomString");
 
-const s3Client = new S3Client({
-    credentials: {
-        accessKeyId: env.awsAccesskey,
-        secretAccessKey: env.awsSecretAccessKey,
-    },
+AWS.config.update({
+    accessKeyId: env.awsAccesskey,
+    secretAccessKey: env.awsSecretAccessKey,
     region: env.awsRegion,
 });
 
+const s3 = new AWS.S3();
 const BucketName = env.awsBucket;
 
 module.exports.upload = async (fileType, file) => {
+    var ext = file.originalname.split(".").slice(1);
+
+    const knownExtensions = [
+        ".jpg",
+        ".jpeg",
+        ".png",
+        ".gif",
+        ".mp4",
+        ".avi",
+        ".mov",
+    ];
+
+    let fileName;
+    if (!knownExtensions.includes(ext)) {
+        fileName = file.originalname;
+    } else {
+        fileName = `${Date.now() + generateRandomString(5)}.${ext}`;
+    }
+    const uploadParams = {
+        Bucket: BucketName,
+        Key: `Chit-Chaat/${fileType}/${fileName}`,
+        Body: file.buffer,
+    };
+
     try {
-        var ext = file.originalname.split(".").slice(1);
-
-        const knownExtensions = [
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".mp4",
-            ".avi",
-            ".mov",
-        ];
-
-        let fileName;
-        if (!knownExtensions.includes(ext)) {
-            fileName = file.originalname;
-        } else {
-            fileName = `${
-                Date.now() + generateRandomString(5)
-            }.${ext}`;
-        }
-
-        const uploadParams = {
-            Bucket: BucketName,
-            Key: `Chit-Chaat/${fileType}/${fileName}`,
-            Body: file.buffer,
-        };
-
         // Upload file to S3 bucket
-        const data = await s3Client.send(
-            new PutObjectCommand(uploadParams)
-        );
-        return data;
+        return (data = await s3.upload(uploadParams).promise());
     } catch (err) {
         console.error("Error uploading file to S3:", err);
         throw new Error("Error in storing file, try after sometime");
@@ -65,10 +53,7 @@ module.exports.delete = async (fileLink) => {
         };
 
         // Delete object from S3 bucket
-        const data = await s3Client.send(
-            new DeleteObjectCommand(params)
-        );
-        return data;
+        return await s3.deleteObject(params).promise();
     } catch (err) {
         console.error("Error deleting file from S3:", err);
         throw new Error("Error deleting file from S3");

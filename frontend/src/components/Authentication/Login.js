@@ -27,7 +27,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
     const navigate = useNavigate();
-    const { user, setUser, setGetGoogleUser } = ChatState();
+    const { setUser } = ChatState();
 
     // console.log("user", user);
     // Form data state
@@ -95,8 +95,6 @@ const Login = () => {
     };
 
     const handlegoogleAuth = () => {
-        setGetGoogleUser(true);
-        localStorage.setItem("needToGetGoogleUser", true);
         window.open(`${BACKEND_URL}/auth/google`, "_self");
     };
 
