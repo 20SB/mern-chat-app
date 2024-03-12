@@ -7,13 +7,9 @@ const env = require("../config/environment");
 // ------------------------------------------------------------------------
 router.get(
     "/google/callback",
-    passport.authenticate("google", {
-        successRedirect: env.client_url,
-        failureRedirect: env.client_url,
-    })
+    passport.authenticate("google", {}),
+    googleLoginController.googleLogin
 );
-
-router.get("/login/success", googleLoginController.googleLogin);
 
 router.get(
     "/google",

@@ -37,9 +37,7 @@ module.exports.googleLogin = asyncHandler(async (req, res) => {
             }
         });
 
-        // Generate a JWT token for the user
-        return res.status(201).json({
-            success: true,
+        const resData = {
             message: message + "Google User Logged in Successfully",
             data: {
                 user: user,
@@ -47,10 +45,21 @@ module.exports.googleLogin = asyncHandler(async (req, res) => {
                     expiresIn: "30d", // Token expiry time
                 }),
             },
-        });
+            success: true,
+        };
+        const resDataString = JSON.stringify(resData);
+
+        res.redirect(
+            `${env.client_url}?google_login_data=${resDataString}`
+        );
     } else {
-        // If user is not authenticated, return an error
-        res.status(400);
-        throw new Error("Google Login Failure");
+        const resData = {
+            message: "Google Login Failed",
+            success: false,
+        };
+        const resDataString = JSON.stringify(resData);
+        res.redirect(
+            `${env.client_url}?google_login_data=${resDataString}`
+        );
     }
 });
