@@ -5,7 +5,11 @@ import axios from "axios";
 import { Avatar, Box, Button, Stack, Text } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { ChatLoading } from "./ChatLoading";
-import { formatDateForChats, getSender, getSenderFull } from "../../config/chatLogics";
+import {
+    formatDateForChats,
+    getSender,
+    getSenderFull,
+} from "../../config/chatLogics";
 import { GroupChatModal } from "./GroupChatModal";
 import {
     fileMsg,
@@ -18,7 +22,14 @@ export const MyChats = ({ fetchAgain }) => {
     const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
     const [loggedUser, setLoggedUser] = useState();
     const toast = useGlobalToast();
-    const { user, selectedChat, setSelectedChat, chats, setChats, setNotifications } = ChatState();
+    const {
+        user,
+        selectedChat,
+        setSelectedChat,
+        chats,
+        setChats,
+        setNotifications,
+    } = ChatState();
 
     const removeNotification = (chat) => {
         setNotifications((prevNotifications) => {
@@ -54,18 +65,23 @@ export const MyChats = ({ fetchAgain }) => {
             .catch((error) => {
                 toast.error(
                     "Error",
-                    error.response ? error.response.data.message : "Something Went Wrong"
+                    error.response
+                        ? error.response.data.message
+                        : "Something Went Wrong"
                 );
             });
     };
-    console.log("chats", chats);
+    // console.log("chats", chats);
     useEffect(() => {
         setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
         fetchChats();
     }, [fetchAgain]);
     return (
         <Box
-            display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
+            display={{
+                base: selectedChat ? "none" : "flex",
+                md: "flex",
+            }}
             flexDir={"column"}
             alignItems={"center"}
             p={3}
@@ -80,7 +96,12 @@ export const MyChats = ({ fetchAgain }) => {
                 fontSize={"28px"}
                 fontFamily={"Work sans"}
                 display={"flex"}
-                flexDir={{ base: "column", md: "column", lg: "column", xl: "row" }}
+                flexDir={{
+                    base: "column",
+                    md: "column",
+                    lg: "column",
+                    xl: "row",
+                }}
                 flexWrap={"wrap"}
                 w={"100%"}
                 justifyContent={"space-between"}
@@ -118,8 +139,16 @@ export const MyChats = ({ fetchAgain }) => {
                                     removeNotification(chat);
                                 }}
                                 cursor={"pointer"}
-                                bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
-                                color={selectedChat === chat ? "white" : "black"}
+                                bg={
+                                    selectedChat === chat
+                                        ? "#38B2AC"
+                                        : "#E8E8E8"
+                                }
+                                color={
+                                    selectedChat === chat
+                                        ? "white"
+                                        : "black"
+                                }
                                 px={3}
                                 py={2}
                                 borderRadius={"lg"}
@@ -131,12 +160,18 @@ export const MyChats = ({ fetchAgain }) => {
                                     size="md"
                                     name={
                                         !chat.isGroupChat
-                                            ? getSender(loggedUser, chat.users)
+                                            ? getSender(
+                                                  loggedUser,
+                                                  chat.users
+                                              )
                                             : chat.chatName
                                     }
                                     src={
                                         !chat.isGroupChat
-                                            ? getSenderFull(loggedUser, chat.users).dp
+                                            ? getSenderFull(
+                                                  loggedUser,
+                                                  chat.users
+                                              ).dp
                                             : chat.gdp
                                     }
                                 />
@@ -144,28 +179,48 @@ export const MyChats = ({ fetchAgain }) => {
                                     display={"flex"}
                                     flexDir={"column"}
                                     w={"100%"}
-                                    color={selectedChat === chat ? "white" : "black"}
+                                    color={
+                                        selectedChat === chat
+                                            ? "white"
+                                            : "black"
+                                    }
                                 >
                                     <Box
                                         display={"flex"}
-                                        justifyContent={"space-between"}
+                                        justifyContent={
+                                            "space-between"
+                                        }
                                         w={"100%"}
                                     >
                                         <Text fontWeight={"450"}>
                                             {!chat.isGroupChat
-                                                ? getSender(loggedUser, chat.users)
+                                                ? getSender(
+                                                      loggedUser,
+                                                      chat.users
+                                                  )
                                                 : chat.chatName}
                                         </Text>
                                         <Text
-                                            color={selectedChat === chat ? "white" : "#667781"}
+                                            color={
+                                                selectedChat === chat
+                                                    ? "white"
+                                                    : "#667781"
+                                            }
                                             fontSize={"14px"}
                                         >
                                             {chat.latestMessage &&
-                                                formatDateForChats(chat.latestMessage.updatedAt)}
+                                                formatDateForChats(
+                                                    chat.latestMessage
+                                                        .updatedAt
+                                                )}
                                         </Text>
                                     </Box>
                                     <Box
-                                        color={selectedChat === chat ? "white" : "#667781"}
+                                        color={
+                                            selectedChat === chat
+                                                ? "white"
+                                                : "#667781"
+                                        }
                                         fontSize="15px"
                                         display={"flex"}
                                     >
@@ -176,11 +231,23 @@ export const MyChats = ({ fetchAgain }) => {
                                         </Box>
 
                                         <Box>
-                                            {chat.latestMessage && chat.latestMessage.isFileInput
-                                                ? fileMsg(chat.latestMessage.fileType)
+                                            {chat.latestMessage &&
+                                            chat.latestMessage
+                                                .isFileInput
+                                                ? fileMsg(
+                                                      chat
+                                                          .latestMessage
+                                                          .fileType
+                                                  )
                                                 : chat.latestMessage &&
-                                                  chat.latestMessage.content &&
-                                                  shortendMsg(chat.latestMessage.content, 30)}
+                                                  chat.latestMessage
+                                                      .content &&
+                                                  shortendMsg(
+                                                      chat
+                                                          .latestMessage
+                                                          .content,
+                                                      30
+                                                  )}
                                         </Box>
                                     </Box>
                                 </Box>

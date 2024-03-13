@@ -45,7 +45,13 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [typingUser, setTypingUser] = useState({});
     const [isSendingMsg, setIsSendingMsg] = useState(false);
 
-    const { user, selectedChat, setSelectedChat, notifications, setNotifications } = ChatState();
+    const {
+        user,
+        selectedChat,
+        setSelectedChat,
+        notifications,
+        setNotifications,
+    } = ChatState();
     const toast = useGlobalToast();
     const typingRef = useRef(false);
     const fileInputDocRef = useRef(null);
@@ -109,18 +115,24 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         axios
             .post(`${BACKEND_URL}/api/message`, formData, config)
             .then(({ data }) => {
-                socket.emit("multiple new messages", data.data.message);
+                socket.emit(
+                    "multiple new messages",
+                    data.data.message
+                );
                 console.log("new message", data);
                 setMessages([...messages, ...data.data.message]);
             })
             .catch((error) => {
                 toast.error(
                     "Error",
-                    error.response ? error.response.data.message : "Something Went Wrong"
+                    error.response
+                        ? error.response.data.message
+                        : "Something Went Wrong"
                 );
             })
             .finally(() => {
                 setIsSendingMsg(false);
+                setFetchAgain(!fetchAgain);
             });
     };
 
@@ -136,7 +148,10 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         };
 
         axios
-            .get(`${BACKEND_URL}/api/message?chatId=${selectedChat._id}`, config)
+            .get(
+                `${BACKEND_URL}/api/message?chatId=${selectedChat._id}`,
+                config
+            )
             .then(({ data }) => {
                 // toast.success(data.message, "");
                 setMessages(data.data);
@@ -180,8 +195,13 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 .catch((error) => {
                     toast.error(
                         "Error",
-                        error.response ? error.response.data.message : "Something Went Wrong"
+                        error.response
+                            ? error.response.data.message
+                            : "Something Went Wrong"
                     );
+                })
+                .finally(() => {
+                    setFetchAgain(!fetchAgain);
                 });
         }
     };
@@ -195,10 +215,17 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         };
 
         axios
-            .delete(`${BACKEND_URL}/api/message/unsend?messageId=${msgId}`, config)
+            .delete(
+                `${BACKEND_URL}/api/message/unsend?messageId=${msgId}`,
+                config
+            )
             .then(({ data }) => {
                 // Successfully deleted message, now fetch messages again
-                setMessages(messages.filter((message) => message._id !== msgId));
+                setMessages(
+                    messages.filter(
+                        (message) => message._id !== msgId
+                    )
+                );
 
                 // Emit socket event to inform other users to fetch messages again
                 socket.emit("delete message", data.data);
@@ -206,8 +233,13 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             .catch((error) => {
                 toast.error(
                     "Error",
-                    error.response ? error.response.data.message : "Something Went Wrong"
+                    error.response
+                        ? error.response.data.message
+                        : "Something Went Wrong"
                 );
+            })
+            .finally(() => {
+                setFetchAgain(!fetchAgain);
             });
     };
 
@@ -227,12 +259,15 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             )
             .then(({ data }) => {
                 // Find the index of the message in your messages array
-                const messageIndex = messages.findIndex((message) => message._id === data.data._id);
+                const messageIndex = messages.findIndex(
+                    (message) => message._id === data.data._id
+                );
 
                 // If the message is found, update its content
                 if (messageIndex !== -1) {
                     const updatedMessages = [...messages]; // Create a copy of the messages array
-                    updatedMessages[messageIndex].content = data.data.content; // Update the content
+                    updatedMessages[messageIndex].content =
+                        data.data.content; // Update the content
                     setMessages(updatedMessages); // Update the state
                 }
 
@@ -246,8 +281,13 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
                 toast.error(
                     "Error",
-                    error.response ? error.response.data.message : "Something Went Wrong"
+                    error.response
+                        ? error.response.data.message
+                        : "Something Went Wrong"
                 );
+            })
+            .finally(() => {
+                setFetchAgain(!fetchAgain);
             });
     };
 
@@ -260,26 +300,40 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // Update messages when a new message is received
     useEffect(() => {
         socket.on("message received", (newMessageReceived) => {
-            if (!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id) {
+            if (
+                !selectedChatCompare ||
+                selectedChatCompare._id !==
+                    newMessageReceived.chat._id
+            ) {
                 const { chat } = newMessageReceived;
                 const chatId = chat._id;
 
                 // Update notifications for the chat
                 setNotifications((prevNotifications) => {
-                    const updatedNotifications = new Map(prevNotifications);
+                    const updatedNotifications = new Map(
+                        prevNotifications
+                    );
 
                     if (updatedNotifications.has(chatId)) {
                         // If notification exists for the chat, update it
-                        const notification = updatedNotifications.get(chatId);
+                        const notification =
+                            updatedNotifications.get(chatId);
 
                         // Check if the new message is not already in the messages array
                         if (
-                            !notification.messages.some((msg) => msg._id === newMessageReceived._id)
+                            !notification.messages.some(
+                                (msg) =>
+                                    msg._id === newMessageReceived._id
+                            )
                         ) {
                             // Prepend the new message to the messages array
-                            notification.messages = [newMessageReceived, ...notification.messages];
+                            notification.messages = [
+                                newMessageReceived,
+                                ...notification.messages,
+                            ];
                             notification.count++;
-                            notification.lastMsgTime = newMessageReceived.createdAt;
+                            notification.lastMsgTime =
+                                newMessageReceived.createdAt;
                         }
                     } else {
                         // If notification doesn't exist, create a new one
@@ -292,71 +346,102 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
                     localStorage.setItem(
                         "unseenNotifications",
-                        JSON.stringify(mapToObject(updatedNotifications))
+                        JSON.stringify(
+                            mapToObject(updatedNotifications)
+                        )
                     );
                     return updatedNotifications;
                 });
-
-                setFetchAgain(!fetchAgain);
             } else {
                 setMessages([...messages, newMessageReceived]);
             }
+            setFetchAgain(!fetchAgain);
         });
-        socket.on("multiple messages received", (newMessagesReceived) => {
-            // check if chat is opened whose new message is received now
-            if (
-                !selectedChatCompare ||
-                selectedChatCompare._id !== newMessagesReceived[0].chat._id
-            ) {
-                newMessagesReceived.forEach((newMessageReceived) => {
-                    const { chat } = newMessageReceived;
-                    const chatId = chat._id;
+        socket.on(
+            "multiple messages received",
+            (newMessagesReceived) => {
+                // check if chat is opened whose new message is received now
+                if (
+                    !selectedChatCompare ||
+                    selectedChatCompare._id !==
+                        newMessagesReceived[0].chat._id
+                ) {
+                    newMessagesReceived.forEach(
+                        (newMessageReceived) => {
+                            const { chat } = newMessageReceived;
+                            const chatId = chat._id;
 
-                    // Update notifications for the chat
-                    setNotifications((prevNotifications) => {
-                        const updatedNotifications = new Map(prevNotifications);
+                            // Update notifications for the chat
+                            setNotifications((prevNotifications) => {
+                                const updatedNotifications = new Map(
+                                    prevNotifications
+                                );
 
-                        if (updatedNotifications.has(chatId)) {
-                            // If notification exists for the chat, update it
-                            const notification = updatedNotifications.get(chatId);
+                                if (
+                                    updatedNotifications.has(chatId)
+                                ) {
+                                    // If notification exists for the chat, update it
+                                    const notification =
+                                        updatedNotifications.get(
+                                            chatId
+                                        );
 
-                            // Check if the new message is not already in the messages array
-                            if (
-                                !notification.messages.some(
-                                    (msg) => msg._id === newMessageReceived._id
-                                )
-                            ) {
-                                // Prepend the new message to the messages array
-                                notification.messages = [
-                                    newMessageReceived,
-                                    ...notification.messages,
-                                ];
-                                notification.count++;
-                                notification.lastMsgTime = newMessageReceived.createdAt;
-                            }
-                        } else {
-                            // If notification doesn't exist, create a new one
-                            updatedNotifications.set(chatId, {
-                                messages: [newMessageReceived],
-                                count: 1,
-                                lastMsgTime: newMessageReceived.createdAt,
+                                    // Check if the new message is not already in the messages array
+                                    if (
+                                        !notification.messages.some(
+                                            (msg) =>
+                                                msg._id ===
+                                                newMessageReceived._id
+                                        )
+                                    ) {
+                                        // Prepend the new message to the messages array
+                                        notification.messages = [
+                                            newMessageReceived,
+                                            ...notification.messages,
+                                        ];
+                                        notification.count++;
+                                        notification.lastMsgTime =
+                                            newMessageReceived.createdAt;
+                                    }
+                                } else {
+                                    // If notification doesn't exist, create a new one
+                                    updatedNotifications.set(chatId, {
+                                        messages: [
+                                            newMessageReceived,
+                                        ],
+                                        count: 1,
+                                        lastMsgTime:
+                                            newMessageReceived.createdAt,
+                                    });
+                                }
+
+                                return updatedNotifications;
                             });
+
+                            setFetchAgain(!fetchAgain);
                         }
-
-                        return updatedNotifications;
-                    });
-
-                    setFetchAgain(!fetchAgain);
-                });
-            } else {
-                setMessages([...messages, ...newMessagesReceived]);
+                    );
+                } else {
+                    setMessages([
+                        ...messages,
+                        ...newMessagesReceived,
+                    ]);
+                }
             }
-        });
+        );
         socket.on("message deleted", (messageDeleted) => {
-            setMessages(messages.filter((message) => message._id !== messageDeleted._id));
+            setMessages(
+                messages.filter(
+                    (message) => message._id !== messageDeleted._id
+                )
+            );
         });
         socket.on("message updated", (messageUpdated) => {
-            setMessages(messages.filter((message) => message._id !== messageUpdated._id));
+            setMessages(
+                messages.filter(
+                    (message) => message._id !== messageUpdated._id
+                )
+            );
             // Find the index of the message in your messages array
             const messageIndex = messages.findIndex(
                 (message) => message._id === messageUpdated._id
@@ -365,7 +450,8 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             // If the message is found, update its content
             if (messageIndex !== -1) {
                 const updatedMessages = [...messages]; // Create a copy of the messages array
-                updatedMessages[messageIndex].content = messageUpdated.content; // Update the content
+                updatedMessages[messageIndex].content =
+                    messageUpdated.content; // Update the content
                 setMessages(updatedMessages); // Update the state
             }
         });
@@ -413,47 +499,78 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                             display={"flex"}
                             justifyContent={{ base: "space-between" }}
                             alignItems={"center"}
-                            w={{ base: "calc(100% - 50px)", md: "100%" }}
+                            w={{
+                                base: "calc(100% - 50px)",
+                                md: "100%",
+                            }}
                         >
                             {!selectedChat.isGroupChat ? (
                                 <>
                                     <ProfileModal
-                                        selectedUser={getSenderFull(user, selectedChat.users)}
+                                        selectedUser={getSenderFull(
+                                            user,
+                                            selectedChat.users
+                                        )}
                                     >
-                                        <div style={{ display: "flex" }}>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                            }}
+                                        >
                                             <Avatar
                                                 mt={"7px"}
                                                 m={1}
                                                 cursor={"pointer"}
-                                                name={getSender(user, selectedChat.users)}
-                                                src={getSenderFull(user, selectedChat.users).dp}
+                                                name={getSender(
+                                                    user,
+                                                    selectedChat.users
+                                                )}
+                                                src={
+                                                    getSenderFull(
+                                                        user,
+                                                        selectedChat.users
+                                                    ).dp
+                                                }
                                                 h={"2.5rem"}
                                                 w={"2.5rem"}
                                             />
                                             <div
                                                 style={{
                                                     display: "flex",
-                                                    alignItems: "flex-end",
+                                                    alignItems:
+                                                        "flex-end",
                                                     cursor: "pointer",
                                                 }}
                                             >
-                                                {getSender(user, selectedChat.users)}
+                                                {getSender(
+                                                    user,
+                                                    selectedChat.users
+                                                )}
                                                 {isTyping ? (
                                                     <div
                                                         style={{
-                                                            fontSize: "13px",
-                                                            fontFamily: "Segoe UI",
+                                                            fontSize:
+                                                                "13px",
+                                                            fontFamily:
+                                                                "Segoe UI",
                                                             color: "#667781",
-                                                            display: "flex",
-                                                            padding: "0px 0px 7px 10px",
-                                                            alignItems: "flex-end",
+                                                            display:
+                                                                "flex",
+                                                            padding:
+                                                                "0px 0px 7px 10px",
+                                                            alignItems:
+                                                                "flex-end",
                                                         }}
                                                     >
                                                         typing
                                                         <Lottie
-                                                            options={getDefaultOptions(loadingDots)}
+                                                            options={getDefaultOptions(
+                                                                loadingDots
+                                                            )}
                                                             width={20}
-                                                            height={"50%"}
+                                                            height={
+                                                                "50%"
+                                                            }
                                                         />
                                                     </div>
                                                 ) : (
@@ -480,8 +597,12 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                                 <Avatar
                                                     mt={"7px"}
                                                     m={1}
-                                                    name={selectedChat.chatName}
-                                                    src={selectedChat.gdp}
+                                                    name={
+                                                        selectedChat.chatName
+                                                    }
+                                                    src={
+                                                        selectedChat.gdp
+                                                    }
                                                     h={"2.5rem"}
                                                     w={"2.5rem"}
                                                 />
@@ -490,17 +611,25 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                             {isTyping ? (
                                                 <div
                                                     style={{
-                                                        fontSize: "13px",
-                                                        fontFamily: "Segoe UI",
+                                                        fontSize:
+                                                            "13px",
+                                                        fontFamily:
+                                                            "Segoe UI",
                                                         color: "#667781",
-                                                        display: "flex",
-                                                        padding: "0px 0px 7px 10px",
-                                                        alignItems: "flex-end",
+                                                        display:
+                                                            "flex",
+                                                        padding:
+                                                            "0px 0px 7px 10px",
+                                                        alignItems:
+                                                            "flex-end",
                                                     }}
                                                 >
-                                                    {typingUser.name} is typing
+                                                    {typingUser.name}{" "}
+                                                    is typing
                                                     <Lottie
-                                                        options={getDefaultOptions(loadingDots)}
+                                                        options={getDefaultOptions(
+                                                            loadingDots
+                                                        )}
                                                         width={20}
                                                         height={"50%"}
                                                     />
@@ -530,7 +659,9 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         h={"100%"}
                         borderRadius={"lg"}
                         overflow={"hidden"}
-                        style={{ backgroundImage: `url(${chatWall})` }}
+                        style={{
+                            backgroundImage: `url(${chatWall})`,
+                        }}
                     >
                         {loading ? (
                             <Spinner
@@ -548,7 +679,11 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     deleteHandler={deleteMessage}
                                     style={{ overflowX: "hidden" }}
                                 />
-                                <Box w={"100%"} display={"flex"} justifyContent={"flex-end"}>
+                                <Box
+                                    w={"100%"}
+                                    display={"flex"}
+                                    justifyContent={"flex-end"}
+                                >
                                     {isSendingMsg && (
                                         <CircularProgress
                                             isIndeterminate
@@ -584,42 +719,99 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     <Portal>
                                         <MenuList>
                                             <MenuItem
-                                                onClick={() => handleFileInput(fileInputDocRef)}
-                                                icon={<IoIosDocument size={20} color="#7F66FF" />}
+                                                onClick={() =>
+                                                    handleFileInput(
+                                                        fileInputDocRef
+                                                    )
+                                                }
+                                                icon={
+                                                    <IoIosDocument
+                                                        size={20}
+                                                        color="#7F66FF"
+                                                    />
+                                                }
                                             >
                                                 Document
                                                 <input
-                                                    ref={fileInputDocRef}
+                                                    ref={
+                                                        fileInputDocRef
+                                                    }
                                                     type="file"
-                                                    style={{ display: "none" }}
-                                                    onChange={(e) => handleFileSelection(e, "doc")}
+                                                    style={{
+                                                        display:
+                                                            "none",
+                                                    }}
+                                                    onChange={(e) =>
+                                                        handleFileSelection(
+                                                            e,
+                                                            "doc"
+                                                        )
+                                                    }
                                                     multiple
                                                 />
                                             </MenuItem>
                                             <MenuItem
-                                                onClick={() => handleFileInput(fileInputImgRef)}
-                                                icon={<IoMdPhotos size={20} color="#007BFC" />}
+                                                onClick={() =>
+                                                    handleFileInput(
+                                                        fileInputImgRef
+                                                    )
+                                                }
+                                                icon={
+                                                    <IoMdPhotos
+                                                        size={20}
+                                                        color="#007BFC"
+                                                    />
+                                                }
                                             >
                                                 Photos
                                                 <input
-                                                    ref={fileInputImgRef}
+                                                    ref={
+                                                        fileInputImgRef
+                                                    }
                                                     type="file"
-                                                    style={{ display: "none" }}
-                                                    onChange={(e) => handleFileSelection(e, "img")}
+                                                    style={{
+                                                        display:
+                                                            "none",
+                                                    }}
+                                                    onChange={(e) =>
+                                                        handleFileSelection(
+                                                            e,
+                                                            "img"
+                                                        )
+                                                    }
                                                     accept="image/*"
                                                     multiple
                                                 />
                                             </MenuItem>
                                             <MenuItem
-                                                onClick={() => handleFileInput(fileInputVidRef)}
-                                                icon={<FaFileVideo size={20} color="#6c0101" />}
+                                                onClick={() =>
+                                                    handleFileInput(
+                                                        fileInputVidRef
+                                                    )
+                                                }
+                                                icon={
+                                                    <FaFileVideo
+                                                        size={20}
+                                                        color="#6c0101"
+                                                    />
+                                                }
                                             >
                                                 Videos
                                                 <input
-                                                    ref={fileInputVidRef}
+                                                    ref={
+                                                        fileInputVidRef
+                                                    }
                                                     type="file"
-                                                    style={{ display: "none" }}
-                                                    onChange={(e) => handleFileSelection(e, "vid")}
+                                                    style={{
+                                                        display:
+                                                            "none",
+                                                    }}
+                                                    onChange={(e) =>
+                                                        handleFileSelection(
+                                                            e,
+                                                            "vid"
+                                                        )
+                                                    }
                                                     accept="video/*"
                                                     multiple
                                                 />
@@ -643,15 +835,26 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                         top: "8px",
                                         cursor: "pointer",
                                     }}
-                                    onClick={() => sendMessage({ key: "Enter" })}
+                                    onClick={() =>
+                                        sendMessage({ key: "Enter" })
+                                    }
                                 />
                             </Box>
                         </FormControl>
                     </Box>
                 </>
             ) : (
-                <Box display={"flex"} alignItems={"center"} justifyContent={"center"} h={"100%"}>
-                    <Text fontSize={"3xl"} pb={3} fontFamily={"Work sans"}>
+                <Box
+                    display={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    h={"100%"}
+                >
+                    <Text
+                        fontSize={"3xl"}
+                        pb={3}
+                        fontFamily={"Work sans"}
+                    >
                         Click on a user to start chatting
                     </Text>
                 </Box>

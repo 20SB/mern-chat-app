@@ -40,7 +40,11 @@ import { EditMsgModal } from "./EditMsgModal";
 import { DisplayImagesModal } from "./DisplayImagesModal";
 import { VideoPlayerModal } from "./VideoPlayerModal";
 
-export const ScrollableChat = ({ messages, deleteHandler, editHandler }) => {
+export const ScrollableChat = ({
+    messages,
+    deleteHandler,
+    editHandler,
+}) => {
     const { user } = ChatState();
 
     const [hoveredMessageId, setHoveredMessageId] = useState(null);
@@ -136,534 +140,869 @@ export const ScrollableChat = ({ messages, deleteHandler, editHandler }) => {
         return acc;
     }, {});
     return (
-        <ScrollableFeed>
-            {Object.entries(groupedMessages).map(([date, messagesForDate]) => (
-                <React.Fragment key={date}>
-                    <Box display={"flex"} justifyContent={"center"}>
+        <ScrollableFeed forceScroll={true}>
+            {Object.entries(groupedMessages).map(
+                ([date, messagesForDate]) => (
+                    <React.Fragment key={date}>
                         <Box
-                            padding={"5px 12px 6px"}
-                            textAlign={"center"}
-                            textShadow={"0 1px 0 rgb(255,255,255),.4"}
-                            backgroundColor={"hsla(0,0%,100%,0.95)"}
-                            borderRadius={"lg"}
-                            boxShadow={"0 1px 0.5px rgba(11,20,26),.13"}
-                            boxSizing="border-box"
-                            fontSize={"12.5px"}
-                            lineHeight={"21px"}
-                            color={"#54656f"}
-                            margin={"8px 0"}
+                            display={"flex"}
+                            justifyContent={"center"}
                         >
-                            {getDateDisplay(date)}
+                            <Box
+                                padding={"5px 12px 6px"}
+                                textAlign={"center"}
+                                textShadow={
+                                    "0 1px 0 rgb(255,255,255),.4"
+                                }
+                                backgroundColor={
+                                    "hsla(0,0%,100%,0.95)"
+                                }
+                                borderRadius={"lg"}
+                                boxShadow={
+                                    "0 1px 0.5px rgba(11,20,26),.13"
+                                }
+                                boxSizing="border-box"
+                                fontSize={"12.5px"}
+                                lineHeight={"21px"}
+                                color={"#54656f"}
+                                margin={"8px 0"}
+                            >
+                                {getDateDisplay(date)}
+                            </Box>
                         </Box>
-                    </Box>
 
-                    {messagesForDate.map((m, index) => {
-                        messageCounter++;
-                        return (
-                            <div style={{ display: "flex" }} key={m._id} position={"relative"}>
-                                {(isSameSender(messages, m, messageCounter, user.user._id) ||
-                                    isLastMessageOfText(
+                        {messagesForDate.map((m, index) => {
+                            messageCounter++;
+                            return (
+                                <div
+                                    style={{ display: "flex" }}
+                                    key={m._id}
+                                    position={"relative"}
+                                >
+                                    {(isSameSender(
                                         messages,
+                                        m,
                                         messageCounter,
                                         user.user._id
-                                    )) && (
-                                    <Tooltip
-                                        label={m.sender.name}
-                                        placement="bottom-start"
-                                        hasArrow
-                                    >
-                                        <Avatar
-                                            mt={"7px"}
-                                            m={1}
-                                            name={m.sender.name}
-                                            src={m.sender.dp}
-                                            h={"2.5rem"}
-                                            w={"2.5rem"}
-                                        />
-                                    </Tooltip>
-                                )}
-
-                                {m.isFileInput ? (
-                                    m.fileType === "img" ? (
-                                        <Box
-                                            onMouseEnter={() => handleMouseEnter(m._id)}
-                                            onMouseLeave={handleMouseLeave}
-                                            style={{
-                                                borderRadius: "10px",
-                                                maxWidth: "75%",
-                                                boxShadow: "0px 1px 1px 0px #adadad ",
-                                                marginBottom: `${
-                                                    isLastMessage(messages, messageCounter)
-                                                        ? "10px"
-                                                        : "2px"
-                                                }`,
-                                                marginTop: 3,
-                                                boxSizing: "border-box",
-                                                marginLeft: isSameSenderMargin(
-                                                    messages,
-                                                    m,
-                                                    messageCounter,
-                                                    user.user._id
-                                                ),
-                                                background: `${
-                                                    m.sender._id === user.user._id
-                                                        ? "#d9fdd3"
-                                                        : "#ffffff"
-                                                }`,
-                                                position: "relative",
-                                            }}
+                                    ) ||
+                                        isLastMessageOfText(
+                                            messages,
+                                            messageCounter,
+                                            user.user._id
+                                        )) && (
+                                        <Tooltip
+                                            label={m.sender.name}
+                                            placement="bottom-start"
+                                            hasArrow
                                         >
-                                            <DisplayImagesModal image={m.file}>
-                                                <Image
-                                                    objectFit="cover"
-                                                    src={m.file}
-                                                    p={1}
-                                                    style={{
-                                                        borderRadius: "10px",
-                                                        width: "100%",
-                                                        maxHeight: "200px",
-                                                        boxSizing: "border-box",
-                                                        cursor: "pointer",
-                                                    }}
-                                                ></Image>
-                                            </DisplayImagesModal>
-                                            {m.sender._id === user.user._id && (
-                                                <Menu>
-                                                    <div
-                                                        style={{
-                                                            position: "absolute",
-                                                            right: "4px",
-                                                            top: "4px",
-                                                            width: "100px",
-                                                            height: "40px",
-                                                            padding: "0px 6px 0px 0px",
-                                                            borderRadius: "0px 6px 0px 0px",
-                                                            display: "flex",
-                                                            flexDirection: "row-reverse",
-                                                            background:
-                                                                "linear-gradient(200deg, white,white, rgb(0 0 0 / 0%),rgb(0 0 0 / 0%), transparent)",
-                                                            opacity:
-                                                                hoveredMessageId === m._id ? 1 : 0,
-                                                            transition: "opacity 0.3s ease",
-                                                        }}
-                                                    >
-                                                        <MenuButton mt={"-15px"}>
-                                                            <FaChevronDown
-                                                                fontSize={15}
-                                                                cursor={"pointer"}
-                                                                style={{
-                                                                    right: "8px",
-                                                                    top: "3px",
-                                                                }}
-                                                            />
-                                                        </MenuButton>
-                                                    </div>
-                                                    <MenuList
-                                                        minWidth={"150px"}
-                                                        mt={"-25px"}
-                                                        mb={"-20px"}
-                                                        boxShadow={"0 2px 5px 0 #737373"}
-                                                    >
-                                                        <MenuItem
-                                                            onClick={() => deleteHandler(m._id)}
-                                                        >
-                                                            Delete
-                                                        </MenuItem>
-                                                    </MenuList>
-                                                </Menu>
-                                            )}
-                                        </Box>
-                                    ) : m.fileType === "vid" ? (
-                                        <Box
-                                            onMouseEnter={() => handleMouseEnter(m._id)}
-                                            onMouseLeave={handleMouseLeave}
-                                            maxWidth={{ base: "85%", lg: "75%" }}
-                                            style={{
-                                                background: `${
-                                                    m.sender._id === user.user._id
-                                                        ? "#d9fdd3"
-                                                        : "#ffffff"
-                                                }`,
-                                                borderRadius: "10px",
-                                                minHeight: "60px",
-                                                marginLeft: isSameSenderMargin(
-                                                    messages,
-                                                    m,
-                                                    messageCounter,
-                                                    user.user._id
-                                                ),
-                                                marginTop: 3,
-                                                boxSizing: "border-box",
-                                                boxShadow: "0px 1px 1px 0px #adadad ",
-                                                textAlign: "justify",
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                marginBottom: `${
-                                                    isLastMessage(messages, messageCounter)
-                                                        ? "10px"
-                                                        : "2px"
-                                                }`,
-                                                padding: "4px",
-                                                position: "relative",
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    background: `${
-                                                        m.sender._id === user.user._id
-                                                            ? "#D1F4CC"
-                                                            : "#F5F6F6"
-                                                    }`,
-                                                    borderRadius: "10px",
-                                                    maxWidth: "100%",
-                                                    display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "flex-start",
-                                                    position: "relative",
-                                                    padding: "10px 25px 15px 10px",
-                                                }}
-                                            >
-                                                <Image
-                                                    src={videoLogo}
-                                                    height={"40px"}
-                                                    marginRight={2}
-                                                />
-                                                <div
-                                                    style={{
-                                                        width: "calc(100% - 95px)",
-                                                        wordWrap: "break-word",
-                                                        fontSize: { base: "12.5px", lg: "inherit" },
-                                                    }}
-                                                >
-                                                    {getFileName(m.file)}
-                                                </div>
+                                            <Avatar
+                                                mt={"7px"}
+                                                m={1}
+                                                name={m.sender.name}
+                                                src={m.sender.dp}
+                                                h={"2.5rem"}
+                                                w={"2.5rem"}
+                                            />
+                                        </Tooltip>
+                                    )}
 
-                                                <VideoPlayerModal video={m.file}>
-                                                    <Box
-                                                        display={"flex"}
-                                                        justifyContent={"center"}
-                                                        alignItems={"center"}
-                                                        w={8}
-                                                        h={8}
-                                                        border={"1px"}
-                                                        borderRadius={"50%"}
-                                                        cursor={"pointer"}
-                                                        marginLeft={"15px"}
-                                                    >
-                                                        <FaPlay
-                                                            size={15}
-                                                            style={{ paddingLeft: "2px" }}
-                                                        />
-                                                    </Box>
-                                                </VideoPlayerModal>
-                                            </div>
-
+                                    {m.isFileInput ? (
+                                        m.fileType === "img" ? (
                                             <Box
+                                                onMouseEnter={() =>
+                                                    handleMouseEnter(
+                                                        m._id
+                                                    )
+                                                }
+                                                onMouseLeave={
+                                                    handleMouseLeave
+                                                }
                                                 style={{
-                                                    position: "absolute",
-                                                    right: "10px",
-                                                    bottom: "5px",
-                                                    fontSize: "0.7rem",
+                                                    borderRadius:
+                                                        "10px",
+                                                    maxWidth: "75%",
+                                                    boxShadow:
+                                                        "0px 1px 1px 0px #adadad ",
+                                                    marginBottom: `${
+                                                        isLastMessage(
+                                                            messages,
+                                                            messageCounter
+                                                        )
+                                                            ? "10px"
+                                                            : "2px"
+                                                    }`,
+                                                    marginTop: 3,
+                                                    boxSizing:
+                                                        "border-box",
+                                                    marginLeft:
+                                                        isSameSenderMargin(
+                                                            messages,
+                                                            m,
+                                                            messageCounter,
+                                                            user.user
+                                                                ._id
+                                                        ),
+                                                    background: `${
+                                                        m.sender
+                                                            ._id ===
+                                                        user.user._id
+                                                            ? "#d9fdd3"
+                                                            : "#ffffff"
+                                                    }`,
+                                                    position:
+                                                        "relative",
                                                 }}
                                             >
-                                                {formatTime(m.updatedAt)}
-                                            </Box>
-                                            {m.sender._id === user.user._id && (
-                                                <Menu>
-                                                    <div
+                                                <DisplayImagesModal
+                                                    image={m.file}
+                                                >
+                                                    <Image
+                                                        objectFit="cover"
+                                                        src={m.file}
+                                                        p={1}
                                                         style={{
-                                                            position: "absolute",
-                                                            right: "4px",
-                                                            width: "100px",
-                                                            height: "40px",
-                                                            padding: "0px 6px 0px 0px",
-                                                            borderRadius: "0px 6px 0px 0px",
-                                                            display: "flex",
-                                                            flexDirection: "row-reverse",
-                                                            opacity:
-                                                                hoveredMessageId === m._id ? 1 : 0,
-                                                            transition: "opacity 0.3s ease",
+                                                            borderRadius:
+                                                                "10px",
+                                                            width: "100%",
+                                                            maxHeight:
+                                                                "200px",
+                                                            boxSizing:
+                                                                "border-box",
+                                                            cursor: "pointer",
                                                         }}
-                                                    >
-                                                        <MenuButton mt={"-15px"}>
-                                                            <FaChevronDown
-                                                                fontSize={15}
-                                                                cursor={"pointer"}
-                                                                style={{
-                                                                    right: "8px",
-                                                                    top: "3px",
-                                                                }}
-                                                            />
-                                                        </MenuButton>
-                                                    </div>
-                                                    <MenuList
-                                                        minWidth={"150px"}
-                                                        mt={"-25px"}
-                                                        mb={"-20px"}
-                                                        boxShadow={"0 2px 5px 0 #737373"}
-                                                    >
-                                                        <MenuItem
-                                                            onClick={() => deleteHandler(m._id)}
+                                                    ></Image>
+                                                </DisplayImagesModal>
+                                                {m.sender._id ===
+                                                    user.user._id && (
+                                                    <Menu>
+                                                        <div
+                                                            style={{
+                                                                position:
+                                                                    "absolute",
+                                                                right: "4px",
+                                                                top: "4px",
+                                                                width: "100px",
+                                                                height: "40px",
+                                                                padding:
+                                                                    "0px 6px 0px 0px",
+                                                                borderRadius:
+                                                                    "0px 6px 0px 0px",
+                                                                display:
+                                                                    "flex",
+                                                                flexDirection:
+                                                                    "row-reverse",
+                                                                background:
+                                                                    "linear-gradient(200deg, white,white, rgb(0 0 0 / 0%),rgb(0 0 0 / 0%), transparent)",
+                                                                opacity:
+                                                                    hoveredMessageId ===
+                                                                    m._id
+                                                                        ? 1
+                                                                        : 0,
+                                                                transition:
+                                                                    "opacity 0.3s ease",
+                                                            }}
                                                         >
-                                                            Delete
-                                                        </MenuItem>
-                                                    </MenuList>
-                                                </Menu>
-                                            )}
-                                        </Box>
-                                    ) : (
-                                        <Box
-                                            onMouseEnter={() => handleMouseEnter(m._id)}
-                                            onMouseLeave={handleMouseLeave}
-                                            maxWidth={{ base: "85%", lg: "75%" }}
-                                            style={{
-                                                background: `${
-                                                    m.sender._id === user.user._id
-                                                        ? "#d9fdd3"
-                                                        : "#ffffff"
-                                                }`,
-                                                borderRadius: "10px",
-                                                minHeight: "60px",
-                                                marginLeft: isSameSenderMargin(
-                                                    messages,
-                                                    m,
-                                                    messageCounter,
-                                                    user.user._id
-                                                ),
-                                                marginTop: 3,
-                                                boxSizing: "border-box",
-                                                boxShadow: "0px 1px 1px 0px #adadad ",
-                                                textAlign: "justify",
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                marginBottom: `${
-                                                    isLastMessage(messages, messageCounter)
-                                                        ? "10px"
-                                                        : "2px"
-                                                }`,
-                                                padding: "4px",
-                                                position: "relative",
-                                            }}
-                                        >
-                                            <div
+                                                            <MenuButton
+                                                                mt={
+                                                                    "-15px"
+                                                                }
+                                                            >
+                                                                <FaChevronDown
+                                                                    fontSize={
+                                                                        15
+                                                                    }
+                                                                    cursor={
+                                                                        "pointer"
+                                                                    }
+                                                                    style={{
+                                                                        right: "8px",
+                                                                        top: "3px",
+                                                                    }}
+                                                                />
+                                                            </MenuButton>
+                                                        </div>
+                                                        <MenuList
+                                                            minWidth={
+                                                                "150px"
+                                                            }
+                                                            mt={
+                                                                "-25px"
+                                                            }
+                                                            mb={
+                                                                "-20px"
+                                                            }
+                                                            boxShadow={
+                                                                "0 2px 5px 0 #737373"
+                                                            }
+                                                        >
+                                                            <MenuItem
+                                                                onClick={() =>
+                                                                    deleteHandler(
+                                                                        m._id
+                                                                    )
+                                                                }
+                                                            >
+                                                                Delete
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                )}
+                                            </Box>
+                                        ) : m.fileType === "vid" ? (
+                                            <Box
+                                                onMouseEnter={() =>
+                                                    handleMouseEnter(
+                                                        m._id
+                                                    )
+                                                }
+                                                onMouseLeave={
+                                                    handleMouseLeave
+                                                }
+                                                maxWidth={{
+                                                    base: "85%",
+                                                    lg: "75%",
+                                                }}
                                                 style={{
                                                     background: `${
-                                                        m.sender._id === user.user._id
-                                                            ? "#D1F4CC"
-                                                            : "#F5F6F6"
+                                                        m.sender
+                                                            ._id ===
+                                                        user.user._id
+                                                            ? "#d9fdd3"
+                                                            : "#ffffff"
                                                     }`,
-                                                    borderRadius: "10px",
-                                                    maxWidth: "100%",
-                                                    padding: "10px 25px 15px 10px",
+                                                    borderRadius:
+                                                        "10px",
+                                                    minHeight: "60px",
+                                                    marginLeft:
+                                                        isSameSenderMargin(
+                                                            messages,
+                                                            m,
+                                                            messageCounter,
+                                                            user.user
+                                                                ._id
+                                                        ),
+                                                    marginTop: 3,
+                                                    boxSizing:
+                                                        "border-box",
+                                                    boxShadow:
+                                                        "0px 1px 1px 0px #adadad ",
+                                                    textAlign:
+                                                        "justify",
                                                     display: "flex",
-                                                    justifyContent: "space-between",
-                                                    alignItems: "flex-start",
-                                                    position: "relative",
+                                                    flexDirection:
+                                                        "column",
+                                                    marginBottom: `${
+                                                        isLastMessage(
+                                                            messages,
+                                                            messageCounter
+                                                        )
+                                                            ? "10px"
+                                                            : "2px"
+                                                    }`,
+                                                    padding: "4px",
+                                                    position:
+                                                        "relative",
                                                 }}
                                             >
-                                                <Image
-                                                    src={getLogo(m.file)}
-                                                    height={"40px"}
-                                                    marginRight={2}
-                                                />
-                                                {getLogo(m.file) === otherLogo && (
-                                                    <div
-                                                        style={{
-                                                            position: "absolute",
-                                                            background: "#530000",
-                                                            fontSize: "8px",
-                                                            padding: "2px",
-                                                            fontWeight: "700",
-                                                            borderRadius: "4px",
-                                                            color: "white",
-                                                            minWidth: "32px",
-                                                            textAlign: "center",
-                                                            top: "26px",
-                                                        }}
-                                                    >
-                                                        {getExtension(m.file)}
-                                                    </div>
-                                                )}
                                                 <div
                                                     style={{
-                                                        width: "calc(100% - 95px)",
-                                                        wordWrap: "break-word",
-                                                        fontSize: { base: "12.5px", lg: "inherit" },
+                                                        background: `${
+                                                            m.sender
+                                                                ._id ===
+                                                            user.user
+                                                                ._id
+                                                                ? "#D1F4CC"
+                                                                : "#F5F6F6"
+                                                        }`,
+                                                        borderRadius:
+                                                            "10px",
+                                                        maxWidth:
+                                                            "100%",
+                                                        display:
+                                                            "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                        alignItems:
+                                                            "flex-start",
+                                                        position:
+                                                            "relative",
+                                                        padding:
+                                                            "10px 25px 15px 10px",
                                                     }}
                                                 >
-                                                    {getFileName(m.file)}
+                                                    <Image
+                                                        src={
+                                                            videoLogo
+                                                        }
+                                                        height={
+                                                            "40px"
+                                                        }
+                                                        marginRight={
+                                                            2
+                                                        }
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            width: "calc(100% - 95px)",
+                                                            wordWrap:
+                                                                "break-word",
+                                                            fontSize:
+                                                                {
+                                                                    base: "12.5px",
+                                                                    lg: "inherit",
+                                                                },
+                                                        }}
+                                                    >
+                                                        {getFileName(
+                                                            m.file
+                                                        )}
+                                                    </div>
+
+                                                    <VideoPlayerModal
+                                                        video={m.file}
+                                                    >
+                                                        <Box
+                                                            display={
+                                                                "flex"
+                                                            }
+                                                            justifyContent={
+                                                                "center"
+                                                            }
+                                                            alignItems={
+                                                                "center"
+                                                            }
+                                                            w={8}
+                                                            h={8}
+                                                            border={
+                                                                "1px"
+                                                            }
+                                                            borderRadius={
+                                                                "50%"
+                                                            }
+                                                            cursor={
+                                                                "pointer"
+                                                            }
+                                                            marginLeft={
+                                                                "15px"
+                                                            }
+                                                        >
+                                                            <FaPlay
+                                                                size={
+                                                                    15
+                                                                }
+                                                                style={{
+                                                                    paddingLeft:
+                                                                        "2px",
+                                                                }}
+                                                            />
+                                                        </Box>
+                                                    </VideoPlayerModal>
                                                 </div>
 
                                                 <Box
-                                                    display={"flex"}
-                                                    justifyContent={"center"}
-                                                    alignItems={"center"}
-                                                    w={8}
-                                                    h={8}
-                                                    border={"1px"}
-                                                    borderRadius={"50%"}
-                                                    cursor={"pointer"}
-                                                    marginLeft={"15px"}
-                                                    onClick={() => openDocument(m.file)}
+                                                    style={{
+                                                        position:
+                                                            "absolute",
+                                                        right: "10px",
+                                                        bottom: "5px",
+                                                        fontSize:
+                                                            "0.7rem",
+                                                    }}
                                                 >
-                                                    <ImArrowDown size={15} />
+                                                    {formatTime(
+                                                        m.updatedAt
+                                                    )}
                                                 </Box>
-                                            </div>
+                                                {m.sender._id ===
+                                                    user.user._id && (
+                                                    <Menu>
+                                                        <div
+                                                            style={{
+                                                                position:
+                                                                    "absolute",
+                                                                right: "4px",
+                                                                width: "100px",
+                                                                height: "40px",
+                                                                padding:
+                                                                    "0px 6px 0px 0px",
+                                                                borderRadius:
+                                                                    "0px 6px 0px 0px",
+                                                                display:
+                                                                    "flex",
+                                                                flexDirection:
+                                                                    "row-reverse",
+                                                                opacity:
+                                                                    hoveredMessageId ===
+                                                                    m._id
+                                                                        ? 1
+                                                                        : 0,
+                                                                transition:
+                                                                    "opacity 0.3s ease",
+                                                            }}
+                                                        >
+                                                            <MenuButton
+                                                                mt={
+                                                                    "-15px"
+                                                                }
+                                                            >
+                                                                <FaChevronDown
+                                                                    fontSize={
+                                                                        15
+                                                                    }
+                                                                    cursor={
+                                                                        "pointer"
+                                                                    }
+                                                                    style={{
+                                                                        right: "8px",
+                                                                        top: "3px",
+                                                                    }}
+                                                                />
+                                                            </MenuButton>
+                                                        </div>
+                                                        <MenuList
+                                                            minWidth={
+                                                                "150px"
+                                                            }
+                                                            mt={
+                                                                "-25px"
+                                                            }
+                                                            mb={
+                                                                "-20px"
+                                                            }
+                                                            boxShadow={
+                                                                "0 2px 5px 0 #737373"
+                                                            }
+                                                        >
+                                                            <MenuItem
+                                                                onClick={() =>
+                                                                    deleteHandler(
+                                                                        m._id
+                                                                    )
+                                                                }
+                                                            >
+                                                                Delete
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                )}
+                                            </Box>
+                                        ) : (
                                             <Box
+                                                onMouseEnter={() =>
+                                                    handleMouseEnter(
+                                                        m._id
+                                                    )
+                                                }
+                                                onMouseLeave={
+                                                    handleMouseLeave
+                                                }
+                                                maxWidth={{
+                                                    base: "85%",
+                                                    lg: "75%",
+                                                }}
                                                 style={{
-                                                    position: "absolute",
-                                                    right: "10px",
-                                                    bottom: "5px",
-                                                    fontSize: "0.7rem",
+                                                    background: `${
+                                                        m.sender
+                                                            ._id ===
+                                                        user.user._id
+                                                            ? "#d9fdd3"
+                                                            : "#ffffff"
+                                                    }`,
+                                                    borderRadius:
+                                                        "10px",
+                                                    minHeight: "60px",
+                                                    marginLeft:
+                                                        isSameSenderMargin(
+                                                            messages,
+                                                            m,
+                                                            messageCounter,
+                                                            user.user
+                                                                ._id
+                                                        ),
+                                                    marginTop: 3,
+                                                    boxSizing:
+                                                        "border-box",
+                                                    boxShadow:
+                                                        "0px 1px 1px 0px #adadad ",
+                                                    textAlign:
+                                                        "justify",
+                                                    display: "flex",
+                                                    flexDirection:
+                                                        "column",
+                                                    marginBottom: `${
+                                                        isLastMessage(
+                                                            messages,
+                                                            messageCounter
+                                                        )
+                                                            ? "10px"
+                                                            : "2px"
+                                                    }`,
+                                                    padding: "4px",
+                                                    position:
+                                                        "relative",
                                                 }}
                                             >
-                                                {formatTime(m.updatedAt)}
+                                                <div
+                                                    style={{
+                                                        background: `${
+                                                            m.sender
+                                                                ._id ===
+                                                            user.user
+                                                                ._id
+                                                                ? "#D1F4CC"
+                                                                : "#F5F6F6"
+                                                        }`,
+                                                        borderRadius:
+                                                            "10px",
+                                                        maxWidth:
+                                                            "100%",
+                                                        padding:
+                                                            "10px 25px 15px 10px",
+                                                        display:
+                                                            "flex",
+                                                        justifyContent:
+                                                            "space-between",
+                                                        alignItems:
+                                                            "flex-start",
+                                                        position:
+                                                            "relative",
+                                                    }}
+                                                >
+                                                    <Image
+                                                        src={getLogo(
+                                                            m.file
+                                                        )}
+                                                        height={
+                                                            "40px"
+                                                        }
+                                                        marginRight={
+                                                            2
+                                                        }
+                                                    />
+                                                    {getLogo(
+                                                        m.file
+                                                    ) ===
+                                                        otherLogo && (
+                                                        <div
+                                                            style={{
+                                                                position:
+                                                                    "absolute",
+                                                                background:
+                                                                    "#530000",
+                                                                fontSize:
+                                                                    "8px",
+                                                                padding:
+                                                                    "2px",
+                                                                fontWeight:
+                                                                    "700",
+                                                                borderRadius:
+                                                                    "4px",
+                                                                color: "white",
+                                                                minWidth:
+                                                                    "32px",
+                                                                textAlign:
+                                                                    "center",
+                                                                top: "26px",
+                                                            }}
+                                                        >
+                                                            {getExtension(
+                                                                m.file
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                    <div
+                                                        style={{
+                                                            width: "calc(100% - 95px)",
+                                                            wordWrap:
+                                                                "break-word",
+                                                            fontSize:
+                                                                {
+                                                                    base: "12.5px",
+                                                                    lg: "inherit",
+                                                                },
+                                                        }}
+                                                    >
+                                                        {getFileName(
+                                                            m.file
+                                                        )}
+                                                    </div>
+
+                                                    <Box
+                                                        display={
+                                                            "flex"
+                                                        }
+                                                        justifyContent={
+                                                            "center"
+                                                        }
+                                                        alignItems={
+                                                            "center"
+                                                        }
+                                                        w={8}
+                                                        h={8}
+                                                        border={"1px"}
+                                                        borderRadius={
+                                                            "50%"
+                                                        }
+                                                        cursor={
+                                                            "pointer"
+                                                        }
+                                                        marginLeft={
+                                                            "15px"
+                                                        }
+                                                        onClick={() =>
+                                                            openDocument(
+                                                                m.file
+                                                            )
+                                                        }
+                                                    >
+                                                        <ImArrowDown
+                                                            size={15}
+                                                        />
+                                                    </Box>
+                                                </div>
+                                                <Box
+                                                    style={{
+                                                        position:
+                                                            "absolute",
+                                                        right: "10px",
+                                                        bottom: "5px",
+                                                        fontSize:
+                                                            "0.7rem",
+                                                    }}
+                                                >
+                                                    {formatTime(
+                                                        m.updatedAt
+                                                    )}
+                                                </Box>
+                                                {m.sender._id ===
+                                                    user.user._id && (
+                                                    <Menu>
+                                                        <div
+                                                            style={{
+                                                                position:
+                                                                    "absolute",
+                                                                right: "4px",
+                                                                width: "100px",
+                                                                height: "40px",
+                                                                padding:
+                                                                    "0px 6px 0px 0px",
+                                                                borderRadius:
+                                                                    "0px 6px 0px 0px",
+                                                                display:
+                                                                    "flex",
+                                                                flexDirection:
+                                                                    "row-reverse",
+                                                                opacity:
+                                                                    hoveredMessageId ===
+                                                                    m._id
+                                                                        ? 1
+                                                                        : 0,
+                                                                transition:
+                                                                    "opacity 0.3s ease",
+                                                            }}
+                                                        >
+                                                            <MenuButton
+                                                                mt={
+                                                                    "-15px"
+                                                                }
+                                                            >
+                                                                <FaChevronDown
+                                                                    fontSize={
+                                                                        15
+                                                                    }
+                                                                    cursor={
+                                                                        "pointer"
+                                                                    }
+                                                                    style={{
+                                                                        right: "8px",
+                                                                        top: "3px",
+                                                                    }}
+                                                                />
+                                                            </MenuButton>
+                                                        </div>
+                                                        <MenuList
+                                                            minWidth={
+                                                                "150px"
+                                                            }
+                                                            mt={
+                                                                "-25px"
+                                                            }
+                                                            mb={
+                                                                "-20px"
+                                                            }
+                                                            boxShadow={
+                                                                "0 2px 5px 0 #737373"
+                                                            }
+                                                        >
+                                                            <MenuItem
+                                                                onClick={() =>
+                                                                    deleteHandler(
+                                                                        m._id
+                                                                    )
+                                                                }
+                                                            >
+                                                                Delete
+                                                            </MenuItem>
+                                                        </MenuList>
+                                                    </Menu>
+                                                )}
                                             </Box>
-                                            {m.sender._id === user.user._id && (
+                                        )
+                                    ) : (
+                                        <div
+                                            onMouseEnter={() =>
+                                                handleMouseEnter(
+                                                    m._id
+                                                )
+                                            }
+                                            onMouseLeave={
+                                                handleMouseLeave
+                                            }
+                                            style={{
+                                                background: `${
+                                                    m.sender._id ===
+                                                    user.user._id
+                                                        ? "#d9fdd3"
+                                                        : "#ffffff"
+                                                }`,
+                                                borderRadius: "10px",
+                                                padding: "5px 15px",
+                                                maxWidth: "75%",
+                                                marginLeft:
+                                                    isSameSenderMargin(
+                                                        messages,
+                                                        m,
+                                                        messageCounter,
+                                                        user.user._id
+                                                    ),
+                                                marginTop: 3,
+                                                minHeight: "40px",
+                                                boxSizing:
+                                                    "border-box",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                boxShadow:
+                                                    "0px 1px 1px 0px #adadad ",
+                                                textAlign: "justify",
+                                                marginBottom: `${
+                                                    isLastMessage(
+                                                        messages,
+                                                        messageCounter
+                                                    )
+                                                        ? "10px"
+                                                        : "2px"
+                                                }`,
+                                                wordBreak:
+                                                    "break-all",
+                                                position: "relative",
+                                                paddingRight: "65px",
+                                            }}
+                                        >
+                                            {m.content}
+                                            {m.sender._id ===
+                                                user.user._id && (
                                                 <Menu>
                                                     <div
                                                         style={{
-                                                            position: "absolute",
+                                                            position:
+                                                                "absolute",
                                                             right: "4px",
                                                             width: "100px",
                                                             height: "40px",
-                                                            padding: "0px 6px 0px 0px",
-                                                            borderRadius: "0px 6px 0px 0px",
-                                                            display: "flex",
-                                                            flexDirection: "row-reverse",
+                                                            padding:
+                                                                "0px 6px 0px 0px",
+                                                            borderRadius:
+                                                                "0px 6px 0px 0px",
+                                                            display:
+                                                                "flex",
+                                                            flexDirection:
+                                                                "row-reverse",
                                                             opacity:
-                                                                hoveredMessageId === m._id ? 1 : 0,
-                                                            transition: "opacity 0.3s ease",
+                                                                hoveredMessageId ===
+                                                                m._id
+                                                                    ? 1
+                                                                    : 0,
+                                                            transition:
+                                                                "opacity 0.3s ease",
                                                         }}
                                                     >
-                                                        <MenuButton mt={"-15px"}>
+                                                        <MenuButton
+                                                            mt={
+                                                                "-15px"
+                                                            }
+                                                        >
                                                             <FaChevronDown
-                                                                fontSize={15}
-                                                                cursor={"pointer"}
+                                                                fontSize={
+                                                                    15
+                                                                }
+                                                                cursor={
+                                                                    "pointer"
+                                                                }
                                                                 style={{
                                                                     right: "8px",
-                                                                    top: "3px",
+                                                                    top: "2px",
                                                                 }}
                                                             />
                                                         </MenuButton>
                                                     </div>
                                                     <MenuList
-                                                        minWidth={"150px"}
+                                                        minWidth={
+                                                            "150px"
+                                                        }
                                                         mt={"-25px"}
                                                         mb={"-20px"}
-                                                        boxShadow={"0 2px 5px 0 #737373"}
+                                                        boxShadow={
+                                                            "0 2px 5px 0 #737373"
+                                                        }
                                                     >
+                                                        <EditMsgModal
+                                                            message={
+                                                                m
+                                                            }
+                                                            editHandler={
+                                                                editHandler
+                                                            }
+                                                        >
+                                                            <MenuItem>
+                                                                Edit
+                                                            </MenuItem>
+                                                        </EditMsgModal>
+
                                                         <MenuItem
-                                                            onClick={() => deleteHandler(m._id)}
+                                                            onClick={() =>
+                                                                deleteHandler(
+                                                                    m._id
+                                                                )
+                                                            }
                                                         >
                                                             Delete
                                                         </MenuItem>
                                                     </MenuList>
                                                 </Menu>
                                             )}
-                                        </Box>
-                                    )
-                                ) : (
-                                    <div
-                                        onMouseEnter={() => handleMouseEnter(m._id)}
-                                        onMouseLeave={handleMouseLeave}
-                                        style={{
-                                            background: `${
-                                                m.sender._id === user.user._id
-                                                    ? "#d9fdd3"
-                                                    : "#ffffff"
-                                            }`,
-                                            borderRadius: "10px",
-                                            padding: "5px 15px",
-                                            maxWidth: "75%",
-                                            marginLeft: isSameSenderMargin(
-                                                messages,
-                                                m,
-                                                messageCounter,
-                                                user.user._id
-                                            ),
-                                            marginTop: 3,
-                                            minHeight: "40px",
-                                            boxSizing: "border-box",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            boxShadow: "0px 1px 1px 0px #adadad ",
-                                            textAlign: "justify",
-                                            marginBottom: `${
-                                                isLastMessage(messages, messageCounter)
-                                                    ? "10px"
-                                                    : "2px"
-                                            }`,
-                                            wordBreak: "break-all",
-                                            position: "relative",
-                                            paddingRight: "65px",
-                                        }}
-                                    >
-                                        {m.content}
-                                        {m.sender._id === user.user._id && (
-                                            <Menu>
-                                                <div
-                                                    style={{
-                                                        position: "absolute",
-                                                        right: "4px",
-                                                        width: "100px",
-                                                        height: "40px",
-                                                        padding: "0px 6px 0px 0px",
-                                                        borderRadius: "0px 6px 0px 0px",
-                                                        display: "flex",
-                                                        flexDirection: "row-reverse",
-                                                        opacity: hoveredMessageId === m._id ? 1 : 0,
-                                                        transition: "opacity 0.3s ease",
-                                                    }}
-                                                >
-                                                    <MenuButton mt={"-15px"}>
-                                                        <FaChevronDown
-                                                            fontSize={15}
-                                                            cursor={"pointer"}
-                                                            style={{
-                                                                right: "8px",
-                                                                top: "2px",
-                                                            }}
-                                                        />
-                                                    </MenuButton>
-                                                </div>
-                                                <MenuList
-                                                    minWidth={"150px"}
-                                                    mt={"-25px"}
-                                                    mb={"-20px"}
-                                                    boxShadow={"0 2px 5px 0 #737373"}
-                                                >
-                                                    <EditMsgModal
-                                                        message={m}
-                                                        editHandler={editHandler}
-                                                    >
-                                                        <MenuItem>Edit</MenuItem>
-                                                    </EditMsgModal>
 
-                                                    <MenuItem onClick={() => deleteHandler(m._id)}>
-                                                        Delete
-                                                    </MenuItem>
-                                                </MenuList>
-                                            </Menu>
-                                        )}
-
-                                        <Box
-                                            style={{
-                                                position: "absolute",
-                                                right: "10px",
-                                                bottom: "5px",
-                                                fontSize: "0.7rem",
-                                            }}
-                                        >
-                                            {formatTime(m.updatedAt)}
-                                        </Box>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </React.Fragment>
-            ))}
+                                            <Box
+                                                style={{
+                                                    position:
+                                                        "absolute",
+                                                    right: "10px",
+                                                    bottom: "5px",
+                                                    fontSize:
+                                                        "0.7rem",
+                                                }}
+                                            >
+                                                {formatTime(
+                                                    m.updatedAt
+                                                )}
+                                            </Box>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </React.Fragment>
+                )
+            )}
         </ScrollableFeed>
     );
 };
