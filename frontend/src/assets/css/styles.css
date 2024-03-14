@@ -32,3 +32,14 @@
     background-color: #000000;
     border: 1px solid #bababa;
 }
+
+@media (min-width: 1024px) {
+    .react-emoji-picker--wrapper {
+        height: 300px !important;
+        border-radius: 15px;
+    }
+}
+
+.GifPickerReact .gpr-search-container input.gpr-search {
+    width: 86% !important;
+}

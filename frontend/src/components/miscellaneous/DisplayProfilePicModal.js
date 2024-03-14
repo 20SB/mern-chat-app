@@ -63,7 +63,6 @@ export const DisplayProfilePicModal = ({ children, selectedUser }) => {
                 onClose();
             });
     };
-    console.log(user);
     return (
         <div>
             <span onClick={onOpen}>{children}</span>

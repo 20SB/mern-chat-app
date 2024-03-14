@@ -1,11 +1,28 @@
-import React, { useEffect } from "react";
-import { Container, Box, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import {
+    Container,
+    Box,
+    Text,
+    Tabs,
+    TabList,
+    TabPanels,
+    Tab,
+    TabPanel,
+} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Authentication/Login";
 import SignUp from "../components/Authentication/SignUp";
+import GifPicker from "gif-picker-react";
 
 export const HomePage = () => {
     const navigate = useNavigate();
+    const [selectedGif, setSelectedGif] = useState(null);
+
+    // Function to handle GIF selection
+    const handleGifSelect = (gif) => {
+        setSelectedGif(gif);
+        console.log(gif);
+    };
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("userInfo"));
@@ -23,11 +40,15 @@ export const HomePage = () => {
                 bg={"white"}
                 p={3}
                 w={"100%"}
-                m={"40px 0 15px 0"}
+                m={{ base: "15px 0 15px 0", md: "40px 0 15px 0" }}
                 borderRadius={"lg"}
                 borderWidth={"1px"}
             >
-                <Text fontSize={"4xl"} fontFamily={"Work sans"} textAlign={"center"}>
+                <Text
+                    fontSize={"4xl"}
+                    fontFamily={"Work sans"}
+                    textAlign={"center"}
+                >
                     Chit Chaat
                 </Text>
             </Box>
@@ -54,6 +75,20 @@ export const HomePage = () => {
                     </TabPanels>
                 </Tabs>
             </Box>
+            {/* <div>
+                <div>
+                    <GifPicker
+                        tenorApiKey={
+                            "AIzaSyAt2gt6xnnjK7O4OcCb0v24HVt2RW7MLV8"
+                        }
+                        onGifClick={handleGifSelect}
+                    />
+                    {selectedGif && (
+                        <img src={selectedGif} alt="Selected GIF" />
+                    )}
+                    https://media.tenor.com/wfdSCMP3BVEAAAAM/excited-dog.gif
+                </div>
+            </div> */}
         </Container>
     );
 };

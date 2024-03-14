@@ -7,16 +7,26 @@ export const ChatBox = ({ fetchAgain, setFetchAgain }) => {
     const { selectedChat } = ChatState();
     return (
         <Box
-            display={{ base: selectedChat ? "flex" : "none", md: "flex" }}
+            display={{
+                base: selectedChat ? "flex" : "none",
+                lg: "flex",
+            }}
             alignItems={"center"}
             flexDir={"column"}
-            p={3}
+            p={{
+                base: "1",
+                lg: "3",
+            }}
             bg={"white"}
-            w={{ base: "100%", md: "68%" }}
+            w={{ base: "100%", lg: "68%" }}
             borderRadius={"lg"}
             borderWidth={"1px"}
+            boxSizing="border-box"
         >
-            <SingleChat fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} />
+            <SingleChat
+                fetchAgain={fetchAgain}
+                setFetchAgain={setFetchAgain}
+            />
         </Box>
     );
 };

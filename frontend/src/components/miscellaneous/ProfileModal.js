@@ -33,9 +33,14 @@ export const ProfileModal = ({ selectedUser, children }) => {
                 // <IconButton display={{ base: "flex" }} icon={<ViewIcon />} onClick={onOpen} />
             )}
 
-            <Modal size={"lg"} isOpen={isOpen} onClose={onClose} isCentered>
+            <Modal
+                size={"lg"}
+                isOpen={isOpen}
+                onClose={onClose}
+                isCentered
+            >
                 <ModalOverlay />
-                <ModalContent h={"400px"}>
+                <ModalContent h={"auto"}>
                     <ModalHeader
                         fontSize={"40px"}
                         fontFamily={"Work sans"}
@@ -51,7 +56,9 @@ export const ProfileModal = ({ selectedUser, children }) => {
                         alignItems={"center"}
                         justifyContent={"space-evenly"}
                     >
-                        <DisplayProfilePicModal selectedUser={selectedUser}>
+                        <DisplayProfilePicModal
+                            selectedUser={selectedUser}
+                        >
                             <Avatar
                                 size="2xl"
                                 name={selectedUser.name}
@@ -59,7 +66,10 @@ export const ProfileModal = ({ selectedUser, children }) => {
                                 cursor={"pointer"}
                             />
                         </DisplayProfilePicModal>
-                        <Text fontSize={{ base: "20px", md: "30px" }} fontFamily={"Work sans"}>
+                        <Text
+                            fontSize={{ base: "20px", md: "30px" }}
+                            fontFamily={"Work sans"}
+                        >
                             Email: {selectedUser.email}
                         </Text>
                     </ModalBody>
@@ -72,7 +82,11 @@ export const ProfileModal = ({ selectedUser, children }) => {
                                 </Button>
                             </UpdateProfileModal>
                         )}
-                        <Button colorScheme="blue" mr={3} onClick={onClose}>
+                        <Button
+                            colorScheme="blue"
+                            mr={3}
+                            onClick={onClose}
+                        >
                             Close
                         </Button>
                     </ModalFooter>

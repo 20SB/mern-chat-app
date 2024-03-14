@@ -18,10 +18,21 @@ export const VideoPlayerModal = ({ children, video }) => {
     return (
         <div>
             <span onClick={onOpen}>{children}</span>
-            <Modal isOpen={isOpen} onClose={onClose} size={"lg"} isCentered>
+            <Modal
+                isOpen={isOpen}
+                onClose={onClose}
+                size={"lg"}
+                isCentered
+            >
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalCloseButton bg={"white"} mt={2} mr={1} borderRadius={"lg"} zIndex={1} />
+                    <ModalCloseButton
+                        bg={"white"}
+                        mt={2}
+                        mr={1}
+                        borderRadius={"lg"}
+                        zIndex={1}
+                    />
                     <ModalBody p={2}>
                         <div
                             style={{

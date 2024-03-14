@@ -6,7 +6,6 @@ import {
     CircularProgress,
     FormControl,
     IconButton,
-    Input,
     Menu,
     MenuButton,
     MenuItem,
@@ -14,8 +13,9 @@ import {
     Portal,
     Spinner,
     Text,
+    useBreakpointValue,
 } from "@chakra-ui/react";
-import { AddIcon, ArrowBackIcon, CloseIcon } from "@chakra-ui/icons";
+import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../../config/chatLogics";
 import { ProfileModal } from "./ProfileModal";
 import { UpdateGroupChatModal } from "./UpdateGroupChatModal";
@@ -26,12 +26,17 @@ import chatWall from "../../assets/images/wpWall.png";
 import { ScrollableChat } from "./ScrollableChat";
 import InputEmoji from "react-input-emoji";
 import { IoIosDocument, IoMdPhotos } from "react-icons/io";
-import { FaUser, FaCamera, FaFileVideo } from "react-icons/fa";
+import { FaFileVideo } from "react-icons/fa";
 import Lottie from "react-lottie";
 import loadingDots from "../../assets/animations/loadingDots.json";
+import { AiOutlineFileGif } from "react-icons/ai";
 
 import io from "socket.io-client";
-import { mapToObject } from "../../config/notificationLogics";
+import {
+    mapToObject,
+    shortendMsg,
+} from "../../config/notificationLogics";
+import { GifModal } from "./GifModal";
 const ENDPOINT = process.env.REACT_APP_BACKEND_URL;
 var socket, selectedChatCompare;
 
@@ -45,13 +50,14 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [typingUser, setTypingUser] = useState({});
     const [isSendingMsg, setIsSendingMsg] = useState(false);
 
-    const {
-        user,
-        selectedChat,
-        setSelectedChat,
-        notifications,
-        setNotifications,
-    } = ChatState();
+    const maxHeadingLength = useBreakpointValue({
+        base: 15,
+        md: 50,
+        lg: 45,
+    });
+
+    const { user, selectedChat, setSelectedChat, setNotifications } =
+        ChatState();
     const toast = useGlobalToast();
     const typingRef = useRef(false);
     const fileInputDocRef = useRef(null);
@@ -89,6 +95,48 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             setTypingUser({});
         });
     }, []);
+
+    const handleGifMessage = (gif) => {
+        console.log("gif inside function", gif);
+        console.log("gif preview link", gif.url);
+
+        setIsSendingMsg(true);
+        const config = {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${user.token}`,
+            },
+        };
+        setNewMessage("");
+        axios
+            .post(
+                `${BACKEND_URL}/api/message`,
+                {
+                    isFileInput: true,
+                    isGif: true,
+                    fileType: "img",
+                    gif: gif.url,
+                    chatId: selectedChat._id,
+                },
+                config
+            )
+            .then(({ data }) => {
+                setMessages([...messages, data.data.message]);
+                socket.emit("new message", data.data.message);
+            })
+            .catch((error) => {
+                toast.error(
+                    "Error",
+                    error.response
+                        ? error.response.data.message
+                        : "Something Went Wrong"
+                );
+            })
+            .finally(() => {
+                setIsSendingMsg(false);
+                setFetchAgain(!fetchAgain);
+            });
+    };
 
     const handleFileSelection = (e, fileType) => {
         console.log("fileType", fileType);
@@ -487,8 +535,14 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 <>
                     <Box
                         fontSize={{ base: "28px", md: "30px" }}
-                        pb={3}
-                        px={2}
+                        pb={{
+                            base: "2",
+                            md: "3",
+                        }}
+                        px={{
+                            base: "1",
+                            md: "2",
+                        }}
                         w="100%"
                         display={"flex"}
                         justifyContent={{ base: "space-between" }}
@@ -542,9 +596,12 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                                     cursor: "pointer",
                                                 }}
                                             >
-                                                {getSender(
-                                                    user,
-                                                    selectedChat.users
+                                                {shortendMsg(
+                                                    getSender(
+                                                        user,
+                                                        selectedChat.users
+                                                    ),
+                                                    maxHeadingLength
                                                 )}
                                                 {isTyping ? (
                                                     <div
@@ -606,7 +663,10 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                                     h={"2.5rem"}
                                                     w={"2.5rem"}
                                                 />
-                                                {selectedChat.chatName.toUpperCase()}
+                                                {shortendMsg(
+                                                    selectedChat.chatName.toUpperCase(),
+                                                    maxHeadingLength
+                                                )}
                                             </div>
                                             {isTyping ? (
                                                 <div
@@ -653,7 +713,11 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                         display={"flex"}
                         flexDir={"column"}
                         justifyContent={"flex-end"}
-                        p={3}
+                        p={{
+                            base: "1",
+                            md: "2",
+                            lg: "3",
+                        }}
                         bg={"#E8E8E8"}
                         w={"100%"}
                         h={"100%"}
@@ -816,6 +880,22 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                                     multiple
                                                 />
                                             </MenuItem>
+                                            <GifModal
+                                                handleGifMessage={
+                                                    handleGifMessage
+                                                }
+                                            >
+                                                <MenuItem
+                                                    icon={
+                                                        <AiOutlineFileGif
+                                                            size={20}
+                                                            color="#156c01"
+                                                        />
+                                                    }
+                                                >
+                                                    Gif
+                                                </MenuItem>
+                                            </GifModal>
                                         </MenuList>
                                     </Portal>
                                 </Menu>
@@ -823,7 +903,6 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     value={newMessage}
                                     onChange={typingHandler}
                                     placeholder="Enter message.."
-                                    width={"50%"}
                                 />
                                 <img
                                     width="24"

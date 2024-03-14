@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { ChatState } from "../../context/chatProvider";
 import useGlobalToast from "../../globalFunctions/toast";
 import axios from "axios";
-import { Avatar, Box, Button, Stack, Text } from "@chakra-ui/react";
+import {
+    Avatar,
+    Box,
+    Button,
+    Stack,
+    Text,
+    useBreakpointValue,
+} from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { ChatLoading } from "./ChatLoading";
 import {
@@ -30,6 +37,11 @@ export const MyChats = ({ fetchAgain }) => {
         setChats,
         setNotifications,
     } = ChatState();
+    const maxHeadingLength = useBreakpointValue({
+        base: 15,
+        md: 45,
+        lg: 25,
+    });
 
     const removeNotification = (chat) => {
         setNotifications((prevNotifications) => {
@@ -80,13 +92,13 @@ export const MyChats = ({ fetchAgain }) => {
         <Box
             display={{
                 base: selectedChat ? "none" : "flex",
-                md: "flex",
+                lg: "flex",
             }}
             flexDir={"column"}
             alignItems={"center"}
             p={3}
             bg={"white"}
-            w={{ base: "100%", md: "31%" }}
+            w={{ base: "100%", lg: "31%" }}
             borderRadius={"lg"}
             borderWidth={"1px"}
         >
@@ -193,12 +205,15 @@ export const MyChats = ({ fetchAgain }) => {
                                         w={"100%"}
                                     >
                                         <Text fontWeight={"450"}>
-                                            {!chat.isGroupChat
-                                                ? getSender(
-                                                      loggedUser,
-                                                      chat.users
-                                                  )
-                                                : chat.chatName}
+                                            {shortendMsg(
+                                                !chat.isGroupChat
+                                                    ? getSender(
+                                                          loggedUser,
+                                                          chat.users
+                                                      )
+                                                    : chat.chatName,
+                                                maxHeadingLength
+                                            )}
                                         </Text>
                                         <Text
                                             color={

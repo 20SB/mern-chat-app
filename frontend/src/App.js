@@ -2,7 +2,6 @@ import "./App.css";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { ChatPage } from "./pages/ChatPage";
-import { GoogleLogin } from "./components/Authentication/Authentication/GoogleLogin";
 import { ChatState } from "./context/chatProvider";
 import { useEffect } from "react";
 import useGlobalToast from "./globalFunctions/toast";
@@ -43,11 +42,6 @@ function App() {
         <div className="App">
             <Routes>
                 <Route path="/" element={<HomePage />} exact />
-                <Route
-                    path="/google_auth"
-                    element={<GoogleLogin />}
-                    exact
-                />
                 <Route path="/chats" element={<ChatPage />} />
             </Routes>
         </div>
