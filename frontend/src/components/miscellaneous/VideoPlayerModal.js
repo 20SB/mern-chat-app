@@ -19,6 +19,7 @@ export const VideoPlayerModal = ({ children, video }) => {
         <div>
             <span onClick={onOpen}>{children}</span>
             <Modal
+                closeOnOverlayClick={false}
                 isOpen={isOpen}
                 onClose={onClose}
                 size={"lg"}

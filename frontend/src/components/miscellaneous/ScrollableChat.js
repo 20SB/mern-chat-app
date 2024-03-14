@@ -404,63 +404,66 @@ export const ScrollableChat = ({
                                                         "relative",
                                                 }}
                                             >
-                                                <div
-                                                    style={{
-                                                        background: `${
-                                                            m.sender
-                                                                ._id ===
-                                                            user.user
-                                                                ._id
-                                                                ? "#D1F4CC"
-                                                                : "#F5F6F6"
-                                                        }`,
-                                                        borderRadius:
-                                                            "10px",
-                                                        maxWidth:
-                                                            "100%",
-                                                        display:
-                                                            "flex",
-                                                        justifyContent:
-                                                            "space-between",
-                                                        alignItems:
-                                                            "flex-start",
-                                                        position:
-                                                            "relative",
-                                                        padding:
-                                                            "10px 25px 15px 10px",
-                                                    }}
+                                                <VideoPlayerModal
+                                                    video={m.file}
                                                 >
-                                                    <Image
-                                                        src={
-                                                            videoLogo
-                                                        }
-                                                        height={
-                                                            "40px"
-                                                        }
-                                                        marginRight={
-                                                            2
-                                                        }
-                                                    />
                                                     <div
                                                         style={{
-                                                            width: "calc(100% - 95px)",
-                                                            wordWrap:
-                                                                "break-word",
-                                                            fontSize:
-                                                                {
-                                                                    base: "12.5px",
-                                                                    lg: "inherit",
-                                                                },
+                                                            background: `${
+                                                                m
+                                                                    .sender
+                                                                    ._id ===
+                                                                user
+                                                                    .user
+                                                                    ._id
+                                                                    ? "#D1F4CC"
+                                                                    : "#F5F6F6"
+                                                            }`,
+                                                            borderRadius:
+                                                                "10px",
+                                                            maxWidth:
+                                                                "100%",
+                                                            display:
+                                                                "flex",
+                                                            justifyContent:
+                                                                "space-between",
+                                                            alignItems:
+                                                                "flex-start",
+                                                            position:
+                                                                "relative",
+                                                            padding:
+                                                                "10px 25px 15px 10px",
+                                                            cursor: "pointer",
                                                         }}
                                                     >
-                                                        {getFileName(
-                                                            m.file
-                                                        )}
-                                                    </div>
+                                                        <Image
+                                                            src={
+                                                                videoLogo
+                                                            }
+                                                            height={
+                                                                "40px"
+                                                            }
+                                                            marginRight={
+                                                                2
+                                                            }
+                                                        />
+                                                        <div
+                                                            style={{
+                                                                width: "calc(100% - 95px)",
+                                                                wordWrap:
+                                                                    "break-word",
+                                                                fontSize:
+                                                                    {
+                                                                        base: "12.5px",
+                                                                        lg: "inherit",
+                                                                    },
+                                                            }}
+                                                        >
+                                                            {getFileName(
+                                                                m.file
+                                                            )}
+                                                        </div>
 
-                                                    <VideoPlayerModal
-                                                        video={m.file}
-                                                    >
                                                         <Box
                                                             display={
                                                                 "flex"
@@ -485,6 +488,7 @@ export const ScrollableChat = ({
                                                             marginLeft={
                                                                 "15px"
                                                             }
+                                                            zIndex={1}
                                                         >
                                                             <FaPlay
                                                                 size={
@@ -496,8 +500,8 @@ export const ScrollableChat = ({
                                                                 }}
                                                             />
                                                         </Box>
-                                                    </VideoPlayerModal>
-                                                </div>
+                                                    </div>
+                                                </VideoPlayerModal>
 
                                                 <Box
                                                     style={{
@@ -643,6 +647,11 @@ export const ScrollableChat = ({
                                                 }}
                                             >
                                                 <div
+                                                    onClick={() =>
+                                                        openDocument(
+                                                            m.file
+                                                        )
+                                                    }
                                                     style={{
                                                         background: `${
                                                             m.sender
@@ -666,6 +675,7 @@ export const ScrollableChat = ({
                                                             "flex-start",
                                                         position:
                                                             "relative",
+                                                        cursor: "pointer",
                                                     }}
                                                 >
                                                     <Image
@@ -749,11 +759,7 @@ export const ScrollableChat = ({
                                                         marginLeft={
                                                             "15px"
                                                         }
-                                                        onClick={() =>
-                                                            openDocument(
-                                                                m.file
-                                                            )
-                                                        }
+                                                        zIndex={1}
                                                     >
                                                         <ImArrowDown
                                                             size={15}

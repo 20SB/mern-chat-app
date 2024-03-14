@@ -4,6 +4,7 @@ import {
     Avatar,
     Box,
     CircularProgress,
+    CircularProgressLabel,
     FormControl,
     IconButton,
     Menu,
@@ -49,6 +50,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [typingUser, setTypingUser] = useState({});
     const [isSendingMsg, setIsSendingMsg] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     const maxHeadingLength = useBreakpointValue({
         base: 15,
@@ -139,23 +141,51 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     };
 
     const handleFileSelection = (e, fileType) => {
-        console.log("fileType", fileType);
+        // console.log("fileType", fileType);
         const files = e.target.files;
+        // console.log("file", files);
 
         const formData = new FormData();
         formData.append("chatId", selectedChat._id);
         formData.append("isFileInput", true);
         formData.append("fileType", fileType);
 
-        // Append each selected file to the FormData object without specifying the key
+        let largeFiles = 0;
+
+        // Check file sizes and append only if they are within the limit
         for (let i = 0; i < files.length; i++) {
-            formData.append("files", files[i]);
+            if (files[i].size <= 100 * 1024 * 1024) {
+                formData.append("files", files[i]);
+            } else {
+                // count no of large files
+                largeFiles++;
+                toast.warning(
+                    `${files[i].name} exceeds the limit (100MB).`
+                );
+            }
         }
+
+        if (largeFiles == files.length) {
+            toast.error(
+                "Please upload files within the 100MB limit."
+            );
+            return;
+        }
+
         setIsSendingMsg(true);
         const config = {
             headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${user.token}`,
+            },
+            onUploadProgress: (progressEvent) => {
+                // Calculate the upload percentage
+                const percentage = Math.round(
+                    (progressEvent.loaded * 100) / progressEvent.total
+                );
+                setUploadProgress(percentage);
+                console.log("Upload Progress:", percentage);
+                // You can set or update the progress state here if needed
             },
         };
 
@@ -163,6 +193,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         axios
             .post(`${BACKEND_URL}/api/message`, formData, config)
             .then(({ data }) => {
+                setUploadProgress(0);
                 socket.emit(
                     "multiple new messages",
                     data.data.message
@@ -171,6 +202,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 setMessages([...messages, ...data.data.message]);
             })
             .catch((error) => {
+                setUploadProgress(0);
                 toast.error(
                     "Error",
                     error.response
@@ -743,17 +775,35 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     deleteHandler={deleteMessage}
                                     style={{ overflowX: "hidden" }}
                                 />
+
                                 <Box
                                     w={"100%"}
                                     display={"flex"}
                                     justifyContent={"flex-end"}
                                 >
-                                    {isSendingMsg && (
-                                        <CircularProgress
-                                            isIndeterminate
-                                            color="green.300"
-                                            size={8}
-                                        />
+                                    {isSendingMsg ? (
+                                        uploadProgress == 100 ? (
+                                            <CircularProgress
+                                                isIndeterminate
+                                                color="green.400"
+                                                size={8}
+                                            />
+                                        ) : (
+                                            <CircularProgress
+                                                value={uploadProgress}
+                                                color="green.400"
+                                                size={8}
+                                            >
+                                                <CircularProgressLabel
+                                                    zIndex={2}
+                                                    fontSize={8}
+                                                >
+                                                    {uploadProgress}%
+                                                </CircularProgressLabel>
+                                            </CircularProgress>
+                                        )
+                                    ) : (
+                                        ""
                                     )}
                                 </Box>
                             </div>

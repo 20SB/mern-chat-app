@@ -61,7 +61,7 @@ module.exports.sendMessage = expressAsyncHandler(async (req, res) => {
                 let latestMessageTillNow;
                 let messages = [];
 
-                console.log(req.files);
+                // console.log(req.files);
                 // Loop over each uploaded file
                 for (const file of req.files) {
                     const folderName = "FILES";
