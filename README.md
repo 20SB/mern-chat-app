@@ -70,4 +70,4 @@
 
 ## Deployed Link
 
--[Chit Chaat]([https://placement-cell-7ci7.onrender.com](https://chit-chaat.subbu.cloud/)https://chit-chaat.subbu.cloud/)
+- [Chit Chaat](https://chit-chaat.subbu.cloud/)
