@@ -10,9 +10,8 @@
 - [Features](#Features)
 - [Screenshot](#Screenshots)
 - [Built with](#built-with)
-- [Author](#author)
 - [Setup](#Setup)
-- [Run](#Run)
+- [Author](#author)
 - [Deploy Link](#deployed-link)
 
 
