@@ -26,13 +26,13 @@
 ## Screenshots
 
 - **Sign Up**<br />
-  ![Sign-Up](./page-screenshots/sign-up.png)
+  ![Sign-Up](./PageScreenShots/Signup.png)
 
 - **Sign In**<br />
-  ![Sign-In](./page-screenshots/sign-in-page.png)
+  ![Sign-In](./PageScreenShots/Login.png)
 
 - **Chat Page**<br />
-  ![Chat-Page](./page-screenshots/home-page.png)
+  ![Chat-Page](./PageScreenShots/ChatPage.png)
 
 ## Built with
 
