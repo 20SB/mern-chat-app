@@ -165,7 +165,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             }
         }
 
-        if (largeFiles == files.length) {
+        if (largeFiles === files.length) {
             toast.error(
                 "Please upload files within the 100MB limit."
             );
@@ -782,7 +782,7 @@ export const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                                     justifyContent={"flex-end"}
                                 >
                                     {isSendingMsg ? (
-                                        uploadProgress == 100 ? (
+                                        uploadProgress === 100 ? (
                                             <CircularProgress
                                                 isIndeterminate
                                                 color="green.400"

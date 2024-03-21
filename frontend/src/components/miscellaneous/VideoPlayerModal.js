@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
-    Button,
-    Image,
     Modal,
     ModalBody,
     ModalCloseButton,
     ModalContent,
-    ModalFooter,
     ModalOverlay,
     useDisclosure,
 } from "@chakra-ui/react";

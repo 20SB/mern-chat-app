@@ -1,27 +1,22 @@
 import React, { useState } from "react";
 import ScrollableFeed from "react-scrollable-feed";
-import ReactPlayer from "react-player";
 import {
     isLastMessage,
     isLastMessageOfText,
     isSameSender,
-    isSameUser,
 } from "../../config/chatLogics";
 import { ChatState } from "./../../context/chatProvider";
 import {
     Avatar,
     Box,
-    Button,
     Image,
     Menu,
     MenuButton,
     MenuItem,
     MenuList,
     Tooltip,
-    position,
 } from "@chakra-ui/react";
 import { isSameSenderMargin } from "./../../config/chatLogics";
-import { Player } from "video-react";
 import { formatTime, getFileName } from "../../config/messageLogics";
 import pdfLogo from "../../assets/images/file logo/pdf.png";
 import docLogo from "../../assets/images/file logo/doc.png";
@@ -33,9 +28,8 @@ import otherLogo from "../../assets/images/file logo/other.png";
 import csvLogo from "../../assets/images/file logo/csv.png";
 import videoLogo from "../../assets/images/file logo/video.png";
 import { ImArrowDown } from "react-icons/im";
-import { FaChevronDown, FaChevronRight } from "react-icons/fa6";
+import { FaChevronDown } from "react-icons/fa6";
 import { FaPlay } from "react-icons/fa";
-import { getTimeAgoString } from "../../config/notificationLogics";
 import { EditMsgModal } from "./EditMsgModal";
 import { DisplayImagesModal } from "./DisplayImagesModal";
 import { VideoPlayerModal } from "./VideoPlayerModal";
