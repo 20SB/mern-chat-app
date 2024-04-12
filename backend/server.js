@@ -42,6 +42,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+console.log("client url", env.client_url)
 // Enable CORS
 app.use(
     cors({

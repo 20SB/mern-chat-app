@@ -1,7 +1,8 @@
 const development = {
     name: "development",
     port: process.env.PORT,
-    client_url: "http://localhost:3000",
+    client_url:
+        process.env.CLIENT_URL || "https://chit-chaat.subbu.cloud",
 
     db: process.env.MONGO_URI,
     jwtSecret: "mern_chat_development",
