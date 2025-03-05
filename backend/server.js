@@ -46,19 +46,15 @@ app.use(passport.session());
 
 console.log("client url", env.client_url);
 // Enable CORS
-app.use(
-  cors({
-    origin: ["*", "http://localhost:3000", "https://chit-chaat.subha.fun", "https://www.chit-chaat.subha.fun"],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
-  })
-);
+// app.use(
+//   cors({
+//     origin: ["*", "http://localhost:3000", "https://chit-chaat.subha.fun", "https://www.chit-chaat.subha.fun"],
+//     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+//     allowedHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
+//   })
+// );
 
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Authorization, Content-Type");
-  res.status(204).send();
-});
+app.use(cors());
 
 // Error tracking with Treblle
 useTreblle(app, {
