@@ -1,4 +1,4 @@
-// Import required modules
+// backend\server.js
 require("dotenv").config(); // Load environment variables from .env file
 const env = require("./config/environment"); // Import environment configuration
 const express = require("express"); // Import Express.js framework
