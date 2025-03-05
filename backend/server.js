@@ -21,6 +21,19 @@ const AWS = require("./config/aws"); // Import AWS configuration
 // Initialize Express application
 const app = express();
 
+app.use((req, res, next) => {
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Origin', 'https://chit-chaat.subha.fun');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    return res.status(200).end();
+  }
+  // Continue for other requests
+  next();
+});
+
 // Connect to MongoDB
 connectDB();
 
@@ -64,11 +77,7 @@ useTreblle(app, {
 // Serve static files from the 'public' directory
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-app.use((req, res, next) => {
-  console.log("Request Origin:", req.headers.origin);
-  console.log("CORS Headers:", res.getHeaders());
-  next();
-});
+
 
 // Routing
 app.use("/", require("./routes")); // Use router defined in 'routes' directory
