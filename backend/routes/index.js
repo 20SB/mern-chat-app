@@ -10,8 +10,7 @@ router.get("/envData", async (req, res) => {
     const envData = env
     return res.status(200).json({
         success: true,
-        envData: envData,
-        users,
+        envData: envData
     });
 });
 router.use("/api", require("./apiRoutes"));

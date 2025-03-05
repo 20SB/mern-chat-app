@@ -9,6 +9,7 @@ const passport = require("passport"); // Authentication middleware for Node.js
 const passportJWT = require("./config/passportJWT"); // Passport strategy for JSON Web Token (JWT) authentication
 const passportGoogleOauth = require("./config/passportGoogleOauth"); // Passport strategy for Gooogle Oauth authentication
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const colors = require("colors"); // Library for terminal output coloring
 const {
     notFound,
@@ -30,13 +31,15 @@ connectDB();
 app.use(express.json()); // Parse JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 
-app.use(
-    session({
-        secret: "your_secret_key_here",
-        resave: false,
-        saveUninitialized: false,
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      ttl: 14 * 24 * 60 * 60 // 14 days
     })
-);
+  }));
 
 // Initialize passport for authentication
 app.use(passport.initialize());
