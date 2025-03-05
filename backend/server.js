@@ -48,11 +48,9 @@ console.log("client url", env.client_url);
 // Enable CORS
 app.use(
   cors({
-    origin: "https://chit-chaat.subha.fun",
+    origin: ["*", "http://localhost:3000", "https://chit-chaat.subha.fun", "https://www.chit-chaat.subha.fun"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    credentials: true,
     allowedHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
-    optionsSuccessStatus: 204,
   })
 );
 
