@@ -74,7 +74,7 @@ const port = env.port || 5000;
 // Start server
 const server = app.listen(
     port,
-    console.log(`Server Started on PORT ${port}`.yellow.bold)
+    console.log(`Server Started on PORT ${port} - ${env.name}`.yellow.bold)
 );
 
 const io = require("./config/socketIo").socketConfig(server);

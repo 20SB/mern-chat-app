@@ -39,4 +39,4 @@ const production = {
     google_client_secret: process.env.GOOGLE_CLIENT_SECRET,
 };
 
-module.exports = development;
+module.exports = process.env.MODE === "dev" ? development:production;
