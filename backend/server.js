@@ -21,19 +21,6 @@ const AWS = require("./config/aws"); // Import AWS configuration
 // Initialize Express application
 const app = express();
 
-app.use((req, res, next) => {
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Origin', 'https://chit-chaat.subha.fun');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    return res.status(200).end();
-  }
-  // Continue for other requests
-  next();
-});
-
 // Connect to MongoDB
 connectDB();
 
@@ -61,7 +48,7 @@ console.log("client url", env.client_url);
 // Enable CORS
 app.use(
   cors({
-    origin: ["https://chit-chaat.subha.fun", "https://www.chit-chaat.subha.fun", "chit-chaat.subha.fun"],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
     optionsSuccessStatus: 204
