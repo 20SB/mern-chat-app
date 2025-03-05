@@ -49,11 +49,13 @@ console.log("client url", env.client_url)
 // Enable CORS
 app.use(
     cors({
-        origin: env.client_url,
-        methods: "GET,POST,PUT,DELETE,PATCH",
-        credentials: true,
+      origin: env.client_url,
+      methods: "GET,POST,PUT,DELETE,PATCH",
+      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"], // Add this
+      optionsSuccessStatus: 204 // Add this
     })
-);
+  );
 
 // Error tracking with Treblle
 useTreblle(app, {
