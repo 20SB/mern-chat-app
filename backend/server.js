@@ -9,12 +9,9 @@ const passport = require("passport"); // Authentication middleware for Node.js
 const passportJWT = require("./config/passportJWT"); // Passport strategy for JSON Web Token (JWT) authentication
 const passportGoogleOauth = require("./config/passportGoogleOauth"); // Passport strategy for Gooogle Oauth authentication
 const session = require("express-session");
-const MongoStore = require('connect-mongo');
+const MongoStore = require("connect-mongo");
 const colors = require("colors"); // Library for terminal output coloring
-const {
-    notFound,
-    errorHandler,
-} = require("./config/errorHandlerMiddleware"); // Middleware for handling 404 errors and other errors
+const { notFound, errorHandler } = require("./config/errorHandlerMiddleware"); // Middleware for handling 404 errors and other errors
 const path = require("path"); // Module for working with file paths
 const fs = require("fs"); // File system module
 const { useTreblle } = require("treblle"); // Integration for error tracking with Treblle
@@ -31,40 +28,48 @@ connectDB();
 app.use(express.json()); // Parse JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded request bodies
 
-app.use(session({
+app.use(
+  session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
-      ttl: 14 * 24 * 60 * 60 // 14 days
-    })
-  }));
+      ttl: 14 * 24 * 60 * 60, // 14 days
+    }),
+  })
+);
 
 // Initialize passport for authentication
 app.use(passport.initialize());
 app.use(passport.session());
 
-console.log("client url", env.client_url)
+console.log("client url", env.client_url);
 // Enable CORS
 app.use(
-    cors({
-      origin: env.client_url,
-      methods: "GET,POST,PUT,DELETE,PATCH",
-      credentials: true,
-      allowedHeaders: ["Content-Type", "Authorization"], // Add this
-      optionsSuccessStatus: 204 // Add this
-    })
-  );
+  cors({
+    origin: "https://chit-chaat.subha.fun",
+    methods: "GET,POST,PUT,DELETE,PATCH",
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"], // Add this
+    optionsSuccessStatus: 204, // Add this
+  })
+);
 
 // Error tracking with Treblle
 useTreblle(app, {
-    apiKey: env.treblleApiKey,
-    projectId: env.treblleProjectId,
+  apiKey: env.treblleApiKey,
+  projectId: env.treblleProjectId,
 });
 
 // Serve static files from the 'public' directory
 app.use("/public", express.static(path.join(__dirname, "public")));
+
+app.use((req, res, next) => {
+  console.log("Request Origin:", req.headers.origin);
+  console.log("CORS Headers:", res.getHeaders());
+  next();
+});
 
 // Routing
 app.use("/", require("./routes")); // Use router defined in 'routes' directory
@@ -77,9 +82,6 @@ app.use(errorHandler);
 const port = env.port || 5000;
 
 // Start server
-const server = app.listen(
-    port,
-    console.log(`Server Started on PORT ${port} - ${env.name}`.yellow.bold)
-);
+const server = app.listen(port, console.log(`Server Started on PORT ${port} - ${env.name}`.yellow.bold));
 
 const io = require("./config/socketIo").socketConfig(server);
