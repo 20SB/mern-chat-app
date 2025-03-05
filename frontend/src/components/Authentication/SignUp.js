@@ -88,7 +88,12 @@ const SignUp = () => {
         setLoading(true);
         // Make a POST request to the backend API
         axios
-            .post(`${BACKEND_URL}/api/user/signup`, formDatas)
+            .post(`${BACKEND_URL}/api/user/signup`, formDatas, {
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
             .then((res) => {
                 toast.success(res.data.message, "");
 

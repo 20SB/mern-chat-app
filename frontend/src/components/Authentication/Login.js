@@ -59,7 +59,12 @@ const Login = () => {
 
         // Make a POST request to the backend API
         axios
-            .post(`${BACKEND_URL}/api/user/login`, formData)
+            .post(`${BACKEND_URL}/api/user/login`, formData, {
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
             .then(({ data }) => {
                 // console.log("data", data);
                 toast.success(data.message, "");

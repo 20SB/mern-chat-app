@@ -50,6 +50,7 @@ app.use(
   cors({
     origin: ["*", "http://localhost:3000", "https://chit-chaat.subha.fun", "https://www.chit-chaat.subha.fun", "chit-chaat.subha.fun"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
     allowedHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
   })
 );
