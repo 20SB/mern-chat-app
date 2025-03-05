@@ -49,12 +49,18 @@ console.log("client url", env.client_url);
 app.use(
   cors({
     origin: "https://chit-chaat.subha.fun",
-    methods: "GET,POST,PUT,DELETE,PATCH",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"], // Add this
-    optionsSuccessStatus: 204, // Add this
+    allowedHeaders: ["Authorization", "Content-Type", "X-Requested-With"],
+    optionsSuccessStatus: 204,
   })
 );
+
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Authorization, Content-Type");
+  res.status(204).send();
+});
 
 // Error tracking with Treblle
 useTreblle(app, {
