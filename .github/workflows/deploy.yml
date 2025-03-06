@@ -18,7 +18,13 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+          cache-dependency-path: backend/package-lock.json # Ensure correct path
+          working-directory: backend  
 
+      - name: Install Dependencies
+        run: npm install
+        working-directory: backend
+        
       - name: Enable Debug Logging
         run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
 
