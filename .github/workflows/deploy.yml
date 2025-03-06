@@ -45,15 +45,11 @@ jobs:
             echo "📥 Fetching latest changes..."
             git fetch origin deploy
 
-            echo "🔄 Resetting local changes..."
-            git reset --hard origin/deploy
-
             echo "📦 Installing dependencies..."
             npm ci --omit=dev  # Clean install for production
 
             echo "🚀 Restarting PM2 process..."
-            pm2 delete server.js || true  # Force delete if exists
-            pm2 start server.js
+            pm2 restart server.js
 
             echo "📋 PM2 Status:"
             pm2 list
