@@ -53,7 +53,7 @@ jobs:
 
             echo "🚀 Restarting PM2 process..."
             pm2 delete server.js || true  # Force delete if exists
-            pm2 start server.js --name "mern-server"
+            pm2 start server.js
 
             echo "📋 PM2 Status:"
             pm2 list
