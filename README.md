@@ -71,4 +71,4 @@
 
 ## Deployed Link
 
-- [Chit Chaat](https://chit-chaat.subbu.cloud/)
+- [Chit Chaat](https://chit-chaat.subha.fun)
