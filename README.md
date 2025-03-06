@@ -22,6 +22,7 @@
 - Group messaging
 - Notifications
 - User profile updates
+- AI Message Enhancement
 
 ## Screenshots
 
