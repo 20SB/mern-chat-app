@@ -3,7 +3,7 @@ name: Deploy Backend to EC2
 on:
   push:
     branches:
-      - deploy  # Trigger workflow only on push to deploy branch
+      - deploy
 
 jobs:
   deploy:
@@ -12,21 +12,16 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
-        
-      - name: Enable Debug Logging
-        run: |
-          echo "RUNNER_DEBUG=true" >> $GITHUB_ENV  # ✅ Enable runner debugging
-          echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV  # ✅ Enable step debugging
-        
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: backend/package-lock.json  # ✅ Correct way
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install Dependencies
-        run: cd backend && npm install
+        run: cd backend && npm ci  # Use npm ci for clean install
 
       - name: Deploy to EC2
         env:
@@ -34,22 +29,34 @@ jobs:
           HOST: ${{ secrets.HOST_DNS }}
           USER: ubuntu
         run: |
+          # Save SSH key with proper formatting
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
-            set -e  # Exit on error
+
+          # SSH commands with improved error handling
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST <<EOF
+            set -e  # Exit immediately if any command fails
             echo "🔄 Navigating to project directory..."
-            cd mern-chat-app/backend || { echo "❌ Directory not found"; exit 1; }
-            
-            echo "📥 Pulling latest changes..."
-            git pull origin deploy || { echo "❌ Git pull failed"; exit 1; }
-            
+            cd /home/ubuntu/mern-chat-app/backend || {
+              echo "❌ Directory not found!";
+              exit 1;
+            }
+
+            echo "📥 Fetching latest changes..."
+            git fetch origin deploy
+
+            echo "🔄 Resetting local changes..."
+            git reset --hard origin/deploy
+
             echo "📦 Installing dependencies..."
-            npm install || { echo "❌ npm install failed"; exit 1; }
-            
+            npm ci --omit=dev  # Clean install for production
+
             echo "🚀 Restarting PM2 process..."
-            pm2 restart server.js || pm2 start server.js || { echo "❌ PM2 failed"; exit 1; }
-            
-            echo "✅ Deployment completed!"
-            exit
+            pm2 delete server.js || true  # Force delete if exists
+            pm2 start server.js --name "mern-server"
+
+            echo "📋 PM2 Status:"
+            pm2 list
+
+            echo "✅ Deployment successful!"
           EOF
