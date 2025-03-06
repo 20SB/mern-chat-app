@@ -18,11 +18,9 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          working-directory: backend  # Focus on backend folder
 
-      - name: Install Dependencies
-        run: npm install
-        working-directory: backend
+      - name: Enable Debug Logging
+        run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
 
       - name: Deploy to EC2
         env:
@@ -33,9 +31,19 @@ jobs:
           echo "$PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
-            cd mern-chat-app/backend
-            git pull origin deploy
-            npm install
-            pm2 restart server.js || pm2 start server.js
+            set -e  # Exit on error
+            echo "🔄 Navigating to project directory..."
+            cd mern-chat-app/backend || { echo "❌ Directory not found"; exit 1; }
+            
+            echo "📥 Pulling latest changes..."
+            git pull origin deploy || { echo "❌ Git pull failed"; exit 1; }
+            
+            echo "📦 Installing dependencies..."
+            npm install || { echo "❌ npm install failed"; exit 1; }
+            
+            echo "🚀 Restarting PM2 process..."
+            pm2 restart server.js || pm2 start server.js || { echo "❌ PM2 failed"; exit 1; }
+            
+            echo "✅ Deployment completed!"
             exit
           EOF
